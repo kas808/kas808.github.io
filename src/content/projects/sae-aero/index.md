@@ -1,12 +1,11 @@
 ---
 # DRAFT write-up (written from the SRR, PDR and capstone reports). Review before publishing.
-# ASK: add my exact role title from the team split (PM / Aero / Structures / Propulsion / Controls) to the role line below.
 title: SAE Aero Design Regular Class Competition
 summary: Senior capstone designing a two-motor electric RC cargo plane that carries 2 L bottles for the 2027 SAE Aero Design Regular Class.
 course: Capstone Design, LMU
 date: 2026 to 2027
 team: Taran Avery, Kasin Ito-Sato, Lucas Lee, Cooper Sedlmayer, Diego Puga. Advisor, Dr. Mustafa Mozael
-role: Five-person team. I ran the two- vs. four-motor and landing gear trade studies, laid out the motor, ESC and battery wiring, sized the cargo bay, and built the team's project management workbook.
+role: Head of Aero and Propulsion on a five-person team. I ran the two- vs. four-motor and landing gear trade studies, laid out the motor, ESC and battery wiring, sized the cargo bay, and built the team's project management workbook.
 tools: [Requirements Definition, Aircraft Conceptual Design, Trade Studies, Electrical Integration, Project Management]
 status: in progress
 featured: true
@@ -31,6 +30,6 @@ documents:
 - High wing with a tapered NACA 64(2)-415 airfoil, a T-tail with NACA 0012 surfaces, and tricycle landing gear
 - Flat cargo bay with Velcro straps and a rear door, so bottles can be moved to balance the center of gravity and swapped within 60 seconds
 
-**My role:** I compared the two- and four-motor layouts and landing gear options against the rule limits, laid out the wiring for the motors, ESCs and battery, sized the cargo bay around the bottle dimensions and payload, and built the team's project management workbook for tasks, phases and schedule.
+**My role:** I'm Head of Aero and Propulsion. I compared the two- and four-motor layouts and landing gear options against the rule limits, laid out the wiring for the motors, ESCs and battery, sized the cargo bay around the bottle dimensions and payload, and built the team's project management workbook for tasks, phases and schedule.
 
 **Next:** Detailed analysis, building and flight testing before the competition in April 2027.

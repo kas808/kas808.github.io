@@ -23,6 +23,6 @@ We practiced our skills to make a chair with three legs.
 
 # Gear
 
-We practiced using tools in OnShape to create gear ratios.
+We also practiced creating gear ratios in Onshape.
 
 https://www.loom.com/share/dc423b7631d7470a9a552dfc39645ab8 (video on the gears animated)

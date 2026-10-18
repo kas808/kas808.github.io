@@ -1,0 +1,20 @@
+---
+// A video that only downloads when someone presses play, so pages stay fast.
+import { url } from '../lib/url';
+interface Props { src: string; poster?: string; caption?: string }
+const { src, poster, caption } = Astro.props;
+---
+
+<figure class="video reveal">
+  <video controls playsinline preload="none" poster={poster ? url(poster) : undefined}>
+    <source src={url(src)} type="video/mp4" />
+    <a href={url(src)}>Download the video</a>
+  </video>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .video { margin: 0 0 40px; }
+  video { width: 100%; max-height: 78vh; background: #111; border-radius: var(--radius); }
+  figcaption { font-size: 0.85rem; color: var(--steel); margin-top: 8px; }
+</style>

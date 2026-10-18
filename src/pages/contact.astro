@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { url } from '../lib/url';
+import { site } from '../lib/site';
+---
+
+<BaseLayout title="Contact" description="Contact Kasin Ito-Sato.">
+  <section class="page-head wrap contact">
+    <h1>Contact.</h1>
+    <p class="lead">
+      I'm looking for mechanical engineering opportunities. The best way to reach me is email, and I'm happy to talk through
+      any of the projects on this site.
+    </p>
+    <ul class="ways">
+      <li class="reveal">
+        <p class="eyebrow">Email</p>
+        <a class="big" href={`mailto:${site.email}`}>{site.email}</a>
+      </li>
+      <li class="reveal">
+        <p class="eyebrow">LinkedIn</p>
+        <a class="big" href={site.linkedin} target="_blank" rel="noopener">linkedin.com/in/kasin-ito-sato</a>
+      </li>
+      <li class="reveal">
+        <p class="eyebrow">Based in</p>
+        <span class="big">Los Angeles, CA</span>
+      </li>
+      <li class="reveal">
+        <p class="eyebrow">Resume</p>
+        <a class="big" href={url('/resume/')}>View or download</a>
+      </li>
+    </ul>
+    <div class="btn-row">
+      <a class="btn" href={`mailto:${site.email}`}>Send an email</a>
+      <a class="btn btn-ghost" href={site.linkedin} target="_blank" rel="noopener">Connect on LinkedIn</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact { padding-bottom: 120px; }
+  .ways { list-style: none; margin: 48px 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--mist); }
+  @media (max-width: 700px) { .ways { grid-template-columns: 1fr; } }
+  .ways li { padding: 28px 24px 28px 0; border-bottom: 1px solid var(--mist); }
+  .ways .eyebrow { margin-bottom: 6px; }
+  .big { font-size: clamp(1.1rem, 2.4vw, 1.5rem); font-weight: 700; color: var(--ink); text-decoration: none; word-break: break-word; }
+  a.big:hover { text-decoration: underline; }
+</style>

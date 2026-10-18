@@ -1,0 +1,268 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectIndex from '../components/ProjectIndex.astro';
+import { url } from '../lib/url';
+import { site } from '../lib/site';
+import headshot from '../assets/headshot.jpg';
+import sketchA from '../content/projects/toggle-clamp-dfm/01_assembly_drawing_with_BOM.png';
+import sketchB from '../content/projects/wind-turbine/03_solidworks_rotor_iso.png';
+import sketchC from '../content/projects/toggle-clamp-dfm/02_interface_plate_drawing.png';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const featured = projects.filter((p) => p.data.featured);
+
+// Highlights pulled from the 2-page project portfolio PDF
+const highlights = [
+  {
+    figure: '2.00x',
+    title: '2.0x Pantograph',
+    text: 'A 2 in test line came out at exactly 4.0 in. I detailed each link with true position at MMC for floating 1/4-20 fasteners, then located the holes with the mill digital readout so the parts matched CAD.',
+    href: '/projects/pantograph/',
+  },
+  {
+    figure: '3 tools',
+    title: 'Self-initiated HVAC calculation tools at WSP',
+    text: 'Exhaust airflow, building pressurization and demand-controlled ventilation came up on project after project. I researched the equations and code requirements and built three Excel tools that the team adopted.',
+    href: '/experience/#wsp',
+  },
+  {
+    figure: '13 to 48',
+    unit: 'W/m²K',
+    title: 'Heat sink and forced-convection testing',
+    text: 'Built an Arduino UNO setup with three MAX6675 thermocouples. Moving air raised the convection coefficient from about 13 to 48 W/m²K, and thermal resistance fell from 3.6 to 2.9 K/W as air speed rose.',
+    href: '/projects/heat-sink/',
+  },
+  {
+    figure: '55 lb',
+    unit: 'max',
+    title: 'SAE Aero Design capstone',
+    text: 'Five-person team building a multi-motor RC cargo plane. I compared two- and four-motor layouts, laid out the motor, ESC and battery wiring, sized the cargo bay, and built our project management workbook.',
+    href: '/projects/sae-aero/',
+  },
+  {
+    figure: 'PI vs PID',
+    title: 'Motor position control and motion sensing',
+    text: 'Wrote interrupt-based Arduino code to read a quadrature encoder, calibrated a two-axis accelerometer, and tuned controllers in MATLAB/Simulink with root locus.',
+    href: '/projects/encoder-motor/',
+  },
+];
+---
+
+<BaseLayout>
+  <section class="hero wrap">
+    <div class="hero-photo reveal">
+      <Image src={headshot} alt="Portrait of Kasin Ito-Sato" widths={[360, 560, 800]} sizes="(max-width: 860px) 80vw, 40vw" loading="eager" fetchpriority="high" />
+    </div>
+    <div class="hero-text reveal">
+      <div class="sketches" aria-hidden="true">
+        <Image class="sk sk-a" src={sketchA} alt="" width={420} />
+        <Image class="sk sk-b" src={sketchB} alt="" width={300} />
+        <Image class="sk sk-c" src={sketchC} alt="" width={320} />
+      </div>
+      <h1>I'm Kasin Ito-Sato, a Mechanical Engineer.</h1>
+      <p class="focus">Mechanical Design · Thermal & Flow Analysis · Assembly & Test · GD&T</p>
+      <p class="lead">
+        I'm a mechanical engineering student at Loyola Marymount University (BS, May 2027). I've designed and machined
+        precision linkages, built my team's HVAC calculation tools as an intern at WSP, and I'm now working across aero,
+        structures, propulsion and controls on our SAE Aero Design capstone.
+      </p>
+      <div class="hero-btns">
+        <a class="btn" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" href={url('/projects/')}>Projects</a>
+        <a class="btn" href={url('/resume/')}>Resume</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="showcase section-tight" aria-labelledby="featured-title">
+    <div class="wrap showcase-head">
+      <h2 id="featured-title">Featured Projects.</h2>
+      <div class="arrows">
+        <button class="arrow" data-dir="-1" aria-label="Previous project">←</button>
+        <button class="arrow" data-dir="1" aria-label="Next project">→</button>
+      </div>
+    </div>
+    <div class="track" tabindex="0" aria-label="Featured projects, scroll sideways">
+      {featured.map((p) => (
+        <article class="slide">
+          <a class="slide-img" href={url(`/projects/${p.id}/`)} tabindex="-1" style={p.data.coverPosition ? `--pos: ${p.data.coverPosition}` : undefined}>
+            {p.data.cover && (
+              <Image src={p.data.cover} alt={p.data.coverAlt ?? ''} widths={[500, 800, 1200]} sizes="(max-width: 700px) 86vw, 46vw" loading="lazy" />
+            )}
+            {p.data.status === 'in progress' && <span class="status slide-status">In progress</span>}
+          </a>
+          <h3>{p.data.title}.</h3>
+          <p>{p.data.summary}</p>
+          <a class="btn" href={url(`/projects/${p.id}/`)}>Learn more<span class="visually-hidden"> about {p.data.title}</span></a>
+        </article>
+      ))}
+    </div>
+    <div class="wrap all-projects">
+      <button class="btn btn-ghost all-btn" aria-expanded="false" aria-controls="all-projects-panel">
+        All projects <span class="caret" aria-hidden="true"></span>
+      </button>
+      <div id="all-projects-panel" class="all-panel" hidden>
+        <ProjectIndex />
+      </div>
+    </div>
+  </section>
+
+  <section class="section wrap" aria-labelledby="highlights-title">
+    <div class="row-head reveal">
+      <h2 id="highlights-title">Highlights.</h2>
+      <a class="btn btn-ghost" href={url('media/resume/Kasin-Ito-Sato-Project-Portfolio.pdf')} target="_blank" rel="noopener">2-page portfolio (PDF)</a>
+    </div>
+    <ol class="highlights">
+      {highlights.map((h) => (
+        <li class="reveal">
+          <a href={url(h.href)}>
+            <span class="fig">{h.figure}{h.unit && <small>{h.unit}</small>}</span>
+            <span class="h-body">
+              <span class="h-title">{h.title}</span>
+              <span class="h-text">{h.text}</span>
+            </span>
+            <span class="h-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="section section-dark">
+    <div class="wrap split">
+      <div class="reveal">
+        <p class="eyebrow">Experience</p>
+        <h2>Mechanical Engineering Intern at WSP.</h2>
+        <p class="lead">
+          Sized HVAC equipment, revised mechanical layouts in Revit and AutoCAD, and built three Excel analysis tools that
+          the team adopted for pressurization, ventilation and exhaust flow.
+        </p>
+        <a class="btn" href={url('/experience/')}>See experience</a>
+      </div>
+      <div class="reveal">
+        <p class="eyebrow">Before LMU</p>
+        <h2>Punahou School.</h2>
+        <p class="lead">
+          Where I started engineering: a go-kart, a solar charger for a ride-on train, enrichment toys for the Honolulu Zoo,
+          and machine shop competency tests.
+        </p>
+        <a class="btn" href={url('/punahou/')}>See Punahou projects</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(32px, 6vw, 88px);
+    align-items: center;
+    padding-block: clamp(40px, 8vw, 110px);
+    overflow-x: clip;
+  }
+  .hero-photo :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0%; border-radius: 4px; }
+  .hero-text { position: relative; text-align: center; padding: 24px 0; }
+  .hero-text h1 { position: relative; font-size: clamp(2.2rem, 5vw, 3.9rem); margin-bottom: 0.5em; }
+  .hero-text .lead { position: relative; margin-inline: auto; max-width: 46ch; font-size: 1.02rem; }
+  .hero-btns { position: relative; display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 28px; }
+  .hero-btns .btn { min-width: 220px; }
+
+  .sketches { position: absolute; inset: -40px -60px; pointer-events: none; }
+  .sk { position: absolute; height: auto; mix-blend-mode: multiply; filter: grayscale(1) contrast(1.2); opacity: 0.13; }
+  .sk-a { width: 300px; top: -30px; right: -40px; }
+  .sk-b { width: 190px; bottom: -10px; right: -20px; }
+  .sk-c { width: 210px; bottom: 10px; left: -40px; }
+  @media (max-width: 1100px) { .sketches { inset: -20px -10px; } .sk-a { width: 220px; } }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-photo { max-width: 420px; margin-inline: auto; width: 100%; }
+    .sketches { display: none; }
+  }
+
+  .section-tight { padding-block: clamp(32px, 5vw, 64px) clamp(56px, 8vw, 96px); background: var(--white); border-block: 1px solid var(--mist); }
+  .showcase-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+  .showcase-head h2 { margin: 0; }
+  .arrows { display: flex; gap: 8px; }
+  .arrow {
+    width: 46px; height: 46px; border: 1px solid var(--ink); background: transparent; color: var(--ink);
+    font-size: 1.2rem; cursor: pointer; border-radius: 12px 0 12px 0; transition: background 0.2s var(--ease), color 0.2s var(--ease);
+  }
+  .arrow:hover { background: var(--ink); color: #fff; }
+  .track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(46vw, 640px);
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: max(var(--gutter), calc((100vw - var(--max)) / 2 + var(--gutter)));
+    padding-inline: max(var(--gutter), calc((100vw - var(--max)) / 2 + var(--gutter)));
+    padding-bottom: 12px;
+    scrollbar-width: thin;
+  }
+  .track:focus-visible { outline-offset: -2px; }
+  @media (max-width: 700px) { .track { grid-auto-columns: 86vw; } }
+  .slide { scroll-snap-align: start; display: flex; flex-direction: column; }
+  .slide-img { position: relative; display: block; aspect-ratio: 3 / 2; overflow: hidden; background: #e7e6e1; border-radius: 2px; }
+  .slide-img :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); transition: transform 0.7s var(--ease); }
+  .slide:hover .slide-img :global(img) { transform: scale(1.03); }
+  .slide-status { position: absolute; top: 14px; left: 14px; }
+  .slide h3 { font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 800; margin: 18px 0 8px; }
+  .slide p { margin: 0 0 18px; max-width: 52ch; }
+  .slide .btn { align-self: flex-start; }
+
+  .row-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+  .row-head h2 { margin: 0; }
+
+  .focus { position: relative; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-wrap: balance; text-transform: uppercase; color: var(--steel); margin-bottom: 1.4em; }
+
+  .all-projects { margin-top: 28px; }
+  .all-btn .caret { width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.2s var(--ease); }
+  .all-btn[aria-expanded='true'] .caret { transform: translateY(1px) rotate(-135deg); }
+  .all-panel { margin-top: 20px; padding: 28px; background: var(--paper); border: 1px solid var(--mist); border-radius: var(--radius); animation: drop 0.25s var(--ease); }
+  @keyframes drop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+  .highlights { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--mist); }
+  .highlights a { display: grid; grid-template-columns: 200px minmax(0, 1fr) 32px; gap: 24px; align-items: center; padding: 26px 0; border-bottom: 1px solid var(--mist); text-decoration: none; color: var(--charcoal); transition: background 0.25s var(--ease), padding 0.25s var(--ease); }
+  .highlights a:hover { background: var(--white); padding-inline: 16px; }
+  .fig { font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 800; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .fig small { display: block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--steel); margin-top: 6px; }
+  .h-body { display: flex; flex-direction: column; gap: 4px; }
+  .h-title { font-weight: 700; color: var(--ink); font-size: 1.08rem; }
+  .h-text { font-size: 0.95rem; max-width: 70ch; }
+  .h-arrow { color: var(--ink); font-size: 1.2rem; transition: transform 0.25s var(--ease); }
+  .highlights a:hover .h-arrow { transform: translateX(4px); }
+  @media (max-width: 700px) {
+    .highlights a { grid-template-columns: 1fr; gap: 10px; }
+    .h-arrow { display: none; }
+  }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 6vw, 96px); }
+  .split .lead { color: #c9d0d7; }
+  @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  const allBtn = document.querySelector<HTMLButtonElement>('.all-btn');
+  const panel = document.getElementById('all-projects-panel');
+  allBtn?.addEventListener('click', () => {
+    const open = allBtn.getAttribute('aria-expanded') !== 'true';
+    allBtn.setAttribute('aria-expanded', String(open));
+    if (panel) panel.hidden = !open;
+  });
+
+  const track = document.querySelector<HTMLElement>('.track');
+  document.querySelectorAll<HTMLButtonElement>('.arrow').forEach((b) =>
+    b.addEventListener('click', () => {
+      if (!track) return;
+      const slide = track.querySelector<HTMLElement>('.slide');
+      const step = slide ? slide.offsetWidth + 20 : track.clientWidth * 0.8;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      track.scrollBy({ left: step * Number(b.dataset.dir), behavior: reduce ? 'auto' : 'smooth' });
+    }),
+  );
+</script>

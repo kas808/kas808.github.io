@@ -1,0 +1,72 @@
+---
+// One project tile: photo, bold title ending in a period, and a LEARN MORE button.
+import { Image } from 'astro:assets';
+import { url } from '../lib/url';
+
+interface Props {
+  href: string;
+  title: string;
+  summary?: string;
+  meta?: string;
+  cover?: ImageMetadata;
+  coverAlt?: string;
+  coverPosition?: string;
+  tools?: string[];
+  status?: string;
+  size?: 'large' | 'small';
+  label?: string; // shown on cards that have no photo
+}
+const { href, title, summary, meta, cover, coverAlt = '', coverPosition, tools = [], status, size = 'large', label } = Astro.props;
+const titleWithPeriod = /[.!?]$/.test(title) ? title : `${title}.`;
+---
+
+<article class:list={['card', `card-${size}`, 'reveal']}>
+  <a class="card-media" href={url(href)} tabindex="-1" aria-hidden="true" style={coverPosition ? `--pos: ${coverPosition}` : undefined}>
+    {cover ? (
+      <Image src={cover} alt={coverAlt} widths={[400, 700, 1000]} sizes={size === 'large' ? '(max-width: 700px) 100vw, 50vw' : '(max-width: 700px) 100vw, 33vw'} loading="lazy" />
+    ) : (
+      <div class="blueprint"><span>{label ?? title}</span></div>
+    )}
+    {status === 'in progress' && <span class="status card-status">In progress</span>}
+  </a>
+  <div class="card-body">
+    {meta && <p class="eyebrow">{meta}</p>}
+    <h3><a href={url(href)}>{titleWithPeriod}</a></h3>
+    {summary && <p class="summary">{summary}</p>}
+    {size === 'large' && tools.length > 0 && (
+      <ul class="tags">{tools.slice(0, 5).map((t) => <li>{t}</li>)}</ul>
+    )}
+    <a class="btn" href={url(href)}>Learn more<span class="visually-hidden"> about {title}</span></a>
+  </div>
+</article>
+
+<style>
+  .card { display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--mist); border-radius: var(--radius); overflow: hidden; transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease); }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 18px 36px -24px rgba(37, 52, 71, 0.45); }
+  .card-media { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; background: #e7e6e1; }
+  .card-small .card-media { aspect-ratio: 16 / 10; }
+  .card-media :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); transition: transform 0.6s var(--ease); }
+  .card:hover .card-media :global(img) { transform: scale(1.035); }
+  .card-status { position: absolute; top: 12px; left: 12px; }
+  .card-body { display: flex; flex-direction: column; gap: 10px; padding: 22px 22px 24px; flex: 1; }
+  .card-body .eyebrow { margin: 0; }
+  .card-body h3 { margin: 0; font-size: 1.35rem; font-weight: 800; }
+  .card-small h3 { font-size: 1.12rem; }
+  .card-body h3 a { color: var(--ink); text-decoration: none; }
+  .summary { margin: 0; font-size: 0.95rem; color: var(--charcoal); }
+  .card-small .summary { font-size: 0.9rem; }
+  .card-body .btn { margin-top: auto; align-self: flex-start; }
+  .card-body .tags { margin-bottom: 6px; }
+
+  .blueprint {
+    width: 100%; height: 100%; display: flex; align-items: flex-end; padding: 18px;
+    background-color: var(--ink);
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
+  }
+  .blueprint span { color: #fff; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.85; }
+</style>

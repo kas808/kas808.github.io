@@ -1,0 +1,102 @@
+---
+// The template for every project page. Content comes from
+// src/content/projects/<folder>/index.md, so you never need to edit this file
+// to add a project.
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Gallery from '../../components/Gallery.astro';
+import VideoPlayer from '../../components/VideoPlayer.astro';
+import Documents from '../../components/Documents.astro';
+import { url } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+  return projects.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, prev: projects[i - 1], next: projects[i + 1] },
+  }));
+}
+
+const { entry, prev, next } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const media = (file: string) => `/media/${entry.id}/${file}`;
+---
+
+<BaseLayout title={d.title} description={d.summary}>
+  <article>
+    <header class="project-head wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href={url('/projects/')}>Projects</a> <span>/</span> {d.title}</nav>
+      <p class="eyebrow">{[d.course, d.date].filter(Boolean).join(' · ')}</p>
+      <h1>{d.title}.</h1>
+      {d.status === 'in progress' && <p><span class="status">In progress</span></p>}
+      <p class="lead">{d.summary}</p>
+    </header>
+
+    {d.cover && (
+      <div class="wrap">
+        <div class="cover">
+          <Image src={d.cover} alt={d.coverAlt ?? ''} widths={[600, 1000, 1400, 1800]} sizes="(max-width: 1200px) 100vw, 1200px" loading="eager" />
+        </div>
+      </div>
+    )}
+
+    <div class="wrap body-grid">
+      <aside class="facts reveal" aria-label="Project details">
+        <dl>
+          <dt>My role</dt>
+          <dd>{d.role}</dd>
+          {d.team && (<><dt>Team</dt><dd>{d.team}</dd></>)}
+          {d.course && (<><dt>Course</dt><dd>{d.course}</dd></>)}
+          <dt>Date</dt>
+          <dd>{d.date}</dd>
+          <dt>Tools and skills</dt>
+          <dd><ul class="tags">{d.tools.map((t) => <li>{t}</li>)}</ul></dd>
+        </dl>
+      </aside>
+
+      <div class="main-col">
+        {d.video && <VideoPlayer src={media(d.video.file)} poster={d.video.poster && media(d.video.poster)} caption={d.video.caption} />}
+        <div class="prose reveal">
+          <Content />
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      {d.gallery.map((g) => <Gallery title={g.title} images={g.images} />)}
+      <Documents folder={entry.id} documents={d.documents} />
+    </div>
+
+    <nav class="pager wrap" aria-label="More projects">
+      {prev ? <a class="prev" href={url(`/projects/${prev.id}/`)}><span class="eyebrow">Previous</span>{prev.data.title}</a> : <span />}
+      {next ? <a class="next" href={url(`/projects/${next.id}/`)}><span class="eyebrow">Next</span>{next.data.title}</a> : <span />}
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .project-head { padding-block: clamp(40px, 6vw, 80px) 32px; }
+  .project-head .lead { margin-top: 0.5em; }
+  .crumbs { font-size: 0.8rem; color: var(--steel); margin-bottom: 28px; }
+  .crumbs a { color: var(--steel); }
+  .cover { border-radius: var(--radius); overflow: hidden; background: var(--white); border: 1px solid var(--mist); }
+  .cover :global(img) { width: 100%; max-height: 74vh; object-fit: contain; }
+
+  .body-grid { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); margin-top: 48px; align-items: start; }
+  @media (max-width: 900px) { .body-grid { grid-template-columns: 1fr; } }
+  .facts { position: sticky; top: calc(var(--header-h) + 24px); border-top: 2px solid var(--ink); padding-top: 18px; }
+  @media (max-width: 900px) { .facts { position: static; } }
+  .facts dl { margin: 0; }
+  .facts dt { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--steel); margin-top: 18px; }
+  .facts dt:first-child { margin-top: 0; }
+  .facts dd { margin: 6px 0 0; font-size: 0.95rem; }
+  .facts .tags { margin-top: 4px; }
+
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-block: 56px 80px; margin-top: 40px; border-top: 1px solid var(--mist); }
+  .pager a { display: flex; flex-direction: column; gap: 4px; text-decoration: none; font-weight: 700; font-size: 1.1rem; color: var(--ink); }
+  .pager .eyebrow { margin: 0; }
+  .pager .next { text-align: right; align-items: flex-end; }
+  .pager a:hover { color: var(--ink-soft); text-decoration: underline; }
+</style>

@@ -1,0 +1,31 @@
+---
+import { url } from '../lib/url';
+import { site } from '../lib/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer section-dark">
+  <div class="wrap foot">
+    <div>
+      <p class="name">{site.name}</p>
+      <p class="muted-light">Mechanical Engineer</p>
+    </div>
+    <ul class="links">
+      <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+      <li><a href={site.linkedin} rel="noopener">LinkedIn</a></li>
+      <li><a href={url('/resume/')}>Resume</a></li>
+    </ul>
+  </div>
+  <div class="wrap legal">© {year} {site.name}</div>
+</footer>
+
+<style>
+  .site-footer { padding-block: 48px 28px; margin-top: 0; }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; align-items: flex-start; }
+  .name { font-weight: 800; font-size: 1.3rem; color: #fff; margin: 0; letter-spacing: -0.02em; }
+  .muted-light { color: var(--steel); margin: 0; font-size: 0.9rem; }
+  .links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 28px; }
+  .links a { text-decoration: none; font-size: 0.95rem; }
+  .links a:hover { text-decoration: underline; }
+  .legal { margin-top: 32px; font-size: 0.8rem; color: var(--steel); }
+</style>

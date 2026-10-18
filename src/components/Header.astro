@@ -1,0 +1,194 @@
+---
+// Sticky top bar with a Projects menu that lists every project.
+// The menu builds itself from your content files, so new projects show up automatically.
+import ProjectIndex from './ProjectIndex.astro';
+import { url } from '../lib/url';
+import { site } from '../lib/site';
+
+const path = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), '') || '/';
+const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsWith(prefix));
+---
+
+<header class="site-header">
+  <div class="bar wrap">
+    <a class="brand" href={url('/')}>{site.name}</a>
+
+    <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
+      <span class="visually-hidden">Menu</span>
+      <span class="burger" aria-hidden="true"></span>
+    </button>
+
+    <nav id="site-nav" class="nav" aria-label="Main">
+      <ul class="nav-list">
+        <li><a href={url('/')} aria-current={active('/') ? 'page' : undefined}>Home</a></li>
+        <li class="has-menu">
+          <button class="menu-btn" aria-expanded="false" aria-controls="projects-menu" data-active={active('/projects') || active('/punahou') ? '' : undefined}>
+            Projects <span class="caret" aria-hidden="true"></span>
+          </button>
+          <div id="projects-menu" class="mega">
+            <div class="mega-inner wrap">
+              <ProjectIndex />
+            </div>
+          </div>
+        </li>
+        <li><a href={url('/experience/')} aria-current={active('/experience') ? 'page' : undefined}>Experience</a></li>
+        <li><a href={url('/resume/')} aria-current={active('/resume') ? 'page' : undefined}>Resume</a></li>
+        <li><a href={url('/contact/')} aria-current={active('/contact') ? 'page' : undefined}>Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(241, 240, 236, 0.94);
+    backdrop-filter: saturate(1.4) blur(10px);
+    -webkit-backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: 1px solid var(--mist);
+  }
+  .bar { height: var(--header-h); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .brand { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; white-space: nowrap; }
+
+  .nav-list { display: flex; align-items: center; gap: 4px; margin: 0; padding: 0; list-style: none; }
+  .nav-list > li > a,
+  .menu-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font: 500 0.78rem/1 var(--font);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    position: relative;
+  }
+  .nav-list > li > a::after,
+  .menu-btn::after {
+    content: '';
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 2px;
+    height: 1px;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s var(--ease);
+  }
+  .nav-list > li > a:hover::after,
+  .nav-list > li > a[aria-current]::after,
+  .menu-btn:hover::after,
+  .menu-btn[data-active]::after { transform: scaleX(1); }
+
+  .caret { width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.2s var(--ease); }
+  .menu-btn[aria-expanded='true'] .caret { transform: translateY(1px) rotate(-135deg); }
+
+  .mega {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--header-h);
+    background: var(--white);
+    border-bottom: 1px solid var(--mist);
+    box-shadow: 0 24px 40px -24px rgba(37, 52, 71, 0.25);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.2s var(--ease), transform 0.2s var(--ease), visibility 0.2s;
+    max-height: calc(100vh - var(--header-h));
+    overflow-y: auto;
+  }
+  .has-menu.open .mega { opacity: 1; visibility: visible; transform: none; }
+  .mega-inner { padding-block: 28px 36px; }
+
+  .menu-toggle { display: none; }
+
+  @media (max-width: 900px) {
+    /* The blur effect would trap the full-screen menu inside the bar, so use a solid bar on phones */
+    .site-header { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--paper); }
+    .menu-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      background: none;
+      cursor: pointer;
+    }
+    .burger, .burger::before, .burger::after {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: var(--ink);
+      position: relative;
+      transition: transform 0.25s var(--ease), background 0.25s;
+    }
+    .burger::before, .burger::after { content: ''; position: absolute; left: 0; }
+    .burger::before { top: -7px; }
+    .burger::after { top: 7px; }
+    .menu-toggle[aria-expanded='true'] .burger { background: transparent; }
+    .menu-toggle[aria-expanded='true'] .burger::before { transform: translateY(7px) rotate(45deg); }
+    .menu-toggle[aria-expanded='true'] .burger::after { transform: translateY(-7px) rotate(-45deg); }
+
+    .nav {
+      position: fixed;
+      inset: var(--header-h) 0 0 0;
+      background: var(--paper);
+      overflow-y: auto;
+      padding: 12px var(--gutter) 48px;
+      display: none;
+    }
+    .nav.open { display: block; }
+    .nav-list { flex-direction: column; align-items: stretch; gap: 0; }
+    .nav-list > li { border-bottom: 1px solid var(--mist); }
+    .nav-list > li > a, .menu-btn { width: 100%; justify-content: space-between; padding: 16px 0; font-size: 0.85rem; }
+    .nav-list > li > a::after, .menu-btn::after { display: none; }
+    .mega { position: static; box-shadow: none; border: 0; background: transparent; transform: none; max-height: none; display: none; opacity: 1; visibility: visible; }
+    .has-menu.open .mega { display: block; }
+    .mega-inner { padding: 0 0 16px 12px; max-width: none; margin: 0; }
+  }
+</style>
+
+<script>
+  function setup() {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+    const toggle = header.querySelector<HTMLButtonElement>('.menu-toggle');
+    const nav = header.querySelector<HTMLElement>('.nav');
+    const item = header.querySelector<HTMLElement>('.has-menu');
+    const btn = header.querySelector<HTMLButtonElement>('.menu-btn');
+    const desktop = window.matchMedia('(min-width: 901px)');
+
+    const setMenu = (open: boolean) => {
+      item?.classList.toggle('open', open);
+      btn?.setAttribute('aria-expanded', String(open));
+    };
+
+    toggle?.addEventListener('click', () => {
+      const open = !nav?.classList.contains('open');
+      nav?.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+
+    btn?.addEventListener('click', () => setMenu(!item?.classList.contains('open')));
+
+    let timer: number | undefined;
+    item?.addEventListener('mouseenter', () => { if (desktop.matches) { clearTimeout(timer); setMenu(true); } });
+    item?.addEventListener('mouseleave', () => { if (desktop.matches) timer = window.setTimeout(() => setMenu(false), 180); });
+
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+    document.addEventListener('click', (e) => {
+      if (desktop.matches && item && !item.contains(e.target as Node)) setMenu(false);
+    });
+  }
+  setup();
+</script>

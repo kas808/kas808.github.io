@@ -1,0 +1,57 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Gallery from '../components/Gallery.astro';
+import Documents from '../components/Documents.astro';
+import { url } from '../lib/url';
+
+const jobs = (await getCollection('experience')).sort((a, b) => a.data.order - b.data.order);
+const rendered = await Promise.all(jobs.map(async (j) => ({ job: j, Content: (await render(j)).Content })));
+---
+
+<BaseLayout title="Experience" description="Engineering experience of Kasin Ito-Sato, including a mechanical engineering internship at WSP.">
+  <header class="page-head wrap">
+    <h1>Experience.</h1>
+    <p class="lead">Work outside the classroom, from HVAC design at an engineering firm to teaching younger students robotics.</p>
+  </header>
+
+  {rendered.map(({ job, Content }, i) => (
+    <section id={job.id} class:list={['section', 'job', i % 2 === 0 && 'tinted']}>
+      <div class="wrap">
+        <div class="job-grid">
+          <div class="job-meta reveal">
+            <p class="eyebrow">{job.data.dates}</p>
+            <h2>{job.data.title}.</h2>
+            <p class="org">{job.data.organization}<span>{job.data.location}</span></p>
+            {job.data.tools.length > 0 && <ul class="tags">{job.data.tools.map((t) => <li>{t}</li>)}</ul>}
+            {job.data.related && (
+              <p class="related">Related: <a href={url(job.data.related.href)}>{job.data.related.title}</a></p>
+            )}
+          </div>
+          <div class="job-body reveal">
+            <ul class="highlights">
+              {job.data.highlights.map((h) => <li>{h}</li>)}
+            </ul>
+            <div class="prose"><Content /></div>
+          </div>
+        </div>
+        {job.data.gallery.length > 0 && <Gallery images={job.data.gallery} />}
+        <Documents folder={job.id} documents={job.data.documents} />
+      </div>
+    </section>
+  ))}
+</BaseLayout>
+
+<style>
+  .job { scroll-margin-top: var(--header-h); }
+  .tinted { background: var(--white); border-block: 1px solid var(--mist); }
+  .job-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(32px, 5vw, 80px); }
+  @media (max-width: 860px) { .job-grid { grid-template-columns: 1fr; } }
+  .job-meta h2 { margin-bottom: 0.3em; }
+  .org { font-weight: 700; color: var(--ink); display: flex; flex-direction: column; margin-bottom: 18px; }
+  .org span { font-weight: 400; color: var(--steel); }
+  .related { margin-top: 18px; font-size: 0.95rem; }
+  .highlights { margin: 0 0 24px; padding-left: 1.1em; }
+  .highlights li { margin-bottom: 0.7em; }
+  .highlights li::marker { color: var(--accent); }
+</style>

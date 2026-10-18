@@ -1,0 +1,9 @@
+---
+// Shows the video thumbnail first and only loads YouTube when clicked (much faster pages).
+import { youtubeId } from '../lib/url';
+interface Props { link: string; title: string }
+const { link, title } = Astro.props;
+const id = youtubeId(link);
+---
+
+{id && <div class="yt-embed" data-yt={id} data-title={title}></div>}

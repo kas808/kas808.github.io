@@ -1,0 +1,154 @@
+---
+// PDFs for a project. The first one marked embed: true is shown as a box of
+// pages you scroll through (pictures made by `npm run pdf-pages`), and every
+// PDF gets Open / Download links.
+import { Image } from 'astro:assets';
+import { url } from '../lib/url';
+
+interface Props { folder: string; documents: { title: string; file: string; embed?: boolean }[] }
+const { folder, documents } = Astro.props;
+const href = (file: string) => url(`/media/${folder}/${file}`);
+const embedded = documents.find((d) => d.embed);
+
+// Page pictures live in src/assets/docs/<folder>/<pdf name>/page-01.jpg ...
+const allPages = import.meta.glob<ImageMetadata>('../assets/docs/**/*.jpg', { eager: true, import: 'default' });
+const pages = embedded
+  ? Object.entries(allPages)
+      .filter(([p]) => p.startsWith(`../assets/docs/${folder}/${embedded.file.replace(/\.pdf$/, '')}/`))
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([, img]) => img)
+  : [];
+---
+
+{documents.length > 0 && (
+  <section class="docs reveal">
+    <h2>Documents.</h2>
+
+    {embedded && pages.length > 0 && (
+      <div class="viewer" data-viewer>
+        <div class="viewer-bar">
+          <span class="viewer-title">{embedded.title}</span>
+          <span class="viewer-count" aria-live="polite"><span data-page>1</span> / {pages.length}</span>
+          <span class="viewer-links">
+            <a href={href(embedded.file)} target="_blank" rel="noopener">Open PDF</a>
+            <a href={href(embedded.file)} download>Download</a>
+          </span>
+        </div>
+        <div class="viewer-scroll" tabindex="0" aria-label={`${embedded.title}, ${pages.length} pages. Scroll to read.`} data-zoom-group>
+          {pages.map((img, i) => (
+            <figure class="page" data-zoom>
+              <Image
+                src={img}
+                alt={`${embedded.title}, page ${i + 1} of ${pages.length}`}
+                data-caption={`${embedded.title}, page ${i + 1} of ${pages.length}`}
+                widths={[500, 900, 1400]}
+                sizes="(max-width: 900px) 92vw, 860px"
+                loading={i === 0 ? 'eager' : 'lazy'}
+              />
+            </figure>
+          ))}
+        </div>
+        {pages.length > 1 && (
+          <button class="scroll-hint" type="button" aria-label="Scroll to the next page">
+            <span>Scroll</span>
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+        )}
+      </div>
+    )}
+
+    {embedded && pages.length === 0 && (
+      <div class="pdf-frame">
+        <iframe src={`${href(embedded.file)}#view=FitH&toolbar=0&navpanes=0`} title={embedded.title} loading="lazy"></iframe>
+      </div>
+    )}
+
+    <ul class="doc-list">
+      {documents.map((d) => (
+        <li>
+          <span class="doc-title">{d.title}</span>
+          <span class="doc-actions">
+            <a href={href(d.file)} target="_blank" rel="noopener">Open</a>
+            <a href={href(d.file)} download>Download</a>
+          </span>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<style>
+  .docs { margin-top: 56px; }
+
+  .viewer { position: relative; border: 1px solid var(--mist); border-radius: var(--radius); background: #e2e1dc; overflow: hidden; }
+  .viewer-bar {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px;
+    padding: 12px 18px; background: var(--ink); color: #fff; font-size: 0.85rem;
+  }
+  .viewer-title { font-weight: 700; }
+  .viewer-count { font-variant-numeric: tabular-nums; color: #c9d0d7; letter-spacing: 0.08em; }
+  .viewer-links { display: flex; gap: 18px; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; }
+  .viewer-links a { color: #fff; }
+  .viewer-scroll {
+    position: relative; /* page positions are measured from the top of this box */
+    height: min(80vh, 900px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 24px clamp(12px, 3vw, 32px) 72px;
+    display: flex; flex-direction: column; align-items: center; gap: 18px;
+    scroll-behavior: smooth;
+  }
+  @media (max-width: 700px) { .viewer-scroll { height: 72vh; } }
+  .page { margin: 0; width: 100%; max-width: 860px; background: #fff; box-shadow: 0 10px 28px -16px rgba(37, 52, 71, 0.5); cursor: zoom-in; }
+  .page :global(img) { width: 100%; height: auto; }
+
+  .scroll-hint {
+    position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
+    display: inline-flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 8px 18px 10px; border: 0; border-radius: 12px 0 12px 0;
+    background: var(--ink); color: #fff; cursor: pointer;
+    font: 600 0.68rem/1 var(--font); letter-spacing: 0.16em; text-transform: uppercase;
+    box-shadow: 0 8px 20px -8px rgba(37, 52, 71, 0.6);
+    transition: opacity 0.35s var(--ease), visibility 0.35s;
+    animation: bob 1.8s var(--ease) infinite;
+  }
+  .scroll-hint .chev { width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); margin-top: 3px; }
+  .viewer.at-end .scroll-hint { opacity: 0; visibility: hidden; }
+  @keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 5px; } }
+  @media (prefers-reduced-motion: reduce) { .scroll-hint { animation: none; } .viewer-scroll { scroll-behavior: auto; } }
+
+  .pdf-frame { border: 1px solid var(--mist); border-radius: var(--radius); background: var(--white); overflow: hidden; }
+  .pdf-frame iframe { display: block; width: 100%; height: min(85vh, 1000px); border: 0; }
+  @media (max-width: 700px) { .pdf-frame iframe { height: 70vh; } }
+
+  .doc-list { list-style: none; padding: 0; margin: 18px 0 0; border-top: 1px solid var(--mist); }
+  .doc-list li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding: 12px 0; border-bottom: 1px solid var(--mist); }
+  .doc-title { font-weight: 600; color: var(--ink); }
+  .doc-actions { display: flex; gap: 18px; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; }
+</style>
+
+<script>
+  // Page counter, and the "Scroll" arrow that hides once you reach the last page.
+  document.querySelectorAll<HTMLElement>('[data-viewer]').forEach((viewer) => {
+    const box = viewer.querySelector<HTMLElement>('.viewer-scroll')!;
+    const pages = Array.from(box.querySelectorAll<HTMLElement>('.page'));
+    const counter = viewer.querySelector('[data-page]');
+    const hint = viewer.querySelector<HTMLButtonElement>('.scroll-hint');
+
+    const update = () => {
+      const mid = box.scrollTop + box.clientHeight / 3;
+      let current = 0;
+      pages.forEach((p, i) => { if (p.offsetTop <= mid) current = i; });
+      if (counter) counter.textContent = String(current + 1);
+      viewer.classList.toggle('at-end', box.scrollTop + box.clientHeight >= box.scrollHeight - 40);
+    };
+    box.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+
+    hint?.addEventListener('click', () => {
+      const next = pages.find((p) => p.offsetTop - 24 > box.scrollTop + 4);
+      box.scrollTo({ top: next ? next.offsetTop - 24 : box.scrollHeight });
+    });
+  });
+</script>

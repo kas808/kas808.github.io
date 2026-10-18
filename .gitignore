@@ -1,0 +1,18 @@
+# Build output and installed packages (recreated automatically)
+dist/
+node_modules/
+.astro/
+
+# Raw originals: kept on your computer, never published
+assets-raw/
+style-examples/
+START-HERE.md
+
+# Mac clutter
+.DS_Store
+
+# Claude Code preview settings (only used on this computer)
+.claude/
+
+# Python cache
+__pycache__/

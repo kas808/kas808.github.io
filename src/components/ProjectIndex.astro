@@ -1,0 +1,51 @@
+---
+// The full list of projects, grouped like the old Google Site (LMU, WSP, Punahou).
+// Used in the top bar's Projects menu and behind the "All projects" button on the home page.
+import { getCollection } from 'astro:content';
+import { url } from '../lib/url';
+import { punahouSections } from '../lib/site';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const punahou = (await getCollection('punahou')).sort((a, b) => a.data.order - b.data.order);
+const groups = punahouSections.map((s) => ({ ...s, pages: punahou.filter((p) => p.data.section === s.id) }));
+---
+
+<div class="pindex">
+  <div>
+    <p class="pi-head"><a href={url('/projects/')}>LMU</a></p>
+    <ul>
+      {projects.map((p) => <li><a href={url(`/projects/${p.id}/`)}>{p.data.title}</a></li>)}
+    </ul>
+    <p class="pi-head"><a href={url('/experience/#wsp')}>WSP Internship</a></p>
+    <ul>
+      <li><a href={url('/experience/#wsp')}>Mechanical Engineering Intern</a></li>
+    </ul>
+  </div>
+  <div>
+    <p class="pi-head"><a href={url('/punahou/')}>Punahou School</a></p>
+    <div class="pi-grid">
+      {groups.map((g) => (
+        <div>
+          <p class="pi-sub"><a href={url(`/punahou/#${g.id}`)}>{g.name}</a></p>
+          <ul>{g.pages.map((p) => <li><a href={url(`/punahou/${p.id}/`)}>{p.data.title}</a></li>)}</ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  .pindex { display: grid; grid-template-columns: 1fr 2.4fr; gap: 40px; }
+  .pindex ul { list-style: none; margin: 0 0 18px; padding: 0; }
+  .pindex li a { display: block; padding: 3px 0; font-size: 0.92rem; color: var(--charcoal); text-decoration: none; }
+  .pindex li a:hover { color: var(--ink); text-decoration: underline; }
+  .pi-head { margin: 0 0 8px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; }
+  .pi-head a, .pi-sub a { color: var(--ink); text-decoration: none; }
+  .pi-sub { margin: 0 0 4px; font-weight: 700; font-size: 0.92rem; }
+  .pi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 28px; }
+  @media (max-width: 900px) {
+    .pindex { grid-template-columns: 1fr; gap: 8px; }
+    .pi-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) { .pi-grid { grid-template-columns: 1fr; } }
+</style>

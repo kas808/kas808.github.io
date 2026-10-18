@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { punahouSections } from '../../lib/site';
+
+const pages = (await getCollection('punahou')).sort((a, b) => a.data.order - b.data.order);
+const sections = punahouSections.map((s) => ({ ...s, pages: pages.filter((p) => p.data.section === s.id) }));
+---
+
+<BaseLayout title="Punahou School" description="Design and engineering projects from Punahou School in Honolulu, Hawaii.">
+  <header class="page-head wrap">
+    <p class="eyebrow">Honolulu, Hawaii</p>
+    <h1>Punahou School.</h1>
+    <p class="lead">
+      Where I started engineering. These pages come from my original Punahou portfolio, grouped the same way: Ke Kilohana,
+      GSD, Lanakila Express, Engineering III, Extra Work and Competency Tests.
+    </p>
+    <nav class="jump" aria-label="Sections">
+      {sections.map((s) => <a href={`#${s.id}`}>{s.name}</a>)}
+    </nav>
+  </header>
+
+  {sections.map((s, i) => (
+    <section id={s.id} class:list={['section', 'p-section', i % 2 === 1 && 'alt']}>
+      <div class="wrap">
+        <h2 class="reveal">{s.name}.</h2>
+        <div class="grid">
+          {s.pages.map((p) => (
+            <ProjectCard
+              href={`/punahou/${p.id}/`}
+              title={p.data.title}
+              cover={p.data.cover ?? p.data.banner}
+              coverAlt=""
+              size="small"
+              label={s.name}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  ))}
+</BaseLayout>
+
+<style>
+  .jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .jump a {
+    font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none;
+    padding: 0.5em 1em; border: 1px solid var(--ink); border-radius: 12px 0 12px 0; color: var(--ink);
+    transition: background 0.2s var(--ease), color 0.2s var(--ease);
+  }
+  .jump a:hover { background: var(--ink); color: #fff; }
+  .p-section { padding-block: clamp(40px, 6vw, 72px); scroll-margin-top: var(--header-h); }
+  .p-section.alt { background: var(--white); border-block: 1px solid var(--mist); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-top: 8px; }
+</style>

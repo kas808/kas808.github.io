@@ -1,5 +1,5 @@
 ---
-// Sticky top bar with a Projects menu that lists every project.
+// Sticky top bar with Projects and Experience menus.
 // The menu builds itself from your content files, so new projects show up automatically.
 import ProjectIndex from './ProjectIndex.astro';
 import { url } from '../lib/url';
@@ -31,7 +31,18 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
             </div>
           </div>
         </li>
-        <li><a href={url('/experience/')} aria-current={active('/experience') ? 'page' : undefined}>Experience</a></li>
+        <li class="has-menu has-drop">
+          <button class="menu-btn" aria-expanded="false" aria-controls="experience-menu" data-active={active('/experience') ? '' : undefined}>
+            Experience <span class="caret" aria-hidden="true"></span>
+          </button>
+          <div id="experience-menu" class="mega drop">
+            <ul class="drop-list">
+              <li><a href={url('/experience/wsp/')}><strong>WSP Internship</strong><span>Mechanical Engineering Intern</span></a></li>
+              <li><a href={url('/experience/robotics-ta/')}><strong>Punahou Robotics</strong><span>Robotics Teaching Assistant</span></a></li>
+              <li><a href={url('/experience/')}><strong>All experience</strong></a></li>
+            </ul>
+          </div>
+        </li>
         <li><a href={url('/resume/')} aria-current={active('/resume') ? 'page' : undefined}>Resume</a></li>
         <li><a href={url('/contact/')} aria-current={active('/contact') ? 'page' : undefined}>Contact</a></li>
       </ul>
@@ -108,6 +119,15 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
   .has-menu.open .mega { opacity: 1; visibility: visible; transform: none; }
   .mega-inner { padding-block: 28px 36px; }
 
+  /* Small dropdown (Experience) */
+  .has-drop { position: relative; }
+  .drop { left: 50%; right: auto; top: calc(var(--header-h) - 12px); width: 290px; translate: -50% 0; border: 1px solid var(--mist); border-radius: var(--radius); overflow: hidden; }
+  .drop-list { list-style: none; margin: 0; padding: 8px 0; }
+  .drop-list a { display: flex; flex-direction: column; gap: 2px; padding: 10px 20px; text-decoration: none; color: var(--ink); }
+  .drop-list a:hover { background: var(--paper); }
+  .drop-list strong { font-size: 0.95rem; }
+  .drop-list span { font-size: 0.82rem; color: var(--steel); }
+
   .menu-toggle { display: none; }
 
   @media (max-width: 900px) {
@@ -154,6 +174,8 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
     .mega { position: static; box-shadow: none; border: 0; background: transparent; transform: none; max-height: none; display: none; opacity: 1; visibility: visible; }
     .has-menu.open .mega { display: block; }
     .mega-inner { padding: 0 0 16px 12px; max-width: none; margin: 0; }
+    .drop { width: auto; translate: none; border: 0; }
+    .drop-list a { padding: 8px 12px; }
   }
 </style>
 
@@ -163,14 +185,14 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
     if (!header) return;
     const toggle = header.querySelector<HTMLButtonElement>('.menu-toggle');
     const nav = header.querySelector<HTMLElement>('.nav');
-    const item = header.querySelector<HTMLElement>('.has-menu');
-    const btn = header.querySelector<HTMLButtonElement>('.menu-btn');
+    const items = Array.from(header.querySelectorAll<HTMLElement>('.has-menu'));
     const desktop = window.matchMedia('(min-width: 901px)');
 
-    const setMenu = (open: boolean) => {
-      item?.classList.toggle('open', open);
-      btn?.setAttribute('aria-expanded', String(open));
+    const setMenu = (item: HTMLElement, open: boolean) => {
+      item.classList.toggle('open', open);
+      item.querySelector('.menu-btn')?.setAttribute('aria-expanded', String(open));
     };
+    const closeAll = (except?: HTMLElement) => items.forEach((i) => i !== except && setMenu(i, false));
 
     toggle?.addEventListener('click', () => {
       const open = !nav?.classList.contains('open');
@@ -179,15 +201,21 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
       document.body.style.overflow = open ? 'hidden' : '';
     });
 
-    btn?.addEventListener('click', () => setMenu(!item?.classList.contains('open')));
+    items.forEach((item) => {
+      const btn = item.querySelector<HTMLButtonElement>('.menu-btn');
+      btn?.addEventListener('click', () => {
+        const open = !item.classList.contains('open');
+        if (desktop.matches) closeAll(item);
+        setMenu(item, open);
+      });
+      let timer: number | undefined;
+      item.addEventListener('mouseenter', () => { if (desktop.matches) { clearTimeout(timer); closeAll(item); setMenu(item, true); } });
+      item.addEventListener('mouseleave', () => { if (desktop.matches) timer = window.setTimeout(() => setMenu(item, false), 180); });
+    });
 
-    let timer: number | undefined;
-    item?.addEventListener('mouseenter', () => { if (desktop.matches) { clearTimeout(timer); setMenu(true); } });
-    item?.addEventListener('mouseleave', () => { if (desktop.matches) timer = window.setTimeout(() => setMenu(false), 180); });
-
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
     document.addEventListener('click', (e) => {
-      if (desktop.matches && item && !item.contains(e.target as Node)) setMenu(false);
+      if (desktop.matches && !items.some((i) => i.contains(e.target as Node))) closeAll();
     });
   }
   setup();

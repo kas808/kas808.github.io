@@ -1,0 +1,167 @@
+---
+// Home page carousel that loops forever in both directions.
+// The list of projects lives in src/lib/featured.ts.
+import { Image } from 'astro:assets';
+import { featured } from '../lib/featured';
+import { url } from '../lib/url';
+
+// Three copies of the slides (before, real, after) make the endless loop seamless.
+const copies = [0, 1, 2];
+---
+
+<div class="carousel" data-carousel aria-roledescription="carousel" aria-label="Featured projects">
+  <div class="viewport">
+    <div class="rail">
+      {copies.map((copy) =>
+        featured.map((f, i) => (
+          <article
+            class="slide"
+            data-i={i}
+            aria-roledescription="slide"
+            aria-label={`${i + 1} of ${featured.length}: ${f.title}`}
+            aria-hidden={copy === 1 ? undefined : 'true'}
+            inert={copy === 1 ? undefined : true}
+          >
+            <a class="slide-img" href={url(f.href)} tabindex="-1" style={`--pos: ${f.position ?? '50% 50%'}; --fit: ${f.fit ?? 'cover'}`}>
+              <Image src={f.image} alt={f.alt} widths={[500, 800, 1200]} sizes="(max-width: 700px) 86vw, 58vw" loading={copy === 1 && i < 2 ? 'eager' : 'lazy'} />
+            </a>
+            <div class="slide-body">
+              <h3><a href={url(f.href)}>{f.title}.</a></h3>
+              <p>{f.text}</p>
+              <a class="btn" href={url(f.href)}>Learn more<span class="visually-hidden"> about {f.title}</span></a>
+            </div>
+          </article>
+        )),
+      )}
+    </div>
+    <button class="c-arrow prev" type="button" aria-label="Previous project"><span aria-hidden="true"></span></button>
+    <button class="c-arrow next" type="button" aria-label="Next project"><span aria-hidden="true"></span></button>
+  </div>
+  <div class="dots" role="group" aria-label="Choose a project">
+    {featured.map((f, i) => (
+      <button type="button" class="dot" data-dot={i} aria-label={`Show ${f.title}`}></button>
+    ))}
+  </div>
+</div>
+
+<style>
+  .carousel { --gap: 24px; --slide: min(58vw, 780px); position: relative; }
+  @media (max-width: 700px) { .carousel { --gap: 14px; --slide: 84vw; } }
+  .viewport { position: relative; overflow: hidden; overflow: clip; touch-action: pan-y; }
+  .rail { display: flex; gap: var(--gap); will-change: transform; }
+  .rail.animate { transition: transform 0.6s var(--ease); }
+
+  .slide { flex: 0 0 var(--slide); display: flex; flex-direction: column; transition: opacity 0.5s var(--ease); opacity: 0.45; }
+  .slide.active { opacity: 1; }
+  .slide-img { display: block; aspect-ratio: 3 / 2; overflow: hidden; background: #fff; border-radius: 2px; }
+  .slide-img :global(img) { width: 100%; height: 100%; object-fit: var(--fit, cover); object-position: var(--pos, 50% 50%); transition: transform 0.8s var(--ease); }
+  .slide.active .slide-img:hover :global(img) { transform: scale(1.03); }
+  .slide-body { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 22px 8px 0; }
+  .slide-body h3 { font-size: clamp(1.45rem, 2.6vw, 2.1rem); font-weight: 800; margin: 0 0 10px; }
+  .slide-body h3 a { color: var(--ink); text-decoration: none; }
+  .slide-body p { max-width: 60ch; margin: 0 0 20px; font-size: 0.97rem; }
+
+  .c-arrow {
+    position: absolute; top: var(--arrow-top, 30%); transform: translateY(-50%);
+    width: 52px; height: 52px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.9);
+    background: rgba(37, 52, 71, 0.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    cursor: pointer; display: grid; place-items: center; z-index: 2;
+    transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+  }
+  .c-arrow:hover { background: rgba(37, 52, 71, 0.85); }
+  .c-arrow span { width: 18px; height: 1.5px; background: #fff; position: relative; }
+  .c-arrow span::before { content: ''; position: absolute; top: -4.5px; width: 9px; height: 9px; border-top: 1.5px solid #fff; border-left: 1.5px solid #fff; }
+  .prev { left: max(12px, calc((100% - var(--slide)) / 2 - 26px)); }
+  .next { right: max(12px, calc((100% - var(--slide)) / 2 - 26px)); }
+  .prev span::before { left: 0; transform: rotate(-45deg); }
+  .next span::before { right: 0; transform: rotate(135deg); }
+
+  .dots { display: flex; justify-content: center; gap: 10px; margin-top: 28px; }
+  .dot { width: 9px; height: 9px; padding: 0; border-radius: 50%; border: 1px solid var(--ink); background: transparent; cursor: pointer; transition: background 0.2s var(--ease), transform 0.2s var(--ease); }
+  .dot[aria-current='true'] { background: var(--ink); transform: scale(1.15); }
+
+  @media (prefers-reduced-motion: reduce) { .rail.animate { transition: none; } }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
+    const viewport = root.querySelector<HTMLElement>('.viewport')!;
+    const rail = root.querySelector<HTMLElement>('.rail')!;
+    const slides = Array.from(rail.querySelectorAll<HTMLElement>('.slide'));
+    const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('.dot'));
+    const n = dots.length;
+    let index = n; // start on the first real slide (middle copy)
+    let busy = false;
+
+    const step = () => slides[0].offsetWidth + parseFloat(getComputedStyle(rail).columnGap || '0');
+    const offset = (i: number, extra = 0) => (viewport.clientWidth - slides[0].offsetWidth) / 2 - i * step() + extra;
+
+    const render = (animate: boolean, extra = 0) => {
+      rail.classList.toggle('animate', animate);
+      rail.style.transform = `translateX(${offset(index, extra)}px)`;
+      slides.forEach((s, i) => s.classList.toggle('active', i === index));
+      dots.forEach((d, i) => d.setAttribute('aria-current', String(i === index % n)));
+      const img = slides[0].querySelector<HTMLElement>('.slide-img');
+      if (img) root.style.setProperty('--arrow-top', `${img.offsetHeight / 2}px`);
+    };
+
+    const go = (i: number) => {
+      if (busy) return;
+      index = i;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) { wrap(); render(false); return; }
+      busy = true;
+      render(true);
+      clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(settle, 750); // backup in case the browser skips transitionend
+    };
+    // After sliding into a copy, jump back to the matching real slide without animation.
+    const wrap = () => {
+      if (index < n) index += n;
+      else if (index >= 2 * n) index -= n;
+    };
+    let settleTimer: number | undefined;
+    const settle = () => {
+      clearTimeout(settleTimer);
+      busy = false;
+      const before = index;
+      wrap();
+      if (index !== before) render(false);
+    };
+    rail.addEventListener('transitionend', (e) => { if (e.target === rail) settle(); });
+
+    root.querySelector('.prev')!.addEventListener('click', () => go(index - 1));
+    root.querySelector('.next')!.addEventListener('click', () => go(index + 1));
+    dots.forEach((d, i) => d.addEventListener('click', () => go(n + i)));
+    root.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') go(index - 1);
+      if (e.key === 'ArrowRight') go(index + 1);
+    });
+
+    // Swipe on phones and drag with a mouse.
+    let startX = 0, dx = 0, dragging = false;
+    viewport.addEventListener('pointerdown', (e) => {
+      if ((e.target as HTMLElement).closest('.c-arrow') || busy) return;
+      dragging = true; startX = e.clientX; dx = 0;
+    });
+    window.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      dx = e.clientX - startX;
+      if (Math.abs(dx) > 6) render(false, dx);
+    });
+    window.addEventListener('pointerup', () => {
+      if (!dragging) return;
+      dragging = false;
+      if (Math.abs(dx) > 50) go(index + (dx < 0 ? 1 : -1));
+      else render(true);
+    });
+    // A drag shouldn't also count as a click on a link.
+    viewport.addEventListener('click', (e) => { if (Math.abs(dx) > 6) { e.preventDefault(); dx = 0; } }, true);
+
+    // Never let the browser scroll the strip itself (e.g. when tabbing to a link); we move it with transform.
+    viewport.addEventListener('scroll', () => { viewport.scrollLeft = 0; });
+    window.addEventListener('resize', () => render(false));
+    render(false);
+    window.addEventListener('load', () => render(false));
+  });
+</script>

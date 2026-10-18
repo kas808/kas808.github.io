@@ -182,6 +182,7 @@ hr { border: 0; border-top: 1px solid var(--mist); margin: 2.5rem 0; }
 /* Several photos in a row inside page text */
 .prose .img-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 1.5em 0; }
 .prose .img-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.prose .img-grid-2 img { object-fit: contain; background: #fff; } /* show drawings and spreadsheets whole */
 .prose .img-grid p { margin: 0; }
 .prose .img-grid img { margin: 0; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 @media (max-width: 640px) { .prose .img-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -200,3 +201,8 @@ hr { border: 0; border-top: 1px solid var(--mist); margin: 2.5rem 0; }
 .yt-play { position: absolute; left: 50%; top: 50%; width: 68px; height: 48px; transform: translate(-50%, -50%); background: var(--ink); border-radius: 12px 0 12px 0; }
 .yt-play::after { content: ''; position: absolute; left: 28px; top: 14px; border-style: solid; border-width: 10px 0 10px 16px; border-color: transparent transparent transparent #fff; }
 .yt-title { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 14px; text-align: left; color: #fff; font: 600 0.85rem/1.3 var(--font); background: linear-gradient(transparent, rgba(0, 0, 0, 0.7)); }
+
+/* Short looping clips inside page text (like a GIF, but much smaller) */
+.prose .inline-video { margin: 1.5em 0; }
+.prose .inline-video video { width: 100%; max-width: 640px; border: 1px solid var(--mist); border-radius: var(--radius); background: #fff; }
+.prose .inline-video figcaption { font-size: 0.85rem; color: var(--steel); margin-top: 8px; }

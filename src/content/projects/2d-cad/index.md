@@ -35,4 +35,4 @@ AutoCAD drawings, each fully dimensioned and annotated for plotting:
 
 Hand sketching: isometric views, missing-view problems and perspective sketches.
 
-I went on to use AutoCAD on HVAC layouts during my [WSP internship](/experience/#wsp).
+I went on to use AutoCAD on HVAC layouts during my [WSP internship](/experience/wsp/).

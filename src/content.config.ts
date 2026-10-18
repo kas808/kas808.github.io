@@ -75,6 +75,10 @@ const experience = defineCollection({
       location: z.string(),
       dates: z.string(),
       order: z.number().default(100),
+      summary: z.string(), // shown on the Experience overview and home page
+      cover: image(), // big header photo
+      coverAlt: z.string(),
+      coverPosition: z.string().optional(),
       highlights: z.array(z.string()),
       tools: z.array(z.string()).default([]),
       related: z.object({ title: z.string(), href: z.string() }).optional(),

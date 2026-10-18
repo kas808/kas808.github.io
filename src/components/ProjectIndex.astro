@@ -16,9 +16,9 @@ const groups = punahouSections.map((s) => ({ ...s, pages: punahou.filter((p) => 
     <ul>
       {projects.map((p) => <li><a href={url(`/projects/${p.id}/`)}>{p.data.title}</a></li>)}
     </ul>
-    <p class="pi-head"><a href={url('/experience/#wsp')}>WSP Internship</a></p>
+    <p class="pi-head"><a href={url('/experience/wsp/')}>WSP Internship</a></p>
     <ul>
-      <li><a href={url('/experience/#wsp')}>Mechanical Engineering Intern</a></li>
+      <li><a href={url('/experience/wsp/')}>Mechanical Engineering Intern</a></li>
     </ul>
   </div>
   <div>
@@ -39,9 +39,12 @@ const groups = punahouSections.map((s) => ({ ...s, pages: punahou.filter((p) => 
   .pindex ul { list-style: none; margin: 0 0 18px; padding: 0; }
   .pindex li a { display: block; padding: 3px 0; font-size: 0.92rem; color: var(--charcoal); text-decoration: none; }
   .pindex li a:hover { color: var(--ink); text-decoration: underline; }
-  .pi-head { margin: 0 0 8px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; }
+  .pi-head { margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); font-size: 1.15rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+  .pi-head:not(:first-child) { margin-top: 10px; }
   .pi-head a, .pi-sub a { color: var(--ink); text-decoration: none; }
-  .pi-sub { margin: 0 0 4px; font-weight: 700; font-size: 0.92rem; }
+  .pi-head a:hover, .pi-sub a:hover { text-decoration: underline; }
+  .pi-sub { margin: 4px 0 4px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+  .pi-sub a { color: var(--steel) !important; }
   .pi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 28px; }
   @media (max-width: 900px) {
     .pindex { grid-template-columns: 1fr; gap: 8px; }

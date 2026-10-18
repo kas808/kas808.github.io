@@ -1,0 +1,46 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { url } from '../../lib/url';
+
+const jobs = (await getCollection('experience')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout title="Experience" description="Engineering experience of Kasin Ito-Sato: mechanical engineering internship at WSP and robotics teaching at Punahou School.">
+  <header class="page-head wrap">
+    <h1>Experience.</h1>
+    <p class="lead">Work outside the classroom, from HVAC design at an engineering firm to teaching younger students robotics.</p>
+  </header>
+
+  <section class="wrap jobs">
+    {jobs.map((job) => (
+      <a class="job reveal" href={url(`/experience/${job.id}/`)}>
+        <span class="job-img" style={`--pos: ${job.data.coverPosition ?? '50% 50%'}`}>
+          <Image src={job.data.cover} alt={job.data.coverAlt} widths={[600, 1000, 1400]} sizes="(max-width: 900px) 100vw, 60vw" />
+        </span>
+        <span class="job-text">
+          <span class="eyebrow">{job.data.organization} · {job.data.location} · {job.data.dates}</span>
+          <span class="job-title">{job.data.title}.</span>
+          <span class="job-sum">{job.data.summary}</span>
+          <span class="btn">See the {job.id === 'wsp' ? 'internship' : 'role'}</span>
+        </span>
+      </a>
+    ))}
+  </section>
+</BaseLayout>
+
+<style>
+  .jobs { display: grid; gap: 32px; padding-bottom: 96px; }
+  .job { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); background: var(--white); border: 1px solid var(--mist); border-radius: var(--radius); overflow: hidden; text-decoration: none; color: var(--charcoal); transition: box-shadow 0.35s var(--ease), transform 0.35s var(--ease); }
+  .job:hover { transform: translateY(-3px); box-shadow: 0 22px 44px -28px rgba(37, 52, 71, 0.5); }
+  @media (max-width: 860px) { .job { grid-template-columns: 1fr; } }
+  .job-img { display: block; aspect-ratio: 16 / 10; overflow: hidden; }
+  .job-img :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos); transition: transform 0.8s var(--ease); }
+  .job:hover .job-img :global(img) { transform: scale(1.03); }
+  .job-text { display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: clamp(24px, 4vw, 48px); }
+  .job-text .eyebrow { margin: 0; }
+  .job-title { font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 800; color: var(--ink); line-height: 1.1; letter-spacing: -0.02em; }
+  .job-sum { font-size: 1rem; }
+  .job-text .btn { align-self: flex-start; margin-top: 8px; }
+</style>

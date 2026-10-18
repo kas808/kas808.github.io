@@ -1,0 +1,95 @@
+---
+// Template for each experience page. Content comes from
+// src/content/experience/<folder>/index.md
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Gallery from '../../components/Gallery.astro';
+import Documents from '../../components/Documents.astro';
+import { url } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const jobs = (await getCollection('experience')).sort((a, b) => a.data.order - b.data.order);
+  return jobs.map((entry, i) => ({ params: { slug: entry.id }, props: { entry, other: jobs[(i + 1) % jobs.length] } }));
+}
+
+const { entry, other } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+---
+
+<BaseLayout title={`${d.title} | ${d.organization}`} description={d.summary}>
+  <article>
+    <header class="banner" style={`--pos: ${d.coverPosition ?? '50% 50%'}`}>
+      <Image src={d.cover} alt={d.coverAlt} widths={[800, 1400, 2000]} sizes="100vw" loading="eager" />
+      <div class="banner-text wrap">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href={url('/experience/')}>Experience</a> / {d.organization}</nav>
+        <h1>{d.title}.</h1>
+        <p class="banner-meta">{d.organization} · {d.location} · {d.dates}</p>
+      </div>
+    </header>
+
+    <section class="wrap intro">
+      <div class="intro-grid">
+        <ul class="highlights reveal">
+          {d.highlights.map((h) => <li>{h}</li>)}
+        </ul>
+        <aside class="facts reveal">
+          {d.tools.length > 0 && (
+            <>
+              <p class="eyebrow">Tools and standards</p>
+              <ul class="tags">{d.tools.map((t) => <li>{t}</li>)}</ul>
+            </>
+          )}
+          {d.related && (
+            <p class="related">Related: <a href={url(d.related.href)}>{d.related.title}</a></p>
+          )}
+        </aside>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <div class="prose exp-prose">
+        <Content />
+      </div>
+      {d.gallery.length > 0 && <Gallery images={d.gallery} />}
+      <Documents folder={entry.id} documents={d.documents} />
+    </div>
+
+    {other && other.id !== entry.id && (
+      <nav class="pager wrap" aria-label="More experience">
+        <a href={url(`/experience/${other.id}/`)}><span class="eyebrow">Also see</span>{other.data.title} · {other.data.organization}</a>
+      </nav>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .banner { position: relative; height: clamp(320px, 52vw, 620px); overflow: hidden; background: var(--ink); }
+  .banner :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--pos); }
+  .banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(37, 52, 71, 0) 40%, rgba(23, 33, 45, 0.88)); }
+  .banner-text { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding-bottom: clamp(24px, 4vw, 52px); }
+  .banner h1 { color: #fff; margin: 0 0 8px; }
+  .banner-meta { color: #dfe3e7; margin: 0; font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase; }
+  .crumbs { font-size: 0.8rem; color: #dfe3e7; margin-bottom: 12px; }
+  .crumbs a { color: #dfe3e7; }
+
+  .intro { padding-block: clamp(36px, 5vw, 64px) 8px; }
+  .intro-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); }
+  @media (max-width: 860px) { .intro-grid { grid-template-columns: 1fr; } }
+  .highlights { margin: 0; padding-left: 1.1em; font-size: 1.05rem; }
+  .highlights li { margin-bottom: 0.8em; }
+  .highlights li::marker { color: var(--accent); }
+  .facts { border-top: 2px solid var(--ink); padding-top: 16px; }
+  .related { margin-top: 18px; font-size: 0.95rem; }
+
+  .exp-prose { max-width: 1000px; margin-inline: auto; }
+  .exp-prose :global(p), .exp-prose :global(ul) { max-width: 76ch; }
+  .exp-prose :global(img) { width: 100%; }
+  .exp-prose :global(h2) { margin-top: 2.4em; padding-top: 0.6em; border-top: 1px solid var(--mist); scroll-margin-top: calc(var(--header-h) + 16px); }
+  .exp-prose :global(h3) { scroll-margin-top: calc(var(--header-h) + 16px); }
+
+  .pager { padding-block: 56px 80px; margin-top: 40px; border-top: 1px solid var(--mist); }
+  .pager a { display: flex; flex-direction: column; gap: 4px; text-decoration: none; font-weight: 700; font-size: 1.15rem; color: var(--ink); }
+  .pager .eyebrow { margin: 0; }
+</style>

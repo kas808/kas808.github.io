@@ -26,7 +26,7 @@ const copies = [0, 1, 2];
               <Image src={f.image} alt={f.alt} widths={[500, 800, 1200]} sizes="(max-width: 700px) 86vw, 58vw" loading={copy === 1 && i < 2 ? 'eager' : 'lazy'} />
             </a>
             <div class="slide-body">
-              <h3><a href={url(f.href)}>{f.title}.</a></h3>
+              <h3><a href={url(f.href)}>{f.title}</a></h3>
               <p>{f.text}</p>
               <a class="btn" href={url(f.href)}>Learn more<span class="visually-hidden"> about {f.title}</span></a>
             </div>

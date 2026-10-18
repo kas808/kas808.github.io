@@ -11,7 +11,7 @@ const sections = punahouSections.map((s) => ({ ...s, pages: pages.filter((p) => 
 <BaseLayout title="Punahou School" description="Design and engineering projects from Punahou School in Honolulu, Hawaii.">
   <header class="page-head wrap">
     <p class="eyebrow">Honolulu, Hawaii</p>
-    <h1>Punahou School.</h1>
+    <h1>Punahou School</h1>
     <p class="lead">
       Where I started engineering. These pages come from my original Punahou portfolio, grouped the same way: Ke Kilohana,
       GSD, Lanakila Express, Engineering III, Extra Work and Competency Tests.
@@ -24,7 +24,7 @@ const sections = punahouSections.map((s) => ({ ...s, pages: pages.filter((p) => 
   {sections.map((s, i) => (
     <section id={s.id} class:list={['section', 'p-section', i % 2 === 1 && 'alt']}>
       <div class="wrap">
-        <h2 class="reveal">{s.name}.</h2>
+        <h2 class="reveal">{s.name}</h2>
         <div class="grid">
           {s.pages.map((p) => (
             <ProjectCard

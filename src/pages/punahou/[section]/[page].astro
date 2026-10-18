@@ -33,7 +33,7 @@ const sectionName = punahouSections.find((s) => s.id === d.section)?.name ?? '';
           <nav class="crumbs" aria-label="Breadcrumb">
             <a href={url('/punahou/')}>Punahou School</a> / <a href={url(`/punahou/#${d.section}`)}>{sectionName}</a>
           </nav>
-          <h1>{d.title}.</h1>
+          <h1>{d.title}</h1>
         </div>
       </header>
     ) : (
@@ -41,7 +41,7 @@ const sectionName = punahouSections.find((s) => s.id === d.section)?.name ?? '';
         <nav class="crumbs plain" aria-label="Breadcrumb">
           <a href={url('/punahou/')}>Punahou School</a> / <a href={url(`/punahou/#${d.section}`)}>{sectionName}</a>
         </nav>
-        <h1>{d.title}.</h1>
+        <h1>{d.title}</h1>
       </header>
     )}
 
@@ -52,14 +52,14 @@ const sectionName = punahouSections.find((s) => s.id === d.section)?.name ?? '';
 
       {d.youtube.length > 0 && (
         <section class="extra">
-          <h2>Video.</h2>
+          <h2>Video</h2>
           {d.youtube.map((v) => <YouTube link={v.url} title={v.title} />)}
         </section>
       )}
 
       {d.links.length > 0 && (
         <section class="extra">
-          <h2>Files.</h2>
+          <h2>Files</h2>
           <ul class="file-links">
             {d.links.map((l) => <li><a class="btn btn-ghost" href={l.url} target="_blank" rel="noopener">{l.title}</a></li>)}
           </ul>

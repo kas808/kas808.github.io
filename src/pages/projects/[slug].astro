@@ -29,7 +29,7 @@ const media = (file: string) => `/media/${entry.id}/${file}`;
     <header class="project-head wrap">
       <nav class="crumbs" aria-label="Breadcrumb"><a href={url('/projects/')}>Projects</a> <span>/</span> {d.title}</nav>
       <p class="eyebrow">{[d.course, d.date].filter(Boolean).join(' · ')}</p>
-      <h1>{d.title}.</h1>
+      <h1>{d.title}</h1>
       {d.status === 'in progress' && <p><span class="status">In progress</span></p>}
       <p class="lead">{d.summary}</p>
     </header>

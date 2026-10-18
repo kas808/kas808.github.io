@@ -9,7 +9,7 @@ const jobs = (await getCollection('experience')).sort((a, b) => a.data.order - b
 
 <BaseLayout title="Experience" description="Engineering experience of Kasin Ito-Sato: mechanical engineering internship at WSP and robotics teaching at Punahou School.">
   <header class="page-head wrap">
-    <h1>Experience.</h1>
+    <h1>Experience</h1>
     <p class="lead">Work outside the classroom, from HVAC design at an engineering firm to teaching younger students robotics.</p>
   </header>
 
@@ -21,7 +21,7 @@ const jobs = (await getCollection('experience')).sort((a, b) => a.data.order - b
         </span>
         <span class="job-text">
           <span class="eyebrow">{job.data.organization} · {job.data.location} · {job.data.dates}</span>
-          <span class="job-title">{job.data.title}.</span>
+          <span class="job-title">{job.data.title}</span>
           <span class="job-sum">{job.data.summary}</span>
           <span class="btn">See the {job.id === 'wsp' ? 'internship' : 'role'}</span>
         </span>

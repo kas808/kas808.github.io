@@ -17,7 +17,6 @@ interface Props {
   label?: string; // shown on cards that have no photo
 }
 const { href, title, summary, meta, cover, coverAlt = '', coverPosition, tools = [], status, size = 'large', label } = Astro.props;
-const titleWithPeriod = /[.!?]$/.test(title) ? title : `${title}.`;
 ---
 
 <article class:list={['card', `card-${size}`, 'reveal']}>
@@ -31,7 +30,7 @@ const titleWithPeriod = /[.!?]$/.test(title) ? title : `${title}.`;
   </a>
   <div class="card-body">
     {meta && <p class="eyebrow">{meta}</p>}
-    <h3><a href={url(href)}>{titleWithPeriod}</a></h3>
+    <h3><a href={url(href)}>{title}</a></h3>
     {summary && <p class="summary">{summary}</p>}
     {size === 'large' && tools.length > 0 && (
       <ul class="tags">{tools.slice(0, 5).map((t) => <li>{t}</li>)}</ul>

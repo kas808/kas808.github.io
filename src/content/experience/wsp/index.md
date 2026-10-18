@@ -4,15 +4,17 @@ organization: WSP in the US
 location: Honolulu, HI
 dates: May 2025 to January 2026
 order: 1
-summary: Designed HVAC, plumbing and fire protection systems alongside licensed mechanical engineers, ran load calculations in IES-VE and TRACE 700, and built three Excel tools the team adopted.
+summary: Built 3 Excel calculation tools adopted team-wide, sized HVAC equipment from loads cross-checked in IES-VE and TRACE 700, and drafted HVAC and plumbing layouts for the Hawaii Prince Waikiki Spa Renovation.
 cover: ./00_wsp_team.jpg
 coverAlt: Kasin with the WSP Honolulu intern class and a mentor in the office
 coverPosition: 50% 35%
 highlights:
-  - Sized mechanical equipment from loads cross-checked in 2 models (IES-VE, TRACE 700), calculated airflow pressure losses, and coordinated equipment selection with manufacturers by reviewing their submittals against specifications.
-  - Built 3 engineering analysis tools in Excel that the team adopted for pressurization, ventilation, and exhaust flow, on my own initiative, with step-by-step guides for each.
-  - Revised mechanical layouts and drawings in Revit and AutoCAD through multiple design stages, and troubleshot a drawing vs. installation discrepancy on site with the install team.
-tools: [Revit, AutoCAD, IES-VE, TRACE 700, Bluebeam, Excel, ASHRAE 62.1 and 90.1, IECC, Load Calculations, HVAC Design]
+  - 3 Excel calculation tools adopted team-wide for building pressurization, demand-controlled ventilation, and exhaust rates, built on my own initiative and documented in walkthrough guides citing ASHRAE 90.1 and 62.1.
+  - Showed the team's 10% rule of thumb left buildings under-pressurized (0.0026 vs. 0.02 in. w.c. minimum on a 40,000 sq ft office) using my pressurization tool.
+  - Sized HVAC equipment from loads cross-checked in 2 models (IES-VE, TRACE 700), calculated duct pressures, and reviewed manufacturer submittals against specifications.
+  - Drafted HVAC and plumbing layouts in Revit and AutoCAD for the Hawaii Prince Waikiki Spa Renovation through multiple design stages as the owner and architect issued changes.
+  - Caught a plan vs. installation discrepancy (storm-drain junction) during a site visit to the Ulana High-Rise; confirmed it was an intentional field change for space.
+tools: [IES-VE, TRACE 700, Revit, AutoCAD, Bluebeam, Excel, ASHRAE 62.1/90.1, IECC, UPC, Load Calculations, Equipment Selection, Duct Pressure, Submittals]
 related: { title: "2D CAD and Technical Sketching", href: "/projects/2d-cad/" }
 documents:
   - { title: End-of-Summer Presentation, file: wsp-end-of-summer-presentation.pdf, embed: true }
@@ -26,7 +28,7 @@ I started at WSP in Honolulu, Hawaii, in May and later continued working for the
 
 ![WSP welcome slide for Kasin Ito-Sato, Mechanical Engineering Intern, Property and Buildings](./welcome_slide.png)
 
-## Hawaii Prince Spa Mechanical Plans
+## Hawaii Prince Waikiki Spa Renovation
 
 The Hawaii Prince Spa project is what I spent the majority of my time on during the summer. It involved learning a lot about how to create an efficient HVAC system, along with how to work efficiently alongside an architect and owner. I designed and redesigned the HVAC system using Revit, along with creating other sheets needed for the deliverables in AutoCAD. I also talked to manufacturers to get equipment selections to meet the requirements of each room. Below, I have shown three pictures of the mechanical plan, which show some of the progress and changes the project went through. The first picture is an earlier design, which would have worked, but the owner had made some new changes to the scope of the project, which required me to redesign based on the new requirements. The second image is after the redesign, and the third is the finalized design after review with the owner and architect. Overall, this project taught me a lot about the design and engineering process. I gained skills in Revit/AutoCAD as well as the dynamic between engineer, architect, and owner.
 
@@ -50,11 +52,11 @@ Below, I have two pictures, the first picture is of an IES-VE model that I creat
 
 ## Excel Calculation Tools
 
-Exhaust airflow, building pressurization, and demand-controlled ventilation calculations came up on project after project and were slow to do by hand. On my own initiative, I researched the equations and code requirements and built three Excel tools that return consistent results from one set of inputs. The team first questioned them because they used newer data than the team usually worked from, then adopted them.
+Exhaust airflow, building pressurization, and demand-controlled ventilation calculations came up on project after project and were slow to do by hand. On my own initiative, I researched the equations and code requirements and built three Excel tools that return consistent results from one set of inputs. The team first questioned them because they used newer data than the team usually worked from, then adopted them. I documented each one in a walkthrough guide citing ASHRAE 90.1 and 62.1.
 
 ### Building Pressurization Excel Sheet
 
-I created an Excel sheet to calculate the pressurization in a room and determine the required outside air to achieve a positive pressure in the room. I researched how building pressurization is calculated and what is considered under-pressurized, ideal, and over-pressurized. I used ASHRAE standards and values to create the Excel sheet below.
+I created an Excel sheet to calculate the pressurization in a room and determine the required outside air to achieve a positive pressure in the room. I researched how building pressurization is calculated and what is considered under-pressurized, ideal, and over-pressurized. I used ASHRAE standards and values to create the Excel sheet below. Using it, I showed that the team's 10% rule of thumb left buildings under-pressurized: 0.0026 in. w.c. on a 40,000 sq ft office, against a 0.02 in. w.c. minimum.
 
 <div class="img-grid img-grid-2">
 
@@ -92,7 +94,7 @@ I created an Excel sheet to calculate the amount of exhaust needed in each room.
 
 ### Ulana Site Visit
 
-During my site visit to the Ulana high-rise, I looked at equipment as well as compared the as-built equipment to our CAD design. While exploring the parking structure, we found an issue with the as-built storm drain design. It did not match our design, where the junction had to be vertical as per plumbing requirements, but the contractor had placed it horizontally. We discussed with the on-site architect as well as the plumbing head to highlight the problem. We then explored the HVAC and plumbing system that ran throughout the high-rise.
+During my site visit to the Ulana high-rise, I looked at equipment as well as compared the as-built equipment to our CAD design. While exploring the parking structure, we found an issue with the as-built storm drain design. It did not match our design, where the junction had to be vertical as per plumbing requirements, but the contractor had placed it horizontally. We discussed with the on-site architect as well as the plumbing head to highlight the problem, and confirmed it was an intentional field change made for space. We then explored the HVAC and plumbing system that ran throughout the high-rise.
 
 <div class="img-grid">
 
@@ -106,7 +108,7 @@ During my site visit to the Ulana high-rise, I looked at equipment as well as co
 
 ![Checking the storm drain design on the drawings](./ulana_07.jpg)
 
-![The as-built storm drain junction, placed horizontally instead of vertically](./ulana_08.jpg)
+![The as-built storm drain junction, placed horizontally as a field change for space](./ulana_08.jpg)
 
 ![HVAC equipment at Ulana](./ulana_09.jpg)
 

@@ -1,8 +1,8 @@
 ---
 # DRAFT write-up (written from the SSR, PDR and capstone reports). Review before publishing.
-title: SAE Aero Design Capstone
+title: SAE Aero Design Regular Class Competition
 summary: Senior capstone designing a two-motor electric RC cargo plane that carries 2 L bottles for the 2027 SAE Aero Design Regular Class.
-course: LMU Senior Capstone
+course: Capstone Design, LMU
 date: 2026 to 2027
 team: Taran Avery, Kasin Ito-Sato, Lucas Lee, Cooper Sedlmayer, Diego Puga. Advisor, Dr. Mustafa Mozael
 role: Five-person team. I work across aero, structures, propulsion and controls.

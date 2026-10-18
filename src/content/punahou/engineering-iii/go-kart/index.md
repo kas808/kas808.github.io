@@ -9,7 +9,7 @@ banner: ./images/01.jpg
 
 # Design Process
 
-Our group will be following this design process to make our Go-Kart!
+Our group followed this design process to make our Go-Kart!
 
 # R&D!
 
@@ -122,7 +122,7 @@ We thought the rectangular tubing would make the chassis stronger and easier to 
 
 # Machines!
 
-These are the many machines we plan to use to create our Go-Kart!
+These are the many machines we used to create our Go-Kart!
 
 ## Timeline
 
@@ -322,4 +322,4 @@ Both of these systems aren't perfect but we got them to work within the time.
 
 # Fully Assembled!
 
-We got it assembled and at the moment it doesn't work fully but we will continue to work on it.
+We got it assembled, but at that point it didn't work fully, and we planned to keep working on it.

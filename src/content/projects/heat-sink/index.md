@@ -13,7 +13,7 @@ order: 13
 
 Built an Arduino UNO data-acquisition setup with MAX6675 thermocouples to log steady-state temperatures, then reduced the data to convection coefficients and thermal resistance.
 
-- **Fin array:** At 6 W, adding the heat sink dropped the block from 137.5 to 89.0 °C. The convection coefficient was about 12.8 W/m²K in still air and 48.3 W/m²K with a fan blowing over the fins.
+- **Fin array:** At 6 W, adding the heat sink dropped the block from 137.5 to 89.0 °C, a convection coefficient of about 12.8 W/m²K in still air. With a fan blowing over the fins at 20 W, the block held 77.0 °C, about 48.3 W/m²K.
 - **Transient cooling:** Logged the bare block cooling in still air to check the lumped-capacitance assumption.
 - **Cylinder in cross-flow:** Tested a heated cylinder at 4.3, 5.8 and 6.2 m/s (Reynolds number about 6,400 to 9,200), splitting the power into convection and radiation losses. Thermal resistance fell from about 3.6 to 2.9 K/W as air speed rose, and heat transfer rose with Reynolds number as flow theory predicts.
 

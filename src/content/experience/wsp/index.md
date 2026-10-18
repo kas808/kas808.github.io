@@ -2,6 +2,7 @@
 title: Mechanical Engineering Intern
 organization: WSP in the US
 location: Honolulu, HI
+headerLocation: Honolulu, HI (later remote)
 dates: May 2025 to January 2026
 order: 1
 summary: Built 3 Excel calculation tools adopted team-wide, sized HVAC equipment from loads cross-checked in IES-VE and TRACE 700, and drafted HVAC and plumbing layouts for the Hawaii Prince Waikiki Spa Renovation.

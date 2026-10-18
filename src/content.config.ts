@@ -19,6 +19,7 @@ const projects = defineCollection({
       tools: z.array(z.string()),
       status: z.enum(['complete', 'in progress']).default('complete'),
       featured: z.boolean().default(false), // true = shows on the home page
+      placeholder: z.boolean().default(false), // true = page still being filled in; kept off the homepage
       size: z.enum(['large', 'small']).default('large'), // card size on the Projects page
       order: z.number().default(100), // lower numbers show first
       cover: image().optional(), // card and header photo (optional)
@@ -59,6 +60,7 @@ const punahou = defineCollection({
         'competency-tests',
       ]),
       order: z.number().default(100),
+      hidden: z.boolean().default(false), // true = page still exists but is left out of menus, the index and next/previous links
       banner: image().optional(),
       cover: image().optional(), // card photo; falls back to the banner
       youtube: z.array(z.object({ url: z.string(), title: z.string() })).default([]),
@@ -79,6 +81,7 @@ const experience = defineCollection({
       cover: image(), // big header photo
       coverAlt: z.string(),
       coverPosition: z.string().optional(),
+      headerLocation: z.string().optional(), // longer location shown only in the page header
       highlights: z.array(z.string()),
       tools: z.array(z.string()).default([]),
       related: z.object({ title: z.string(), href: z.string() }).optional(),

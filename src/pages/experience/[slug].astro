@@ -25,7 +25,7 @@ const d = entry.data;
       <div class="banner-text wrap">
         <nav class="crumbs" aria-label="Breadcrumb"><a href={url('/experience/')}>Experience</a> / {d.organization}</nav>
         <h1>{d.title}</h1>
-        <p class="banner-meta">{d.organization} · {d.location} · {d.dates}</p>
+        <p class="banner-meta">{d.organization} · {d.headerLocation ?? d.location} · {d.dates}</p>
       </div>
     </header>
 

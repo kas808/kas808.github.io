@@ -17,7 +17,7 @@ export const featured = [
     alt: 'Rope climbing robot hanging on the rope',
   },
   {
-    title: 'Wind Turbine Design & Testing',
+    title: 'Small Wind Turbine Design',
     text: 'For my Fluid Mechanics course at LMU, my teammates Mia Vazquez and Andy Salgado and I designed, built, and wind-tunnel tested a small-scale wind turbine. We sized NACA 0012 blades with hand calculations, modeled the rotor in SolidWorks, ran CFD on the airfoil, and 3D printed a four-blade rotor driving a DC motor. The turbine reached 422 RPM and 6.2 mW of measured output, and we compared it against our predicted power to identify where the losses came from.',
     href: '/projects/wind-turbine/',
     image: turbine,
@@ -25,16 +25,16 @@ export const featured = [
     position: '50% 12%',
   },
   {
-    title: 'Pantograph Design & Manufacturing',
-    text: 'For my Design and Manufacturing course at LMU, my partner Evan Soleimani and I designed and built a pantograph that magnifies a drawing by 2.0x. We modeled the linkage in CAD, machined the aluminum arms on the mill and horizontal bandsaw, 3D printed the stylus and pencil holders, and used true position tolerancing to size the pivot holes. In testing, it hit exactly 2.0x on a straight line and 1.98x to 2.0x on a square.',
+    title: '2x Magnifying Pantograph',
+    text: 'For my Design and Manufacturing course at LMU, my partner Evan Soleimani and I designed and built a pantograph that magnifies a drawing by 2.0x. We modeled the linkage in CAD, machined the aluminum arms on the mill and horizontal bandsaw, 3D printed the pen holder and pivot blocks, and used true position tolerancing to size the pivot holes. In testing, it hit exactly 2.0x on a straight line and 1.98x to 2.0x on a square.',
     href: '/projects/pantograph/',
     image: pantograph,
     alt: 'Aluminum pantograph on an optical breadboard',
   },
   {
     title: 'Lanakila Express',
-    text: 'Our school holds an annual carnival but this year there will be no rides to stay as safe as possible from the Covid-19 threat. Our class decided to create a train to be the only ride at the carnival. We were put into groups and divided up the work.',
-    href: '/punahou/lanakila-express/solar-charger/',
+    text: 'With carnival rides canceled during Covid-19, our class built a ride-on train as the only ride. I helped machine the couplings and worked on the solar charger, and the finished train safely carried riders up through sixth grade.',
+    href: '/punahou/#lanakila-express',
     image: lanakila,
     alt: 'The Lanakila Express train carrying riders at the Punahou carnival',
   },
@@ -48,10 +48,10 @@ export const featured = [
   },
   {
     title: 'Go-Kart',
-    text: 'In my Engineering III class, I was able to create a moving Go-Kart alongside three of my classmates. This Go-Kart featured steering and battery powered drive. We mainly worked on building the frame and the steering system.',
+    text: 'In Engineering III, three classmates and I built a battery-powered go-kart. I focused on the drive and steering parts: the axle mount bearing, brake disc and sprocket mounts, spacers, and the steering cap. We got it fully assembled, but it did not fully work by the end of the class.',
     href: '/punahou/engineering-iii/go-kart/',
     image: goKart,
-    alt: 'The finished go-kart frame with steering and battery drive',
+    alt: 'Go-kart frame with steering and drive system during assembly',
   },
 ] satisfies {
   title: string;

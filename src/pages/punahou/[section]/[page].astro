@@ -12,7 +12,7 @@ export async function getStaticPaths() {
   const pages = (await getCollection('punahou')).sort((a, b) => a.data.order - b.data.order);
   return pages.map((entry) => {
     const [section, page] = entry.id.split('/');
-    const siblings = pages.filter((p) => p.data.section === entry.data.section);
+    const siblings = pages.filter((p) => p.data.section === entry.data.section && (!p.data.hidden || p === entry));
     const i = siblings.indexOf(entry);
     return { params: { section, page }, props: { entry, prev: siblings[i - 1], next: siblings[i + 1] } };
   });
@@ -24,7 +24,7 @@ const d = entry.data;
 const sectionName = punahouSections.find((s) => s.id === d.section)?.name ?? '';
 ---
 
-<BaseLayout title={`${d.title} | Punahou`} description={`${d.title}: a ${sectionName} project from Punahou School.`}>
+<BaseLayout title={`${d.title} | Punahou`} description={`${d.title}: a ${sectionName} project from Punahou School.`} noindex={d.hidden}>
   <article>
     {d.banner ? (
       <header class="banner">

@@ -13,7 +13,7 @@ links:
 
 ![Toy Project](./images/02.png)
 
-To complete this project we had to use the "Design Thinking Process" (shown on left). We are going through each step to create a successful toy for first graders. We empathized through empathy interviews with first graders. Defined by coming up with a toy idea, then ideated and sketched out the idea. We then went back on those steps if a better toy idea was proposed. Then we brought these ideas into RHINO and tried many different variations to prototype. Then tested how the kids liked these ideas.
+To complete this project we had to use the "Design Thinking Process" (shown on left). We went through each step to create a successful toy for first graders. We empathized through empathy interviews with first graders. Defined by coming up with a toy idea, then ideated and sketched out the idea. We then went back on those steps if a better toy idea was proposed. Then we brought these ideas into RHINO and tried many different variations to prototype. Then tested how the kids liked these ideas.
 
 # Empathy Interviews
 
@@ -45,7 +45,7 @@ This idea was created by Emile Labrador and our group really enjoyed it because 
 
 ## Early Wall Ideas
 
-This was the first sort of idea for a wall and how it would work. The top left design is what the outer frame of the whole play area could look like. The other designs shown are of the walls that you could place in the play area. We plan to have magnets on the bottom of the wall to stick to the base.
+This was the first sort of idea for a wall and how it would work. The top left design is what the outer frame of the whole play area could look like. The other designs shown are of the walls that you could place in the play area. We planned to have magnets on the bottom of the wall to stick to the base.
 
 ![Toy Project](./images/08.jpg)
 
@@ -65,13 +65,13 @@ We have started doing quick sketches with adding color. This helps you to think 
 
 ## Spinny Starfish!
 
-This is my design for one of the pieces going into our golf set, a spinning starfish. The figure on the left is the starfish and the figure on the right is the insert that will go in the hole of the starfish. This insert will allow the starfish to spin, the bottom will be capped off with a magnet.
+This is my design for one of the pieces going into our golf set, a spinning starfish. The figure on the left is the starfish and the figure on the right is the insert that would go in the hole of the starfish. This insert would allow the starfish to spin, and the bottom would be capped off with a magnet.
 
 ![Toy Project](./images/11.png)
 
 ## Bucket Obstacle!
 
-This is a design for a twist on just a simple cylinder piece. We decided that a bucket could be a cool and fun piece to include. This bucket can just be placed anywhere to act as an obstacle. There will be a magnet on the bottom to allow it to stick to the course.
+This is a design for a twist on just a simple cylinder piece. We decided that a bucket could be a cool and fun piece to include. This bucket can just be placed anywhere to act as an obstacle. There would be a magnet on the bottom to allow it to stick to the course.
 
 ![previous layout for walls](./images/12.png)
 
@@ -87,7 +87,7 @@ This was the previous design for the golf club and was made to be laser cut. The
 
 ![Toy Project](./images/15.png)
 
-This is what I came up with to be able to create the golf club. This is sort of a sleeve to put on a metal pole which will make it sturdier so the first graders won't break it.
+This is what I came up with to be able to create the golf club. This is sort of a sleeve to put on a metal pole which made it sturdier so the first graders wouldn't break it.
 
 # CAD into the real world!
 
@@ -95,13 +95,13 @@ This is what I came up with to be able to create the golf club. This is sort of 
 
 ## Bucket and Starfish Done!
 
-This is what the results of the 3D print look like! I think that the bucket came out pretty good as well as the starfish. I added a screw and a nut in the starfish to allow it to spin. I am further developing how the starfish will spin. I also think that the starfish could be made more efficiently and sustainably with a more reasonable way to spin.
+This is what the results of the 3D print look like! I think that the bucket came out pretty good as well as the starfish. I added a screw and a nut in the starfish to allow it to spin. I then kept developing how the starfish would spin. I also think that the starfish could be made more efficiently and sustainably with a more reasonable way to spin.
 
 ![Toy Project](./images/17.jpg)
 
 ## New and Improved Starfish!
 
-I decided to go for a more resourceful method of making the starfish. Instead of 3D printing I layered pieces of wood together. The middle tube will use a similar technique of layering pieces.
+I decided to go for a more resourceful method of making the starfish. Instead of 3D printing I layered pieces of wood together. The middle tube used a similar technique of layering pieces.
 
 # Finished and Painted!
 
@@ -119,7 +119,7 @@ We decided to go for a classic starfish and bucket color to make it more recogni
 
 ## Great Wall of Mini Golf
 
-Just like the bucket and starfish, the walls have been painted! The magnetic tape has also been added to the bottoms of all the walls. The sand color makes it feel like built up sand in the water which fits the beach theme we are going for! You can also see the triangle piece done and painted.
+Just like the bucket and starfish, the walls have been painted! The magnetic tape has also been added to the bottoms of all the walls. The sand color makes it feel like built up sand in the water which fits the beach theme we were going for! You can also see the triangle piece done and painted.
 
 ## Golf Club and Ball
 

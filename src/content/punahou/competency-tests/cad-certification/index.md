@@ -2,6 +2,8 @@
 title: "CAD Certification"
 section: competency-tests
 order: 21
+# Hidden until the Rhinoceros CAD Level 2 certificate image is added. ASK: send the certificate image, then delete this line and the next.
+hidden: true
 banner: ./images/01.jpg
 ---
 

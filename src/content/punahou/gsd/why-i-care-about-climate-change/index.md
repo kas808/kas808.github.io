@@ -13,7 +13,7 @@ I think ocean acidification is a problem that needs to be focused on because of 
 
 Works Cited
 
-What Is Ocean Acidification?, www.pmel.noaa.gov/co2/story/What is Ocean Acidification?
+What Is Ocean Acidification?, [www.pmel.noaa.gov/co2/story/What is Ocean Acidification?](https://www.pmel.noaa.gov/co2/story/What+is+Ocean+Acidification%3F)
 
 Andersson, Andreas J. “Ocean Acidification and Coral Reefs: Effects on Breakdown, Dissolution, and Net Ecosystem Calcification.” Annual Reviews, www.annualreviews.org/doi/abs/10.1146/annurev-marine-121211-172241.
 
@@ -29,13 +29,13 @@ Lantz, C.A., Atkinson, M.J., Winn, C.W. et al. Dissolved inorganic carbon and to
 
 First set of thumbnail sketches. Messing with ocean and vacuum idea.
 
-![Second Set. I am looking at ways I can create movement in my piece.](./images/03.jpg)
+![Second Set. I was looking at ways I could create movement in my piece.](./images/03.jpg)
 
-Second Set. I am looking at ways I can create movement in my piece.
+Second Set. I was looking at ways I could create movement in my piece.
 
-![Third Set. I am still looking into ways to create simple movement.](./images/04.jpg)
+![Third Set. I was still looking into ways to create simple movement.](./images/04.jpg)
 
-Third Set. I am still looking into ways to create simple movement.
+Third Set. I was still looking into ways to create simple movement.
 
 ![Fourth Set. I figured out a solid idea and two ways to show movement.](./images/05.jpg)
 
@@ -71,8 +71,8 @@ This is what the coral pieces would look sort of like.
 
 # Pulley in Action
 
-As you press down on the gas pedal the thing on the other end will move. This will be essential for the scene of my sculpture to be able to change.
+As you press down on the gas pedal the thing on the other end will move. This was essential for the scene of my sculpture to be able to change.
 
 ## Reflection!
 
-One obstacle that came up was trying to figure out how to make the sculpture feel connected. I knew parts that I would need to include but struggled to find a good way to make everything feel connected. If we were to continue with this product I would make more changes on what I would be putting my simple machines inside of. The idea that I had could be improved and bettered. I think the most successful part of this project was trying to figure out how to make it kinetic. This made you have to be more creative in creating machines and incorporating them into a design. I think that if we were to go back to school next year I would not continue this project because I feel like I gained some knowledge on how to make some simple machines like a pulley but could use the time to learn more things.
+One obstacle that came up was trying to figure out how to make the sculpture feel connected. I knew parts that I would need to include but struggled to find a good way to make everything feel connected. If we had continued with this product I would have made more changes on what I would be putting my simple machines inside of. The idea that I had could be improved and bettered. I think the most successful part of this project was trying to figure out how to make it kinetic. This made you have to be more creative in creating machines and incorporating them into a design. I think that if we had gone back to school the next year, I would not have continued this project because I felt like I gained some knowledge on how to make some simple machines like a pulley but could use the time to learn more things.

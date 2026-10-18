@@ -17,21 +17,21 @@ We drew the toolbox in a 4:1 ratio.
 
 # Sketch to CAD
 
-This is the sketch layout of the various toolbox parts. I will later turn these into actual pieces for a real tool box. (Rhino)
+This is the sketch layout of the various toolbox parts. I later turned these into actual pieces for a real tool box. (Rhino)
 
 ![Toolbox](./images/04.png)
 
 # CAD Model
 
-This is a model of how it should look in real life. The long cylinder will be a PVC pipe. (Rhino)
+This is a model of how it should look in real life. The long cylinder became a PVC pipe. (Rhino)
 
-I plan to make this out of aluminum with a friction fit and a PVC pipe as the handle.
+I planned to make this out of aluminum with a friction fit and a PVC pipe as the handle.
 
 ![Toolbox](./images/05.png)
 
 # Text Design
 
-This will be on the side of my tool box!
+This was for the side of my tool box!
 
 # CAD to Real Life
 
@@ -41,19 +41,19 @@ This will be on the side of my tool box!
 
 ## Water Jet
 
-We will water jet out each piece of the tool box.
+We water jetted out each piece of the tool box.
 
 ![Toolbox](./images/07.jpg)
 
 ## Wire Brush
 
-We will use a wire brush to clean our pieces so dirt and other things will not become a problem.
+We used a wire brush to clean our pieces so dirt and other things would not become a problem.
 
 ![Toolbox](./images/08.jpg)
 
 ## Welding
 
-We will weld each piece together.
+We welded each piece together.
 
 ![Toolbox](./images/09.jpg)
 
@@ -79,7 +79,7 @@ I finished the box off by malleting the PVC pipe into the two end holes.
 
 # Piece to Piece
 
-These are my pieces of my tool box put together. They still need to be welded and cleaned for the final piece.
+These are my pieces of my tool box put together. They still needed to be welded and cleaned for the final piece.
 
 # PVC
 

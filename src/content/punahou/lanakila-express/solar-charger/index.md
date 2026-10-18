@@ -11,7 +11,7 @@ youtube:
 
 # What is a Solar Charger?
 
-Solar Chargers are made to charge things using the energy from the sun. The system on the left is one made to charge the battery of an electric car. The goal of the one we plan to make is to charge batteries for our train.
+Solar Chargers are made to charge things using the energy from the sun. The system on the left is one made to charge the battery of an electric car. The goal of the one we planned to make was to charge batteries for our train.
 
 # R&D!
 
@@ -101,7 +101,7 @@ This is a list of the general materials we used for our project.
 
 # Machines!
 
-These are the many machines we plan to use to create our Solar Charger
+These are the many machines we planned to use to create our Solar Charger
 
 ## Timeline
 
@@ -177,7 +177,7 @@ We mainly prototyped our leg bracket to make sure we had the sizing and the hole
 
 # Handle
 
-This is one of our prototypes for the free moving handle we plan to put on our wheel.
+This is one of our prototypes for the free moving handle we planned to put on our wheel.
 
 ![One outside leg](./images/30.jpg)
 

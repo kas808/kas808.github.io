@@ -45,7 +45,7 @@ documents:
 
 **Results:**
 
-- Required pump head: 23.4 m (76.6 ft)
+- Required pump head: 23.4 m (76.8 ft)
 - Flow to outlets 1, 2 and 3: 141, 103 and 77 gpm (total 320.65 gpm)
 - Selected pump: single-stage centrifugal at 1750 RPM with a 9 in impeller, at about 80 ft of head and 320 gpm
 

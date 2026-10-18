@@ -92,6 +92,9 @@ import wspExcel from '../content/experience/wsp/building-pressurization-excel-sh
         <span>Excel calculation tools</span>
       </a>
     </div>
+    <div class="to-top">
+      <a class="btn btn-ghost" href="#main" data-top>Back to top <span class="up" aria-hidden="true"></span></a>
+    </div>
   </section>
 
   <section class="section section-dark">
@@ -185,12 +188,23 @@ import wspExcel from '../content/experience/wsp/building-pressurization-excel-sh
     font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
   }
 
+  .to-top { display: flex; justify-content: center; margin-top: clamp(40px, 5vw, 64px); }
+  .to-top .btn { gap: 10px; }
+  .up { width: 8px; height: 8px; border-left: 1.5px solid currentColor; border-top: 1.5px solid currentColor; transform: translateY(2px) rotate(45deg); }
+
   .split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 6vw, 96px); }
   .split .lead { color: #c9d0d7; }
   @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
 </style>
 
 <script>
+  // Back to top: scroll smoothly (or jump, for people who prefer reduced motion)
+  document.querySelector('[data-top]')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+  });
+
   const allBtn = document.querySelector<HTMLButtonElement>('.all-btn');
   const panel = document.getElementById('all-projects-panel');
   allBtn?.addEventListener('click', () => {

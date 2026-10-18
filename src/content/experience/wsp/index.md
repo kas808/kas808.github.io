@@ -56,19 +56,19 @@ Exhaust airflow, building pressurization, and demand-controlled ventilation calc
 
 I created an Excel sheet to calculate the pressurization in a room and determine the required outside air to achieve a positive pressure in the room. I researched how building pressurization is calculated and what is considered under-pressurized, ideal, and over-pressurized. I used ASHRAE standards and values to create the Excel sheet below.
 
-<div class="img-grid img-grid-2">
-
 ![Building pressurization Excel sheet walk-through](./building-pressurization-excel-sheet-walk-through.jpg)
-
-![Building pressurization Excel sheet](./excel_03.png)
-
-</div>
 
 ### Demand Controlled Ventilation Excel Sheet
 
 I created an Excel sheet to determine whether a room requires demand-controlled ventilation. I used the criteria in ASHRAE 90.1-2016 and combined them with ASHRAE room values to evaluate each room. The sheet pulls from the data already entered in a standard room data sheet, then flags whether the room requires demand-controlled ventilation and what needs to change if it does.
 
+<div class="img-grid img-grid-2">
+
 ![Demand-controlled ventilation (DCV) Excel sheet walk-through](./dcv-excel-sheet-walk-through.jpg)
+
+![Demand-controlled ventilation Excel sheet: flags whether each room needs DCV](./excel_03.png)
+
+</div>
 
 ### Exhaust Rate Excel Sheet
 

@@ -6,9 +6,10 @@ import FeaturedCarousel from '../components/FeaturedCarousel.astro';
 import { url } from '../lib/url';
 import { site } from '../lib/site';
 import headshot from '../assets/headshot.jpg';
-import sketchA from '../content/projects/toggle-clamp-dfm/01_assembly_drawing_with_BOM.png';
-import sketchB from '../content/projects/wind-turbine/03_solidworks_rotor_iso.png';
-import sketchC from '../content/projects/toggle-clamp-dfm/02_interface_plate_drawing.png';
+// Faint line drawings from my own AutoCAD and SolidWorks work (made transparent for the background)
+import sketchA from '../assets/sketches/wrench.png';
+import sketchB from '../assets/sketches/bracket.png';
+import sketchC from '../assets/sketches/support.png';
 import wspTeam from '../content/experience/wsp/00_wsp_team.jpg';
 import wspSite from '../content/experience/wsp/ulana_03.jpg';
 import wspPlan from '../content/experience/wsp/spa_plan_04.jpg';
@@ -22,16 +23,16 @@ import wspExcel from '../content/experience/wsp/building-pressurization-excel-sh
     </div>
     <div class="hero-text reveal">
       <div class="sketches" aria-hidden="true">
-        <Image class="sk sk-a" src={sketchA} alt="" width={420} />
-        <Image class="sk sk-b" src={sketchB} alt="" width={300} />
-        <Image class="sk sk-c" src={sketchC} alt="" width={320} />
+        <Image class="sk sk-a" src={sketchA} alt="" width={520} />
+        <Image class="sk sk-b" src={sketchB} alt="" width={460} />
+        <Image class="sk sk-c" src={sketchC} alt="" width={300} />
       </div>
       <h1>I'm Kasin Ito-Sato, a Mechanical Engineer.</h1>
       <p class="focus">Mechanical Design · Testing & Analysis · HVAC/MEP · GD&T</p>
       <p class="lead">
-        I'm a mechanical engineering student at Loyola Marymount University (BS, May 2027). I've designed and machined
-        precision linkages, built my team's HVAC calculation tools as an intern at WSP, and I'm now working across aero,
-        structures, propulsion and controls on our SAE Aero Design capstone.
+        I'm a mechanical engineering student at Loyola Marymount University, graduating in May 2027. I take parts from
+        CAD to the shop floor, and as an intern at WSP I designed HVAC systems and built calculation tools my team
+        adopted. Right now I'm on our SAE Aero Design capstone team.
       </p>
       <div class="hero-btns">
         <a class="btn" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
@@ -121,25 +122,32 @@ import wspExcel from '../content/experience/wsp/building-pressurization-excel-sh
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     gap: clamp(32px, 6vw, 88px);
     align-items: center;
-    padding-block: clamp(40px, 8vw, 110px);
+    padding-block: clamp(110px, 11vw, 160px) clamp(40px, 8vw, 110px);
     overflow-x: clip;
   }
   .hero-photo :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0%; border-radius: 4px; }
-  .hero-text { position: relative; text-align: center; padding: 24px 0; }
-  .hero-text h1 { position: relative; font-size: clamp(2.2rem, 5vw, 3.9rem); margin-bottom: 0.5em; }
-  .hero-text .lead { position: relative; margin-inline: auto; max-width: 46ch; font-size: 1.02rem; }
-  .hero-btns { position: relative; display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 28px; }
+  .hero-text { position: relative; text-align: left; padding: 24px 0; }
+  .hero-text h1 {
+    position: relative; z-index: 1;
+    font-size: clamp(2.2rem, 4.6vw, 3.6rem);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin-bottom: 0.5em;
+  }
+  .hero-text .lead { position: relative; z-index: 1; max-width: 44ch; font-size: 1.05rem; }
+  .hero-btns { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 28px; }
   .hero-btns .btn { min-width: 220px; }
 
-  .sketches { position: absolute; inset: -40px -60px; pointer-events: none; }
-  .sk { position: absolute; height: auto; mix-blend-mode: multiply; filter: grayscale(1) contrast(1.2); opacity: 0.13; }
-  .sk-a { width: 300px; top: -30px; right: -40px; }
-  .sk-b { width: 190px; bottom: -10px; right: -20px; }
-  .sk-c { width: 210px; bottom: 10px; left: -40px; }
-  @media (max-width: 1100px) { .sketches { inset: -20px -10px; } .sk-a { width: 220px; } }
+  /* Faint line drawings, kept out at the edges and never behind the headline */
+  .sketches { position: absolute; inset: 0; pointer-events: none; }
+  .sk { position: absolute; height: auto; opacity: 0.12; }
+  .sk-a { width: 250px; bottom: calc(100% + 4px); right: -70px; }   /* above the headline, top right */
+  .sk-b { width: 210px; bottom: 0; right: -90px; }                   /* beside the buttons, bottom right */
+  .sk-c { width: 120px; top: 54%; right: -110px; }                   /* out at the right edge */
+  @media (max-width: 1240px) { .sk-c { display: none; } .sk-a { right: -20px; } .sk-b { right: -30px; width: 170px; } }
 
   @media (max-width: 860px) {
-    .hero { grid-template-columns: 1fr; }
+    .hero { grid-template-columns: 1fr; padding-top: 40px; }
     .hero-photo { max-width: 420px; margin-inline: auto; width: 100%; }
     .sketches { display: none; }
   }

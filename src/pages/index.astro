@@ -27,12 +27,14 @@ import wspExcel from '../content/experience/wsp/building-pressurization-excel-sh
         <Image class="sk sk-b" src={sketchB} alt="" width={460} />
         <Image class="sk sk-c" src={sketchC} alt="" width={300} />
       </div>
-      <h1>I'm Kasin Ito-Sato, a Mechanical Engineer.</h1>
-      <p class="focus">Mechanical Design · Testing & Analysis · HVAC/MEP · GD&T</p>
+      <h1>Kasin Ito-Sato.</h1>
+      <p class="role">MECHANICAL ENGINEER</p>
+      <p class="focus">MECHANICAL DESIGN · THERMAL & FLOW ANALYSIS · ASSEMBLY & TEST · GD&T</p>
       <p class="lead">
-        I'm a mechanical engineering student at Loyola Marymount University, graduating in May 2027. I take parts from
-        CAD to the shop floor, and as an intern at WSP I designed HVAC systems and built calculation tools my team
-        adopted. Right now I'm on our team for the 2027 SAE Aero Design Regular Class competition.
+        I'm a mechanical engineering student at Loyola Marymount University, graduating in May 2027. Originally from Oahu,
+        now based in Los Angeles. I take parts from CAD to the shop floor, and as an intern at WSP I worked on HVAC design
+        and built three Excel analysis tools my team adopted. Right now I'm on our team for the 2027 SAE Aero Design Regular
+        Class competition.
       </p>
       <div class="hero-btns">
         <a class="btn" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
@@ -132,8 +134,9 @@ import wspExcel from '../content/experience/wsp/building-pressurization-excel-sh
     font-size: clamp(2.2rem, 4.6vw, 3.6rem);
     font-weight: 700;
     letter-spacing: 0.01em;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.25em;
   }
+  .role { position: relative; z-index: 1; margin: 0 0 1.1em; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.22em; color: var(--ink); }
   .hero-text .lead { position: relative; z-index: 1; max-width: 44ch; font-size: 1.05rem; }
   .hero-btns { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 28px; }
   .hero-btns .btn { min-width: 220px; }
@@ -152,7 +155,7 @@ import wspExcel from '../content/experience/wsp/building-pressurization-excel-sh
     .sketches { display: none; }
   }
 
-  .focus { position: relative; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-wrap: balance; text-transform: uppercase; color: var(--steel); margin-bottom: 1.4em; }
+  .focus { position: relative; z-index: 1; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-wrap: balance; text-transform: uppercase; color: var(--steel); margin-bottom: 1.4em; }
 
   .section-tight { padding-block: clamp(40px, 6vw, 72px) clamp(56px, 8vw, 96px); background: var(--white); border-block: 1px solid var(--mist); }
   .showcase h2 { margin-bottom: clamp(24px, 3vw, 36px); }

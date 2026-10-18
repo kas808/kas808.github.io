@@ -17,11 +17,11 @@ What Is Ocean Acidification?, www.pmel.noaa.gov/co2/story/What is Ocean Acidific
 
 Andersson, Andreas J. “Ocean Acidification and Coral Reefs: Effects on Breakdown, Dissolution, and Net Ecosystem Calcification.” Annual Reviews, www.annualreviews.org/doi/abs/10.1146/annurev-marine-121211-172241.
 
-Narita, D., Rehdanz, K. & Tol, R.S.J. Economic costs of ocean acidification: a look into the impacts on global shellfish production. Climatic Change 113, 1049–1063 (2012). https://doi.org/10.1007/s10584-011-0383-3
+Narita, D., Rehdanz, K. & Tol, R.S.J. Economic costs of ocean acidification: a look into the impacts on global shellfish production. Climatic Change 113, 1049-1063 (2012). https://doi.org/10.1007/s10584-011-0383-3
 
 Nicola Jones, et al. “How Growing Sea Plants Can Help Slow Ocean Acidification.” Yale E360, e360.yale.edu/features/kelp_seagrass_slow_ocean_acidification_netarts.
 
-Lantz, C.A., Atkinson, M.J., Winn, C.W. et al. Dissolved inorganic carbon and total alkalinity of a Hawaiian fringing reef: chemical techniques for monitoring the effects of ocean acidification on coral reefs. Coral Reefs 33, 105–115 (2014). https://doi.org/10.1007/s00338-013-1082-5
+Lantz, C.A., Atkinson, M.J., Winn, C.W. et al. Dissolved inorganic carbon and total alkalinity of a Hawaiian fringing reef: chemical techniques for monitoring the effects of ocean acidification on coral reefs. Coral Reefs 33, 105-115 (2014). https://doi.org/10.1007/s00338-013-1082-5
 
 # This draws the line...
 

@@ -44,6 +44,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     </main>
     <Footer />
 
+    <button class="float-top" type="button" aria-label="Back to top" data-float-top>
+      <span class="ft-arrow" aria-hidden="true"></span>
+    </button>
+
     <dialog class="lightbox" aria-label="Enlarged image">
       <button class="lb-close" aria-label="Close">×</button>
       <button class="lb-prev" aria-label="Previous image">‹</button>
@@ -75,6 +79,20 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       .lb-prev { left: 4px; top: 50%; transform: translateY(-50%); }
       .lb-next { right: 4px; top: 50%; transform: translateY(-50%); }
       .lightbox.single .lb-prev, .lightbox.single .lb-next { display: none; }
+
+      /* Floating back-to-top button: shows up after scrolling down a bit */
+      .float-top {
+        position: fixed; right: clamp(16px, 3vw, 32px); bottom: clamp(16px, 3vw, 32px); z-index: 40;
+        width: 48px; height: 48px; display: grid; place-items: center;
+        background: var(--ink); color: #fff; border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 12px 0 12px 0; cursor: pointer;
+        box-shadow: 0 10px 24px -10px rgba(23, 33, 45, 0.6);
+        opacity: 0; visibility: hidden; transform: translateY(10px);
+        transition: opacity 0.25s var(--ease), transform 0.25s var(--ease), visibility 0.25s, background 0.2s var(--ease);
+      }
+      .float-top.show { opacity: 1; visibility: visible; transform: none; }
+      .float-top:hover { background: var(--ink-soft); }
+      .ft-arrow { width: 10px; height: 10px; border-left: 2px solid currentColor; border-top: 2px solid currentColor; transform: translateY(3px) rotate(45deg); }
     </style>
 
     <script>
@@ -115,6 +133,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       dialog.querySelector('.lb-prev')!.addEventListener('click', () => show(index - 1));
       dialog.querySelector('.lb-next')!.addEventListener('click', () => show(index + 1));
       dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+      // Floating back-to-top button
+      const topBtn = document.querySelector<HTMLButtonElement>('[data-float-top]')!;
+      const toggleTop = () => topBtn.classList.toggle('show', window.scrollY > 700);
+      window.addEventListener('scroll', toggleTop, { passive: true });
+      toggleTop();
+      topBtn.addEventListener('click', () => {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+        (document.querySelector('.brand') as HTMLElement | null)?.focus({ preventScroll: true });
+      });
+
       // YouTube: show a thumbnail, load the real player only when clicked.
       document.querySelectorAll<HTMLElement>('.yt-embed[data-yt]').forEach((box) => {
         const id = box.dataset.yt!;

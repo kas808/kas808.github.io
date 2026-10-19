@@ -8,7 +8,6 @@
 // real page with that filter already on, so shared links open filtered and
 // still work with JavaScript turned off.
 import { getCollection } from 'astro:content';
-import { getImage } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from './ProjectCard.astro';
 import AllProjectsButton from './AllProjectsButton.astro';
@@ -73,12 +72,6 @@ const filters = await Promise.all(categories.map(async (c) => ({ cat: c, cards: 
 const cat = active ? categoryBySlug(active)! : undefined;
 const pageTitle = (name?: string) => (name ? `${name} Projects` : 'Projects');
 const defaultDescription = 'Engineering projects by Kasin Ito-Sato from LMU and Punahou School: design, manufacturing, CAD, analysis and testing.';
-let shareSrc: string | undefined;
-if (cat) {
-  const cards = filters.find((f) => f.cat.slug === cat.slug)!.cards;
-  const pick = (cat.shareFrom && cards.find((c) => c.href.startsWith(cat.shareFrom!) && c.cover)) || cards.find((c) => c.cover);
-  if (pick?.cover) shareSrc = (await getImage({ src: pick.cover, width: 1200, height: 630, fit: 'cover', position: 'attention', format: 'jpg', quality: 80 })).src;
-}
 
 // What the script needs to switch filters without a reload
 const filterInfo = {
@@ -86,12 +79,12 @@ const filterInfo = {
   siteName: 'Kasin Ito-Sato',
   all: { title: pageTitle(), description: defaultDescription },
   filters: Object.fromEntries(
-    filters.map(({ cat: c, cards }) => [c.slug, { name: c.name, title: pageTitle(c.name), description: c.description, count: cards.length }]),
+    filters.map(({ cat: c, cards }) => [c.slug, { name: c.name, title: pageTitle(c.name), description: c.intro, count: cards.length }]),
   ),
 };
 ---
 
-<BaseLayout title={pageTitle(cat?.name)} description={cat?.description ?? defaultDescription} image={shareSrc}>
+<BaseLayout title={pageTitle(cat?.name)} description={cat?.intro ?? defaultDescription}>
   <div data-projects-page>
     <header class="page-head wrap">
       <p class="eyebrow">LMU and Punahou School</p>

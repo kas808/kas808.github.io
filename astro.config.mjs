@@ -6,7 +6,8 @@ import { defineConfig } from 'astro/config';
 const base = process.env.BASE_PATH || '/';
 
 export default defineConfig({
-  site: process.env.SITE_URL || 'http://localhost:4321',
+  // The live address, so link previews always use full https://kasinitosato.github.io/... links
+  site: process.env.SITE_URL || 'https://kasinitosato.github.io',
   base,
   trailingSlash: 'ignore',
   build: { format: 'directory' },

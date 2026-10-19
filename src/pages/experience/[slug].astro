@@ -20,7 +20,7 @@ const { Content } = await render(entry);
 const d = entry.data;
 ---
 
-<BaseLayout title={`${d.title} | ${d.organization}`} description={d.summary}>
+<BaseLayout title={`${d.title} | ${d.organization}`} description={d.summary} type="article">
   <article>
     <header class="banner" style={`--pos: ${d.coverPosition ?? '50% 50%'}`}>
       <Image src={d.cover} alt={d.coverAlt} widths={[800, 1400, 2000]} sizes="100vw" loading="eager" />

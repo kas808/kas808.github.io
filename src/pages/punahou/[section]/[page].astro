@@ -26,7 +26,7 @@ const d = entry.data;
 const sectionName = punahouSections.find((s) => s.id === d.section)?.name ?? '';
 ---
 
-<BaseLayout title={`${d.title} | Punahou`} description={`${d.title}: a ${sectionName} project from Punahou School.`} noindex={d.hidden}>
+<BaseLayout title={`${d.title} | Punahou`} description={`${d.title}, a project from the ${sectionName} section of my Punahou School portfolio.`} type="article" noindex={d.hidden}>
   <article>
     {d.banner ? (
       <header class="banner">

@@ -24,7 +24,7 @@ const d = entry.data;
 const media = (file: string) => `/media/${entry.id}/${file}`;
 ---
 
-<BaseLayout title={d.title} description={d.summary}>
+<BaseLayout title={d.title} description={d.summary} type="article">
   <article>
     <header class="project-head wrap">
       <nav class="crumbs" aria-label="Breadcrumb"><a href={url('/projects/')}>Projects</a> <span>/</span> {d.title}</nav>

@@ -1,47 +1,137 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BackHome from '../components/BackHome.astro';
 import { url } from '../lib/url';
 import { site } from '../lib/site';
+import headshot from '../assets/headshot.jpg';
+import sketch from '../assets/sketches/bracket.png';
 ---
 
-<BaseLayout title="Contact" description="Contact Kasin Ito-Sato.">
-  <section class="page-head wrap contact">
-    <h1>Contact</h1>
-    <p class="lead">
-      I'm looking for mechanical engineering opportunities. The best way to reach me is email, and I'm happy to talk through
-      any of the projects on this site.
-    </p>
-    <ul class="ways">
-      <li class="reveal">
-        <p class="eyebrow">Email</p>
-        <a class="big" href={`mailto:${site.email}`}>{site.email}</a>
-      </li>
-      <li class="reveal">
-        <p class="eyebrow">LinkedIn</p>
-        <a class="big" href={site.linkedin} target="_blank" rel="noopener">linkedin.com/in/kasin-ito-sato</a>
-      </li>
-      <li class="reveal">
-        <p class="eyebrow">Based in</p>
-        <span class="big">Los Angeles, CA</span>
-      </li>
-      <li class="reveal">
-        <p class="eyebrow">Resume</p>
-        <a class="big" href={url('/resume/')}>View or download</a>
-      </li>
-    </ul>
-    <div class="btn-row">
-      <a class="btn" href={`mailto:${site.email}`}>Send an email</a>
-      <a class="btn btn-ghost" href={site.linkedin} target="_blank" rel="noopener">Connect on LinkedIn</a>
+<BaseLayout title="Contact" description="Contact Kasin Ito-Sato, mechanical engineering student at Loyola Marymount University.">
+  <section class="wrap contact">
+    <div class="intro reveal">
+      <Image class="sketch" src={sketch} alt="" width={460} aria-hidden="true" />
+      <p class="eyebrow">Get in touch</p>
+      <h1>Contact</h1>
+      <p class="lead">
+        I'm looking for mechanical engineering opportunities. The best way to reach me is email, and I'm happy to talk
+        through any of the projects on this site.
+      </p>
+      <div class="btn-row">
+        <a class="btn" href={`mailto:${site.email}`}>Send an email</a>
+        <a class="btn btn-ghost" href={site.linkedin} target="_blank" rel="noopener">Connect on LinkedIn</a>
+      </div>
     </div>
+
+    <aside class="card reveal" aria-label="Contact details">
+      <div class="who">
+        <Image class="face" src={headshot} alt="" widths={[120, 240]} sizes="88px" />
+        <div>
+          <p class="name">{site.name}</p>
+          <p class="title">Mechanical Engineering, Loyola Marymount University · May 2027</p>
+        </div>
+      </div>
+
+      <ul class="rows">
+        <li>
+          <a class="row" href={`mailto:${site.email}`}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5" /><path d="M3.5 6l8.5 7 8.5-7" /></svg>
+            <span><span class="label">Email</span><span class="value">{site.email}</span></span>
+          </a>
+          <button class="copy" type="button" data-copy={site.email} aria-label="Copy email address">Copy</button>
+        </li>
+        <li>
+          <a class="row" href={site.linkedin} target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5" /><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7" /></svg>
+            <span><span class="label">LinkedIn</span><span class="value">linkedin.com/in/kasin-ito-sato</span></span>
+            <span class="go" aria-hidden="true"></span>
+          </a>
+        </li>
+        <li>
+          <div class="row">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0113 0C18.5 14.8 12 21 12 21z" /><circle cx="12" cy="9.8" r="2.3" /></svg>
+            <span><span class="label">Based in</span><span class="value">Los Angeles, CA · Originally from Oahu</span></span>
+          </div>
+        </li>
+        <li>
+          <a class="row" href={url('/resume/')}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4M9 12h6M9 16h6" /></svg>
+            <span><span class="label">Resume</span><span class="value">View or download the PDF</span></span>
+            <span class="go" aria-hidden="true"></span>
+          </a>
+        </li>
+      </ul>
+    </aside>
   </section>
+
+  <div class="wrap end"><BackHome /></div>
 </BaseLayout>
 
 <style>
-  .contact { padding-bottom: 120px; }
-  .ways { list-style: none; margin: 48px 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--mist); }
-  @media (max-width: 700px) { .ways { grid-template-columns: 1fr; } }
-  .ways li { padding: 28px 24px 28px 0; border-bottom: 1px solid var(--mist); }
-  .ways .eyebrow { margin-bottom: 6px; }
-  .big { font-size: clamp(1.1rem, 2.4vw, 1.5rem); font-weight: 700; color: var(--ink); text-decoration: none; word-break: break-word; }
-  a.big:hover { text-decoration: underline; }
+  .contact {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(32px, 6vw, 88px);
+    align-items: center;
+    padding-block: clamp(56px, 9vw, 120px) 32px;
+  }
+  @media (max-width: 880px) { .contact { grid-template-columns: 1fr; } }
+
+  .intro { position: relative; }
+  .intro > :not(.sketch) { position: relative; z-index: 1; }
+  .sketch { position: absolute; width: 230px; height: auto; right: -20px; bottom: -230px; opacity: 0.1; pointer-events: none; }
+  @media (max-width: 880px) { .sketch { display: none; } }
+  .intro .lead { margin-bottom: 28px; }
+
+  .card {
+    background: var(--ink);
+    color: #dfe3e7;
+    border-radius: 16px 0 16px 0;
+    padding: clamp(24px, 3.5vw, 40px);
+    box-shadow: 0 30px 60px -36px rgba(23, 33, 45, 0.8);
+  }
+  .who { display: flex; align-items: center; gap: 18px; padding-bottom: 22px; border-bottom: 1px solid rgba(255, 255, 255, 0.14); }
+  .who :global(.face) { width: 72px; height: 72px; object-fit: cover; object-position: 50% 0%; border-radius: 12px 0 12px 0; flex: none; }
+  .name { margin: 0; color: #fff; font-weight: 800; font-size: 1.25rem; letter-spacing: -0.01em; }
+  .title { margin: 2px 0 0; font-size: 0.85rem; color: var(--steel); }
+
+  .rows { list-style: none; margin: 8px 0 0; padding: 0; }
+  .rows li { display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+  .rows li:last-child { border-bottom: 0; }
+  .row { flex: 1; min-width: 0; display: flex; align-items: center; gap: 16px; padding: 18px 4px; color: inherit; text-decoration: none; }
+  a.row { transition: transform 0.25s var(--ease); }
+  a.row:hover { transform: translateX(4px); }
+  a.row:hover .value { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+  .row svg { width: 26px; height: 26px; flex: none; fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .row > span:not(.go) { display: flex; flex-direction: column; min-width: 0; }
+  .label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--steel); }
+  .value { font-size: 1.02rem; font-weight: 600; color: #f4f5f6; overflow-wrap: anywhere; }
+  .go { margin-left: auto; width: 8px; height: 8px; border-top: 1.5px solid var(--steel); border-right: 1.5px solid var(--steel); transform: rotate(45deg); flex: none; }
+
+  .copy {
+    flex: none; font: 600 0.68rem/1 var(--font); letter-spacing: 0.14em; text-transform: uppercase;
+    color: #fff; background: transparent; border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 8px 12px; border-radius: 8px 0 8px 0; cursor: pointer; transition: background 0.2s var(--ease), color 0.2s var(--ease);
+  }
+  .copy:hover { background: #fff; color: var(--ink); }
+  .copy.done { background: var(--accent); border-color: var(--accent); color: var(--ink); }
+
+  .end { padding-bottom: 96px; }
 </style>
+
+<script>
+  // "Copy" puts the email address on the clipboard and briefly says "Copied"
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy ?? '');
+        btn.textContent = 'Copied';
+        btn.classList.add('done');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1800);
+      } catch {
+        window.location.href = `mailto:${btn.dataset.copy}`;
+      }
+    });
+  });
+</script>

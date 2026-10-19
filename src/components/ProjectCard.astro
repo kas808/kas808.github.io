@@ -11,16 +11,17 @@ interface Props {
   cover?: ImageMetadata;
   coverAlt?: string;
   coverPosition?: string;
+  coverFit?: 'cover' | 'contain';
   tools?: string[];
   status?: string;
   size?: 'large' | 'small';
   label?: string; // shown on cards that have no photo
 }
-const { href, title, summary, meta, cover, coverAlt = '', coverPosition, tools = [], status, size = 'large', label } = Astro.props;
+const { href, title, summary, meta, cover, coverAlt = '', coverPosition, coverFit, tools = [], status, size = 'large', label } = Astro.props;
 ---
 
 <article class:list={['card', `card-${size}`, 'reveal']}>
-  <a class="card-media" href={url(href)} tabindex="-1" aria-hidden="true" style={coverPosition ? `--pos: ${coverPosition}` : undefined}>
+  <a class="card-media" href={url(href)} tabindex="-1" aria-hidden="true" style={[coverPosition && `--pos: ${coverPosition}`, coverFit && `--fit: ${coverFit}`].filter(Boolean).join('; ') || undefined}>
     {cover ? (
       <Image src={cover} alt={coverAlt} widths={[400, 700, 1000]} sizes={size === 'large' ? '(max-width: 700px) 100vw, 50vw' : '(max-width: 700px) 100vw, 33vw'} loading="lazy" />
     ) : (
@@ -44,7 +45,8 @@ const { href, title, summary, meta, cover, coverAlt = '', coverPosition, tools =
   .card:hover { transform: translateY(-3px); box-shadow: 0 18px 36px -24px rgba(37, 52, 71, 0.45); }
   .card-media { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; background: #e7e6e1; }
   .card-small .card-media { aspect-ratio: 16 / 10; }
-  .card-media :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); transition: transform 0.6s var(--ease); }
+  .card-media[style*='contain'] { background: #fff; }
+  .card-media :global(img) { width: 100%; height: 100%; object-fit: var(--fit, cover); object-position: var(--pos, 50% 50%); transition: transform 0.6s var(--ease); }
   .card:hover .card-media :global(img) { transform: scale(1.035); }
   .card-status { position: absolute; top: 12px; left: 12px; }
   .card-body { display: flex; flex-direction: column; gap: 10px; padding: 22px 22px 24px; flex: 1; }

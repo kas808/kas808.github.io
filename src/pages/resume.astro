@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { url } from '../lib/url';
 import { site } from '../lib/site';
+import BackHome from '../components/BackHome.astro';
 import resumePage from '../assets/resume-page.png';
 import p1 from '../content/projects/pantograph/01_pantograph_final_build.jpg';
 import p2 from '../content/projects/wind-turbine/01_final_turbine_photo.jpg';
@@ -46,11 +47,13 @@ const portfolio = url('media/resume/Kasin-Ito-Sato-Project-Portfolio.pdf');
       <Image src={p5} alt="Junior robotics at Punahou School" widths={[300, 500]} sizes="(max-width: 900px) 50vw, 20vw" />
     </div>
   </section>
+  <div class="wrap end"><BackHome /></div>
 </BaseLayout>
 
 <style>
   .centered { justify-content: center; margin-top: 24px; }
-  .resume-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; padding-bottom: 96px; align-items: start; }
+  .resume-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; padding-bottom: 24px; align-items: start; }
+  .end { padding-bottom: 96px; }
   @media (max-width: 900px) { .resume-grid { grid-template-columns: 1fr; } }
   .paper { display: block; background: #fff; border: 1px solid var(--mist); border-radius: 2px; box-shadow: 0 22px 44px -28px rgba(37, 52, 71, 0.45); transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease); }
   .paper:hover { transform: translateY(-2px); box-shadow: 0 28px 52px -28px rgba(37, 52, 71, 0.55); }

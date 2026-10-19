@@ -1,40 +1,79 @@
 ---
+// The Projects page. The order of the cards lives in src/lib/projects-page.ts.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
-import { url } from '../../lib/url';
+import AllProjectsButton from '../../components/AllProjectsButton.astro';
+import BackHome from '../../components/BackHome.astro';
 import { punahouSections } from '../../lib/site';
+import { largeCards, smallCards, type CardEntry } from '../../lib/projects-page';
 
-const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
-const large = projects.filter((p) => p.data.featured || p.data.size === 'large');
-const small = projects.filter((p) => !(p.data.featured || p.data.size === 'large'));
-const punahou = (await getCollection('punahou')).filter((p) => !p.data.hidden).sort((a, b) => a.data.order - b.data.order);
-const sections = punahouSections.map((s) => {
-  const pages = punahou.filter((p) => p.data.section === s.id);
-  return { ...s, count: pages.length, cover: pages.find((p) => p.data.cover || p.data.banner) };
-});
+const projects = await getCollection('projects');
+const punahou = await getCollection('punahou');
+
+// Turn each entry in the order file into the details a card needs.
+const toCard = (entry: CardEntry) => {
+  if ('project' in entry) {
+    const p = projects.find((x) => x.id === entry.project);
+    if (!p) throw new Error(`projects-page.ts: no project folder named "${entry.project}"`);
+    return {
+      href: `/projects/${p.id}/`,
+      title: p.data.title,
+      summary: p.data.summary,
+      meta: [p.data.course, p.data.date].filter(Boolean).join(' · '),
+      cover: p.data.cover,
+      coverAlt: p.data.coverAlt,
+      coverPosition: p.data.coverPosition,
+      coverFit: undefined,
+      tools: p.data.tools,
+      status: p.data.status,
+      label: p.data.course,
+    };
+  }
+  const page = punahou.find((x) => x.id === entry.punahou);
+  if (!page) throw new Error(`projects-page.ts: no Punahou page named "${entry.punahou}"`);
+  const section = punahouSections.find((s) => s.id === page.data.section)?.name;
+  return {
+    href: entry.href ?? `/punahou/${page.id}/`,
+    title: entry.title ?? page.data.title,
+    summary: entry.summary,
+    meta: ['Punahou School', section, entry.date].filter(Boolean).join(' · '),
+    cover: entry.cover ?? page.data.cover ?? page.data.banner,
+    coverAlt: entry.coverAlt ?? '',
+    coverPosition: entry.coverPosition,
+    coverFit: entry.fit,
+    tools: entry.tools ?? [],
+    status: undefined,
+    label: 'Punahou School',
+  };
+};
+
+const large = largeCards.map(toCard);
+const small = smallCards.map(toCard);
 ---
 
-<BaseLayout title="Projects" description="Engineering projects by Kasin Ito-Sato: design, manufacturing, CAD, analysis and testing.">
+<BaseLayout title="Projects" description="Engineering projects by Kasin Ito-Sato from LMU and Punahou School: design, manufacturing, CAD, analysis and testing.">
   <header class="page-head wrap">
-    <p class="eyebrow">Loyola Marymount University</p>
+    <p class="eyebrow">LMU and Punahou School</p>
     <h1>Projects</h1>
-    <p class="lead">Design, manufacturing and testing work from my mechanical engineering classes and capstone at LMU.</p>
+    <p class="lead">Design, manufacturing and testing work from my mechanical engineering classes at LMU and my engineering classes at Punahou School.</p>
   </header>
 
   <section class="wrap">
     <div class="big-grid">
-      {large.map((p) => (
+      {large.map((c) => (
         <ProjectCard
-          href={`/projects/${p.id}/`}
-          title={p.data.title}
-          summary={p.data.summary}
-          meta={[p.data.course, p.data.date].filter(Boolean).join(' · ')}
-          cover={p.data.cover}
-          coverAlt={p.data.coverAlt}
-          coverPosition={p.data.coverPosition}
-          tools={p.data.tools}
-          status={p.data.status}
+          href={c.href}
+          title={c.title}
+          summary={c.summary}
+          meta={c.meta}
+          cover={c.cover}
+          coverAlt={c.coverAlt}
+          coverPosition={c.coverPosition}
+          coverFit={c.coverFit}
+          tools={c.tools}
+          status={c.status}
+          label={c.label}
         />
       ))}
     </div>
@@ -43,43 +82,25 @@ const sections = punahouSections.map((s) => {
   <section class="section wrap">
     <h2 class="reveal">Other projects</h2>
     <div class="small-grid">
-      {small.map((p) => (
+      {small.map((c) => (
         <ProjectCard
-          href={`/projects/${p.id}/`}
-          title={p.data.title}
-          summary={p.data.summary}
-          meta={p.data.date}
-          cover={p.data.cover}
-          coverAlt={p.data.coverAlt}
-          coverPosition={p.data.coverPosition}
+          href={c.href}
+          title={c.title}
+          summary={c.summary}
+          meta={c.meta}
+          cover={c.cover}
+          coverAlt={c.coverAlt}
+          coverPosition={c.coverPosition}
+          coverFit={c.coverFit}
+          status={c.status}
           size="small"
-          label={p.data.course}
+          label={c.label}
         />
       ))}
     </div>
-  </section>
 
-  <section class="section section-dark">
-    <div class="wrap">
-      <div class="row-head reveal">
-        <div>
-          <p class="eyebrow">Before LMU</p>
-          <h2>Punahou School</h2>
-        </div>
-        <a class="btn" href={url('/punahou/')}>All Punahou projects</a>
-      </div>
-      <ul class="section-list">
-        {sections.map((s) => (
-          <li class="reveal">
-            <a href={url(`/punahou/#${s.id}`)}>
-              <span class="s-name">{s.name}</span>
-              <span class="s-count">{s.count} {s.count === 1 ? 'page' : 'pages'}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-      <p class="wsp reveal">Looking for my internship work? See <a href={url('/experience/wsp/')}>the WSP internship page</a>.</p>
-    </div>
+    <AllProjectsButton />
+    <BackHome />
   </section>
 </BaseLayout>
 
@@ -87,12 +108,4 @@ const sections = punahouSections.map((s) => {
   .big-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
   @media (max-width: 760px) { .big-grid { grid-template-columns: 1fr; } }
   .small-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-top: 24px; }
-  .row-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
-  .row-head h2 { margin: 0; }
-  .section-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1px; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.12); }
-  .section-list a { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 22px 20px; background: var(--ink); text-decoration: none; transition: background 0.25s var(--ease); }
-  .section-list a:hover { background: var(--ink-soft); }
-  .s-name { font-weight: 700; font-size: 1.1rem; color: #fff; }
-  .s-count { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--steel); }
-  .wsp { margin-top: 32px; color: #c9d0d7; }
 </style>

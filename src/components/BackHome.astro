@@ -1,0 +1,14 @@
+---
+// A centered "Back to home" button, used at the bottom of a few pages.
+import { url } from '../lib/url';
+---
+
+<div class="back-home">
+  <a class="btn btn-ghost" href={url('/')}><span class="arrow" aria-hidden="true"></span>Back to home</a>
+</div>
+
+<style>
+  .back-home { display: flex; justify-content: center; margin-top: 28px; }
+  .back-home .btn { gap: 10px; }
+  .arrow { width: 7px; height: 7px; border-left: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); }
+</style>

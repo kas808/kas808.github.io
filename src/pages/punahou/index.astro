@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
+import BackHome from '../../components/BackHome.astro';
 import { punahouSections } from '../../lib/site';
 
 const pages = (await getCollection('punahou')).filter((p) => !p.data.hidden).sort((a, b) => a.data.order - b.data.order);
@@ -40,9 +41,11 @@ const sections = punahouSections.map((s) => ({ ...s, pages: pages.filter((p) => 
       </div>
     </section>
   ))}
+  <div class="wrap end"><BackHome /></div>
 </BaseLayout>
 
 <style>
+  .end { padding-block: 16px 96px; }
   .jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
   .jump a {
     font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none;

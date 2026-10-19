@@ -1,0 +1,38 @@
+---
+// The "View all projects" button and the full project list it opens.
+// Used on the home page and the Projects page.
+import ProjectIndex from './ProjectIndex.astro';
+
+interface Props { hidePlaceholders?: boolean } // true leaves out pages still being filled in
+const { hidePlaceholders = false } = Astro.props;
+---
+
+<div class="wrap all-projects" data-all-projects>
+  <button class="btn all-btn" aria-expanded="false" aria-controls="all-projects-panel">
+    View all projects <span class="caret" aria-hidden="true"></span>
+  </button>
+  <div id="all-projects-panel" class="all-panel" hidden>
+    <ProjectIndex hidePlaceholders={hidePlaceholders} />
+  </div>
+</div>
+
+<style>
+  .all-projects { margin-top: 36px; display: flex; flex-direction: column; align-items: center; }
+  .all-btn { font-size: 0.9rem; padding: 1em 2.6em; min-width: 280px; border-radius: 16px 0 16px 0; box-shadow: 0 10px 24px -14px rgba(37, 52, 71, 0.7); }
+  .all-btn .caret { width: 8px; height: 8px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.2s var(--ease); }
+  .all-btn[aria-expanded='true'] .caret { transform: translateY(1px) rotate(-135deg); }
+  .all-panel { width: 100%; margin-top: 24px; padding: 28px; background: var(--paper); border: 1px solid var(--mist); border-radius: var(--radius); animation: drop 0.25s var(--ease); }
+  @keyframes drop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-all-projects]').forEach((root) => {
+    const btn = root.querySelector<HTMLButtonElement>('.all-btn');
+    const panel = root.querySelector<HTMLElement>('.all-panel');
+    btn?.addEventListener('click', () => {
+      const open = btn.getAttribute('aria-expanded') !== 'true';
+      btn.setAttribute('aria-expanded', String(open));
+      if (panel) panel.hidden = !open;
+    });
+  });
+</script>

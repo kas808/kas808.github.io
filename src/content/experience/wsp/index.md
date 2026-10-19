@@ -19,6 +19,11 @@ tools: [IES-VE, TRACE 700, Revit, AutoCAD, Bluebeam, Excel, ASHRAE 62.1/90.1, IE
 related: { title: "2D CAD and Technical Sketching", href: "/projects/2d-cad/" }
 documents:
   - { title: End-of-Summer Presentation, file: wsp-end-of-summer-presentation.pdf, embed: true }
+categories:
+  - category: thermal
+    order: 1
+    blurb: "Sized HVAC equipment from loads cross-checked in IES-VE and TRACE 700, and built 3 Excel tools for pressurization, DCV and exhaust that the team adopted. My pressurization tool showed the team's 10% rule of thumb left a 40,000 sq ft office under-pressurized."
+    anchor: overview
 ---
 
 ## Overview

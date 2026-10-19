@@ -24,6 +24,10 @@ gallery:
       - { src: ./08_sketch_phone.png, caption: Phone sketch }
 documents:
   - { title: 2D CAD Drawings, file: 2d-cad-drawings.pdf }
+categories:
+  - category: design
+    order: 6
+    blurb: "Fully dimensioned AutoCAD drawings, including a pipe bracket with section view A-A, plus freehand isometric and missing-view sketches. I later used AutoCAD on HVAC layouts at WSP."
 ---
 
 AutoCAD drawings, each fully dimensioned and annotated for plotting:

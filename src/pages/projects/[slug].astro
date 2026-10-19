@@ -8,6 +8,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Gallery from '../../components/Gallery.astro';
 import VideoPlayer from '../../components/VideoPlayer.astro';
 import Documents from '../../components/Documents.astro';
+import SkillChips from '../../components/SkillChips.astro';
+import { pageCategories } from '../../lib/category-cards';
 import { url } from '../../lib/url';
 
 export async function getStaticPaths() {
@@ -31,6 +33,7 @@ const media = (file: string) => `/media/${entry.id}/${file}`;
       <p class="eyebrow">{[d.course, d.date].filter(Boolean).join(' · ')}</p>
       <h1>{d.title}</h1>
       {d.status === 'in progress' && <p><span class="status">In progress</span></p>}
+      <div class="skill-tags"><SkillChips small label="Skill areas" only={pageCategories(d)} /></div>
       <p class="lead">{d.summary}</p>
     </header>
 
@@ -99,4 +102,6 @@ const media = (file: string) => `/media/${entry.id}/${file}`;
   .pager .eyebrow { margin: 0; }
   .pager .next { text-align: right; align-items: flex-end; }
   .pager a:hover { color: var(--ink-soft); text-decoration: underline; }
+  .skill-tags { margin-top: 14px; }
+  .skill-tags:empty { display: none; }
 </style>

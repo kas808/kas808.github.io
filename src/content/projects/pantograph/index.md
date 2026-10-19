@@ -32,9 +32,20 @@ documents:
   - { title: Pantograph Design Report, file: pantograph-design-report.pdf, embed: true }
   - { title: Pantograph Slides, file: pantograph-slides.pdf }
   - { title: Bar Drawing, file: bar-drawing.pdf }
+categories:
+  - category: design
+    order: 3
+    blurb: "Laid out a 2x linkage in SolidWorks, tested it with a cardboard prototype, and drew the bars with GD&T true position callouts and a floating-fastener tolerance analysis."
+    anchor: design-and-build
+  - category: manufacturing
+    order: 1
+    blurb: "Cut the aluminum bars on a horizontal bandsaw and drilled the pivot holes on the mill using the digital readout. The finished linkage drew at 1.98x to 2.0x."
+    anchor: design-and-build
 ---
 
 **Goal:** Design and build a pantograph that repeatably enlarges a drawing by exactly 2.0x, mounts to an optical breadboard, uses at least two materials and three manufacturing processes, and holds a marker that is secure but easy to swap.
+
+<div id="design-and-build" class="anchor"></div>
 
 **Design and build:**
 

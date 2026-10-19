@@ -9,6 +9,13 @@ role: Three-person lab team. Data acquisition setup, testing and data reduction.
 tools: [Arduino, Thermocouples, Data Acquisition, Conduction, Convection, Lab Reports]
 size: small
 order: 13
+categories:
+  - category: thermal
+    order: 2
+    blurb: "Adding a fin array dropped a heated block from 137.5 to 89.0 °C at 6 W, and forced air raised the convection coefficient from about 12.8 to 48.3 W/m²K. On a cylinder in cross-flow, thermal resistance fell from 3.6 to 2.9 K/W as air speed rose."
+  - category: testing
+    order: 2
+    blurb: "Built an Arduino UNO setup with MAX6675 thermocouples to log steady-state temperatures, then reduced the data to convection coefficients and thermal resistance at three air speeds."
 ---
 
 Built an Arduino UNO data-acquisition setup with MAX6675 thermocouples to log steady-state temperatures, then reduced the data to convection coefficients and thermal resistance.

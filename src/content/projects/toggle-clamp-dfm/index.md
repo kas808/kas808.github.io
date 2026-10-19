@@ -34,6 +34,15 @@ documents:
   - { title: Left Support, Machined Drawing, file: left-support-machined-drawing.pdf }
   - { title: Left Support, Sheet Metal Drawing, file: left-support-sheet-metal-drawing.pdf }
   - { title: Left Support, Flat Pattern, file: left-support-flat-pattern.pdf }
+categories:
+  - category: design
+    order: 2
+    blurb: "Modeled a full toggle clamp assembly in SolidWorks with an exploded assembly drawing and BOM, and detailed the interface plate with M8 x 1.25 tapped holes and a tolerance block."
+    anchor: toggle-clamp-assembly
+  - category: manufacturing
+    order: 2
+    blurb: "Redesigned the clamp's left support twice: as a machined aluminum part made in three setups with standard drills, and as 3 mm bent steel with a laser-cut flat pattern."
+    anchor: left-support-design-for-manufacturing-two-ways
 ---
 
 ## Toggle Clamp Assembly

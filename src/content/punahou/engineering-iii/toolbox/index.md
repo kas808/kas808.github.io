@@ -3,6 +3,11 @@ title: "Toolbox"
 section: engineering-iii
 order: 13
 banner: ./images/01.jpg
+categories:
+  - category: manufacturing
+    order: 6
+    blurb: "Waterjet cut each piece from my Rhino layout, welded the box together, and cut and belt-sanded a PVC pipe handle to fit the end holes."
+    anchor: machines
 ---
 
 ![Toolbox](./images/02.jpg)

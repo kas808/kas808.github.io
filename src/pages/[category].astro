@@ -1,0 +1,73 @@
+---
+// One page per skill category, like /thermal/. The categories live in
+// src/lib/categories.ts and the cards come from each project's `categories:` list.
+import { getImage } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import SkillChips from '../components/SkillChips.astro';
+import BackHome from '../components/BackHome.astro';
+import { categories, type Category } from '../lib/categories';
+import { categoryCards } from '../lib/category-cards';
+import { url } from '../lib/url';
+
+export function getStaticPaths() {
+  return categories.map((c) => ({ params: { category: c.slug }, props: { cat: c } }));
+}
+
+const { cat } = Astro.props as { cat: Category };
+const cards = await categoryCards(cat.slug);
+
+// Link preview image (1200 x 630) cropped from a project photo
+const shareCard = (cat.shareFrom && cards.find((c) => c.href.startsWith(cat.shareFrom!) && c.cover)) || cards.find((c) => c.cover);
+const share = shareCard?.cover
+  ? await getImage({ src: shareCard.cover, width: 1200, height: 630, fit: 'cover', position: 'attention', format: 'jpg', quality: 80 })
+  : undefined;
+---
+
+<BaseLayout title={`${cat.name} Projects`} description={cat.description} image={share?.src}>
+  <header class="page-head wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href={url('/projects/')}>Projects</a> <span>/</span> {cat.name}</nav>
+    <p class="eyebrow">Skill area</p>
+    <h1>{cat.name}</h1>
+    <p class="lead">{cat.intro}</p>
+    <ul class="tags skills" aria-label="Skills and tools">
+      {cat.skills.map((s) => <li>{s}</li>)}
+    </ul>
+  </header>
+
+  <section class="wrap">
+    <div class="cat-grid">
+      {cards.map((c) => (
+        <ProjectCard
+          href={c.href}
+          title={c.title}
+          summary={c.blurb}
+          meta={c.meta}
+          cover={c.cover}
+          coverAlt={c.coverAlt}
+          coverPosition={c.coverPosition}
+          status={c.status}
+          label={c.label}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="section wrap more">
+    <SkillChips label="Other skill areas" current={cat.slug} />
+    <div class="end-row">
+      <a class="btn btn-ghost" href={url('/projects/')}>All projects</a>
+    </div>
+    <BackHome />
+  </section>
+</BaseLayout>
+
+<style>
+  .crumbs { font-size: 0.85rem; color: var(--steel); margin-bottom: 18px; }
+  .crumbs a { color: var(--steel); }
+  .skills { margin-top: 22px; max-width: 900px; }
+  .skills li { font-size: 0.8rem; }
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 24px; }
+  .more { padding-top: clamp(48px, 7vw, 80px); }
+  .end-row { display: flex; justify-content: center; margin-top: 36px; }
+</style>

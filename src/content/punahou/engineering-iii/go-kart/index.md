@@ -3,6 +3,19 @@ title: "Go-Kart"
 section: engineering-iii
 order: 11
 banner: ./images/01.jpg
+categories:
+  - category: design
+    order: 5
+    blurb: "Designed the axle mount bearing, brake disc mount, sprocket mount and spacers for the drive, plus the steering wheel cap body, which took three prints to get right."
+    anchor: drive
+    cover: ../../../../assets/featured/go-kart.jpg
+    coverAlt: "Go-kart frame with steering and drive system during assembly"
+  - category: manufacturing
+    order: 4
+    blurb: "Built an aluminum rectangular tube chassis, worked around brackets with off-set holes that forced us to redo bars, and made and welded our own turning mechanism when the kit parts were too long."
+    anchor: problems
+    cover: ../../../../assets/featured/go-kart.jpg
+    coverAlt: "Go-kart frame with steering and drive system during assembly"
 ---
 
 ![Go-Kart](./images/02.png)

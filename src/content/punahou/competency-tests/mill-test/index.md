@@ -3,6 +3,11 @@ title: "Mill Test"
 section: competency-tests
 order: 22
 banner: ./images/01.jpg
+categories:
+  - category: manufacturing
+    order: 7
+    title: "Mill & Lathe Tests"
+    blurb: "Machined two test pieces to set measurements and tolerances: a lathe piece turned down from hex stock that met all of its size requirements, and a mill piece with a dropped-down section and drilled, tapped holes."
 ---
 
 ![Mill Test](./images/02.jpg)

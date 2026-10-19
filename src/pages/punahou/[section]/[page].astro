@@ -7,6 +7,8 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import YouTube from '../../../components/YouTube.astro';
 import { url } from '../../../lib/url';
 import { punahouSections } from '../../../lib/site';
+import SkillChips from '../../../components/SkillChips.astro';
+import { pageCategories } from '../../../lib/category-cards';
 
 export async function getStaticPaths() {
   const pages = (await getCollection('punahou')).sort((a, b) => a.data.order - b.data.order);
@@ -34,6 +36,7 @@ const sectionName = punahouSections.find((s) => s.id === d.section)?.name ?? '';
             <a href={url('/punahou/')}>Punahou School</a> / <a href={url(`/punahou/#${d.section}`)}>{sectionName}</a>
           </nav>
           <h1>{d.title}</h1>
+          <div class="skill-tags"><SkillChips small onDark label="Skill areas" only={pageCategories(d)} /></div>
         </div>
       </header>
     ) : (
@@ -42,6 +45,7 @@ const sectionName = punahouSections.find((s) => s.id === d.section)?.name ?? '';
           <a href={url('/punahou/')}>Punahou School</a> / <a href={url(`/punahou/#${d.section}`)}>{sectionName}</a>
         </nav>
         <h1>{d.title}</h1>
+        <div class="skill-tags"><SkillChips small label="Skill areas" only={pageCategories(d)} /></div>
       </header>
     )}
 
@@ -92,4 +96,6 @@ const sectionName = punahouSections.find((s) => s.id === d.section)?.name ?? '';
   .pager a { display: flex; flex-direction: column; gap: 4px; text-decoration: none; font-weight: 700; font-size: 1.1rem; color: var(--ink); }
   .pager .eyebrow { margin: 0; }
   .pager .next { text-align: right; align-items: flex-end; }
+  .skill-tags { margin-top: 14px; }
+  .skill-tags:empty { display: none; }
 </style>

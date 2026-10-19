@@ -5,6 +5,14 @@ order: 8
 banner: ./images/01.jpg
 youtube:
   - { url: "https://www.youtube.com/watch?v=Y-uGxxRSAfo", title: "Solar Charger video" }
+categories:
+  - category: manufacturing
+    order: 5
+    title: "Lanakila Express"
+    blurb: "Prototyped the solar charger's leg bracket to check its sizing and hole placement, then used it as a layout to drill the legs. Also helped make the train's couplings on the horizontal bandsaw and mill."
+    anchor: prototyping
+    cover: ../../../../assets/featured/lanakila-express.jpg
+    coverAlt: "The Lanakila Express train carrying riders at the Punahou carnival"
 ---
 
 ![Solar Charger](./images/02.jpg)

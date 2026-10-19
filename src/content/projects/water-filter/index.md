@@ -28,11 +28,18 @@ gallery:
 documents:
   - { title: Water Filter Technical Memo, file: water-filter-technical-memo.pdf, embed: true }
   - { title: Water Filter Presentation, file: water-filter-presentation.pdf }
+categories:
+  - category: fluids
+    order: 4
+    blurb: "Compared results from all ten teams and redesigned around a sand-heavy bed, cutting average turbidity from 86 to 34.1 NTU, about 60% lower."
+    anchor: iteration-2
 ---
 
 **Goal:** Design a gravity filter from anthracite, sand and gravel that turns 1.2 L of dirty water into at least 1 L of clean water, aiming for the EPA's 5 NTU turbidity limit.
 
 **Iteration 1:** Based on full-scale treatment plants (mostly anthracite): 9 in anthracite, 5 in #20 sand, 2 in gravel in a 21 in column. We picked the sand grain size using Kawamura's equation. Average turbidity: 86 NTU.
+
+<div id="iteration-2" class="anchor"></div>
 
 **Iteration 2:** We compared our results against all ten teams in the class and saw that sand-heavy filters did better. We switched to 3 in anthracite, 5 in #20 sand, 8 in finer #30 sand and 2 in gravel. Average turbidity: 34.1 NTU, about 60% lower than the first design. Less anthracite also meant less anthracite dust in the filtered water.
 

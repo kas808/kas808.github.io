@@ -22,6 +22,10 @@ gallery:
       - { src: ./04_oscilloscope_capture_3.jpg, caption: Oscilloscope capture }
 documents:
   - { title: Piano Technical Memo, file: piano-technical-memo.pdf, embed: true }
+categories:
+  - category: controls
+    order: 3
+    blurb: "Built an 8-key breadboard piano with an LM555 timer in astable mode, solving the frequency equation for each note's resistor and checking every note from C4 to C5 on a multimeter and oscilloscope."
 ---
 
 Built an 8-key electronic piano on a breadboard, using an LM555 timer in astable mode to play one octave, C4 to C5 (261.63 to 523.25 Hz), at 5 V.

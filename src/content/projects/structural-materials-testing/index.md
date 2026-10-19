@@ -13,6 +13,10 @@ role: Lab coursework.
 tools: [Rotating-Beam Fatigue Testing, S-N Curves, Buckling Testing, Euler Buckling, ASTM E8 Tensile Testing, Instron 4505]
 size: small
 order: 16
+categories:
+  - category: testing
+    order: 1
+    blurb: "Built S-N curves for 7075-T6 aluminum and 4140 steel from rotating-beam fatigue tests at 6,000 rpm, buckling-tested 6061-T6 tubes, and ran ASTM E8 tensile tests on an Instron 4505 within about 2% of published yield."
 ---
 
 - Generated S-N curves for 7075-T6 aluminum and 4140 steel from rotating-beam fatigue tests at 6,000 rpm (26 to 80 ksi). The steel showed an endurance limit that the aluminum lacked.

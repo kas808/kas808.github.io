@@ -32,6 +32,23 @@ gallery:
       - { src: ./03_river_crossing.jpg, caption: The final outdoor run across the "river" }
       - { src: ./01_river_crossing_wide.jpg, caption: The robot partway across the rope }
       - { src: ./15_speed_hand_calcs.jpg, caption: Hand calculations for the predicted climbing speed (0.134 ft/s) }
+categories:
+  - category: design
+    order: 1
+    blurb: "After the top-scoring two-arm concept (40/50) failed on the rope, we redesigned it as a constrained screw slider so the hooks follow the same path every stroke. Checked the printed linkage against the CAD with calipers."
+    anchor: redesign-screw-slider
+  - category: manufacturing
+    order: 3
+    blurb: "Laser-cut a finger-jointed plywood chassis and 3D printed the gears, shafts, hooks and slider in PLA, so we could change the CAD and reprint parts after each test."
+    anchor: wood--3d-printed-build
+  - category: testing
+    order: 4
+    blurb: "Tested each iteration on a practice rope in the lab, then crossed 38 ft outdoors in 5.5 minutes at 0.115 ft/s, about 86% of the predicted 0.134 ft/s."
+    anchor: testing--results
+  - category: controls
+    order: 2
+    blurb: "Built and tested the 3-stage spur gear drivetrain (64T/32T/16T) that drives the hooks, and ran a motion analysis on the four-bar linkage to trace the hook path and predict climbing speed."
+    anchor: original-arm-design
 ---
 
 As a team of four (Mackenzie, Yasmine, Marianne, and I), we designed and built a motorized robot that climbs and travels along a rope to carry itself across a "river." The project took us from concept sketches and a weighted design matrix through CAD, motion analysis, fabrication, and several rounds of testing and redesign. Our final robot combines a laser-cut wooden chassis, a 3D-printed gear train, and a constrained screw-slider drive that grips and pulls the robot along the rope.

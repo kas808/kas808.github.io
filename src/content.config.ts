@@ -1,10 +1,33 @@
 // This file describes the fields each content file can have.
 // If you make a typo in a project file (like a missing title), the build
 // will stop and tell you exactly which file and field to fix.
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, z, type SchemaContext } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { categorySlugs } from './lib/categories';
 
 const folderId = ({ entry }: { entry: string }) => entry.replace(/\/index\.md$/, '');
+
+// Skill categories (see src/lib/categories.ts). Projects, Punahou pages and
+// experience entries all use the same two fields.
+const categoryFields = (image: SchemaContext['image']) => ({
+  categories: z
+    .array(
+      z.object({
+        // must be one of: aerodynamics, thermal, fluids, design, manufacturing, testing, controls
+        category: z.enum(categorySlugs),
+        order: z.number(), // place on that category page, lower shows first
+        blurb: z.string(), // 1 to 2 sentences for the card, written for that category
+        anchor: z.string().optional(), // heading id the card opens the page at
+        title: z.string().optional(), // card title, if different from the page title
+        cover: image().optional(), // card photo, if different from the page's own
+        coverAlt: z.string().optional(),
+      }),
+    )
+    .default([]),
+  // true = leave this page off every category page (and its tags) for now.
+  // Delete the line to put it back.
+  hideFromCategories: z.boolean().default(false),
+});
 
 const projects = defineCollection({
   loader: glob({ pattern: '*/index.md', base: './src/content/projects', generateId: folderId }),
@@ -43,6 +66,7 @@ const projects = defineCollection({
       documents: z
         .array(z.object({ title: z.string(), file: z.string(), embed: z.boolean().default(false) }))
         .default([]),
+      ...categoryFields(image),
     }),
 });
 
@@ -65,6 +89,7 @@ const punahou = defineCollection({
       cover: image().optional(), // card photo; falls back to the banner
       youtube: z.array(z.object({ url: z.string(), title: z.string() })).default([]),
       links: z.array(z.object({ title: z.string(), url: z.string() })).default([]),
+      ...categoryFields(image),
     }),
 });
 
@@ -89,6 +114,7 @@ const experience = defineCollection({
       documents: z
         .array(z.object({ title: z.string(), file: z.string(), embed: z.boolean().default(false) }))
         .default([]),
+      ...categoryFields(image),
     }),
 });
 

@@ -8,6 +8,10 @@ role: Lab coursework. Wrote the encoder code shown below.
 tools: [Arduino (C++), Interrupts, Quadrature Encoders, Sensor Calibration, MATLAB/Simulink, Root Locus, PI/PID Control]
 size: small
 order: 14
+categories:
+  - category: controls
+    order: 1
+    blurb: "Wrote interrupt-based Arduino code to read a quadrature encoder and convert counts to position and velocity, and tuned PI and PID controllers in MATLAB/Simulink with root locus."
 ---
 
 - Wrote interrupt-based Arduino code that reads both channels of a quadrature encoder (90 x 64 PPR) and converts the counts to angular position and velocity in degrees

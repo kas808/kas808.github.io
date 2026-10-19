@@ -20,9 +20,20 @@ gallery:
 documents:
   - { title: Preliminary Design Review Report, file: sae-aero-pdr-report.pdf, embed: true }
   - { title: SRR Presentation, file: sae-aero-srr-slides.pdf }
+categories:
+  - category: aerodynamics
+    order: 1
+    blurb: "As Head of Aero and Propulsion, I ran the two- vs. four-motor trade study for the 2027 Regular Class. Two motors won, with larger 12 in props, less weight and simpler wiring, and I laid out the motor, ESC and battery wiring."
+    anchor: so-far
+  - category: design
+    order: 4
+    blurb: "Sized the cargo bay around the 2 L bottles, with Velcro straps and a rear door so bottles can shift to balance the center of gravity and swap within 60 seconds. Also ran the landing gear trade study."
+    anchor: so-far
 ---
 
 **Goal:** Design, build and fly a radio-controlled cargo plane for the 2027 SAE Aero Design Regular Class competition in Van Nuys, CA. It has to carry 2 L bottles inside the fuselage, use two or four electric motors, stay under 55 lb with a 72 to 96 in wingspan and a body under 120 in, and run on a 4-cell, 2200 mAh LiPo battery.
+
+<div id="so-far" class="anchor"></div>
 
 **So far:** We turned the rulebook into Level One Requirements and measurable specs, then compared concepts for the Preliminary Design Review:
 

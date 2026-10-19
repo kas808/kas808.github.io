@@ -28,6 +28,11 @@ gallery:
       - { src: ./04_pump_curve_selection.png, caption: "Pump selection: single-stage centrifugal, 1750 RPM, 9 in impeller, about 80 ft at 320 gpm. Pump curve image: \"Typical Single Stage Pump Curve,\" Pumps & Systems." }
 documents:
   - { title: Hydraulic System Design Report, file: hydraulic-system-report.pdf }
+categories:
+  - category: fluids
+    order: 1
+    blurb: "Built a MATLAB solver for a branched school water network using Colebrook-White friction factors and major and minor losses. It sized the pump at 23.4 m of head and split 320.65 gpm across three outlets."
+    anchor: analysis
 ---
 
 **Goal:** Design the potable water system for a new school building in rural Waslala, Nicaragua, running from the city supply line to three outlets at 5 m, 8 m and 12 m elevation. Check whether the city line has enough pressure, size a pump if it doesn't, and pick pipe and fittings that will last with little maintenance.
@@ -40,6 +45,8 @@ documents:
 - A gate valve isolates the main, and each branch has a globe valve
 - PVC with flanged fittings: cheap, resists corrosion, light enough to install by hand, and long-lasting, which matters for a rural school with limited maintenance
 - Modeled with the roughness of used copper (2 µm) instead of smooth PVC to account for sediment buildup over time, so the pump estimate carries some margin
+
+<div id="analysis" class="anchor"></div>
 
 **Analysis:** We built and checked a MATLAB solver for the branched network. It applies conservation of mass at each tee and the energy (Bernoulli) equation along every path from the inlet to each outlet, including major losses (f L/D V^2/2g) and minor losses (K V^2/2g) for the tees, elbows and valves. It gets the friction factor from the Colebrook-White equation, solved iteratively with fzero as the Reynolds number changes, then returns the pump head and the flow to each branch and checks continuity.
 

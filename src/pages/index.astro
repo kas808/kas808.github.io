@@ -10,37 +10,62 @@ import headshot from '../assets/headshot.jpg';
 import sketchA from '../assets/sketches/wrench.png';
 import sketchB from '../assets/sketches/bracket.png';
 import sketchC from '../assets/sketches/support.png';
+// Hero photos (crossfade with a slow zoom). Picked for sharpness at full width.
+import heroPantograph from '../assets/hero/pantograph.jpg';
+import heroRube from '../assets/hero/rube-goldberg.jpg';
+import heroKart from '../assets/hero/go-kart.jpg';
 import wspTeam from '../content/experience/wsp/00_wsp_team.jpg';
 import wspSite from '../content/experience/wsp/ulana_03.jpg';
 import wspPlan from '../content/experience/wsp/spa_plan_04.jpg';
 import wspExcel from '../content/experience/wsp/building-pressurization-excel-sheet-walk-through.jpg';
+
+const heroSlides = [
+  { src: heroPantograph, alt: '2x magnifying pantograph on an optical breadboard', caption: '2x Magnifying Pantograph', position: '50% 55%' },
+  { src: heroRube, alt: 'Rube Goldberg machine on a plywood board', caption: 'Rube Goldberg Machine', position: '50% 45%' },
+  { src: heroKart, alt: 'Assembled go-kart frame with steering and drive system', caption: 'Go-Kart, Punahou School', position: '50% 50%' },
+];
 ---
 
 <BaseLayout>
-  <section class="hero wrap">
-    <div class="hero-photo reveal">
-      <Image src={headshot} alt="Portrait of Kasin Ito-Sato" widths={[360, 560, 800]} sizes="(max-width: 860px) 80vw, 40vw" loading="eager" fetchpriority="high" />
+  <section class="hero" aria-label="Introduction">
+    <div class="slides" aria-hidden="true">
+      {heroSlides.map((h, i) => (
+        <div class="slide-frame" style={`--i: ${i}; --pos: ${h.position}`}>
+          <Image src={h.src} alt="" widths={[900, 1400, 2000, 2400]} sizes="100vw" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} />
+          <span class="slide-caption">{h.caption}</span>
+        </div>
+      ))}
     </div>
-    <div class="hero-text reveal">
+    <div class="shade" aria-hidden="true"></div>
+    <div class="wrap hero-content">
+      <h1>Kasin Ito-Sato.</h1>
+      <p class="role">MECHANICAL ENGINEER</p>
+      <p class="focus">MECHANICAL DESIGN · THERMAL & FLOW ANALYSIS · ASSEMBLY & TEST · GD&T</p>
+      <div class="hero-btns">
+        <a class="btn" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" href={url('/projects/')}>Projects</a>
+        <a class="btn" href={url('/resume/')}>Resume</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="about wrap" aria-labelledby="about-title">
+    <div class="about-photo reveal">
+      <Image src={headshot} alt="Portrait of Kasin Ito-Sato" widths={[360, 560, 800]} sizes="(max-width: 860px) 80vw, 40vw" />
+    </div>
+    <div class="about-text reveal">
       <div class="sketches" aria-hidden="true">
         <Image class="sk sk-a" src={sketchA} alt="" width={520} />
         <Image class="sk sk-b" src={sketchB} alt="" width={460} />
         <Image class="sk sk-c" src={sketchC} alt="" width={300} />
       </div>
-      <h1>Kasin Ito-Sato</h1>
-      <p class="role">MECHANICAL ENGINEER</p>
-      <p class="focus">MECHANICAL DESIGN · THERMAL & FLOW ANALYSIS · ASSEMBLY & TEST · GD&T</p>
+      <h2 id="about-title">About.</h2>
       <p class="lead">
         I'm a mechanical engineering student at Loyola Marymount University, graduating in May 2027. Originally from Oahu,
         now based in Los Angeles. I take parts from CAD to the shop floor, and as an intern at WSP I worked on HVAC design
         and built three Excel analysis tools my team adopted. Right now I'm on our team for the 2027 SAE Aero Design Regular
         Class competition.
       </p>
-      <div class="hero-btns">
-        <a class="btn" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
-        <a class="btn" href={url('/projects/')}>Projects</a>
-        <a class="btn" href={url('/resume/')}>Resume</a>
-      </div>
     </div>
   </section>
 
@@ -115,43 +140,99 @@ import wspExcel from '../content/experience/wsp/building-pressurization-excel-sh
 </BaseLayout>
 
 <style>
+  /* Full-width hero: photos crossfade with a slow zoom under a dark gradient */
   .hero {
+    position: relative;
+    min-height: clamp(520px, 88vh, 860px);
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    background: var(--ink);
+    color: #fff;
+  }
+  .slides { position: absolute; inset: 0; }
+  .slide-frame {
+    position: absolute; inset: 0;
+    opacity: 0;
+    animation: heroFade 24s linear infinite;
+    animation-delay: calc(var(--i) * 8s - 2s);
+  }
+  .slide-frame :global(img) {
+    width: 100%; height: 100%; object-fit: cover; object-position: var(--pos);
+    animation: heroZoom 24s linear infinite;
+    animation-delay: calc(var(--i) * 8s - 2s);
+  }
+  /* Each photo: fades in over 2s, holds about 6s, fades out over 2s, then waits its turn */
+  @keyframes heroFade {
+    0% { opacity: 0; }
+    8.3% { opacity: 1; }
+    33.3% { opacity: 1; }
+    41.6% { opacity: 0; }
+    100% { opacity: 0; }
+  }
+  @keyframes heroZoom {
+    0% { transform: scale(1); }
+    41.6% { transform: scale(1.08); }
+    100% { transform: scale(1.08); }
+  }
+  .slide-caption {
+    position: absolute; right: clamp(16px, 4vw, 48px); bottom: clamp(16px, 3vw, 32px); z-index: 2;
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255, 255, 255, 0.75);
+  }
+  .shade {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, rgba(20, 29, 40, 0.9) 0%, rgba(20, 29, 40, 0.68) 45%, rgba(20, 29, 40, 0.25) 100%),
+      linear-gradient(0deg, rgba(20, 29, 40, 0.75) 0%, rgba(20, 29, 40, 0) 55%);
+  }
+  .hero-content { position: relative; z-index: 3; padding-block: clamp(80px, 12vw, 140px) clamp(56px, 8vw, 96px); }
+  .hero h1 {
+    color: #fff;
+    font-size: clamp(2.8rem, 7vw, 5.4rem);
+    font-weight: 800;
+    letter-spacing: 0.005em;
+    margin-bottom: 0.2em;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
+  }
+  .role { margin: 0 0 1em; font-size: clamp(0.85rem, 1.4vw, 1rem); font-weight: 600; letter-spacing: 0.24em; color: #fff; }
+  .focus { font-size: 0.74rem; font-weight: 600; letter-spacing: 0.1em; text-wrap: balance; text-transform: uppercase; color: #c9d0d7; margin-bottom: 2em; }
+  .hero-btns { display: flex; flex-wrap: wrap; gap: 12px; }
+  .hero-btns .btn { min-width: 180px; background: #fff; color: var(--ink); border-color: #fff; }
+  .hero-btns .btn:hover { background: var(--accent); border-color: var(--accent); color: var(--ink); }
+
+  /* Reduced motion: one still photo, no crossfade or zoom */
+  @media (prefers-reduced-motion: reduce) {
+    .slide-frame, .slide-frame :global(img) { animation: none !important; }
+    .slide-frame:first-child { opacity: 1; }
+  }
+
+  /* About section: headshot on one side, text on the other */
+  .about {
     display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     gap: clamp(32px, 6vw, 88px);
     align-items: center;
-    padding-block: clamp(110px, 11vw, 160px) clamp(40px, 8vw, 110px);
+    padding-block: clamp(72px, 10vw, 130px);
     overflow-x: clip;
   }
-  .hero-photo :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0%; border-radius: 4px; }
-  .hero-text { position: relative; text-align: left; padding: 24px 0; }
-  .hero-text h1 {
-    position: relative; z-index: 1;
-    font-size: clamp(2.2rem, 4.6vw, 3.6rem);
-    font-weight: 700;
-    letter-spacing: 0.01em;
-    margin-bottom: 0.25em;
-  }
-  .role { position: relative; z-index: 1; margin: 0 0 1.1em; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.22em; color: var(--ink); }
-  .hero-text .lead { position: relative; z-index: 1; max-width: 44ch; font-size: 1.05rem; }
-  .hero-btns { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 28px; }
-  .hero-btns .btn { min-width: 220px; }
+  .about-photo :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0%; border-radius: 4px; }
+  .about-text { position: relative; padding: 24px 0; }
+  .about-text h2 { position: relative; z-index: 1; font-size: clamp(2rem, 4vw, 3rem); }
+  .about-text .lead { position: relative; z-index: 1; max-width: 50ch; font-size: 1.08rem; }
 
-  /* Faint line drawings, kept out at the edges and never behind the headline */
+  /* Faint line drawings, kept out at the edges and never behind the heading */
   .sketches { position: absolute; inset: 0; pointer-events: none; }
   .sk { position: absolute; height: auto; opacity: 0.12; }
-  .sk-a { width: 250px; bottom: calc(100% + 4px); right: -70px; }   /* above the headline, top right */
-  .sk-b { width: 210px; bottom: 0; right: -90px; }                   /* beside the buttons, bottom right */
-  .sk-c { width: 120px; top: 54%; right: -110px; }                   /* out at the right edge */
-  @media (max-width: 1240px) { .sk-c { display: none; } .sk-a { right: -20px; } .sk-b { right: -30px; width: 170px; } }
+  .sk-a { width: 250px; bottom: calc(100% + 4px); right: -70px; }
+  .sk-b { width: 210px; top: calc(100% + 4px); right: -40px; }
+  .sk-c { width: 120px; top: 30%; right: -150px; }
+  @media (max-width: 1240px) { .sk-c { display: none; } .sk-a { right: -20px; } .sk-b { right: -10px; width: 170px; } }
 
   @media (max-width: 860px) {
-    .hero { grid-template-columns: 1fr; padding-top: 40px; }
-    .hero-photo { max-width: 420px; margin-inline: auto; width: 100%; }
+    .about { grid-template-columns: 1fr; padding-top: 56px; }
+    .about-photo { max-width: 420px; margin-inline: auto; width: 100%; }
     .sketches { display: none; }
   }
-
-  .focus { position: relative; z-index: 1; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-wrap: balance; text-transform: uppercase; color: var(--steel); margin-bottom: 1.4em; }
 
   .section-tight { padding-block: clamp(40px, 6vw, 72px) clamp(56px, 8vw, 96px); background: var(--white); border-block: 1px solid var(--mist); }
   .showcase h2 { margin-bottom: clamp(24px, 3vw, 36px); }

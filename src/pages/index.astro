@@ -10,9 +10,13 @@ import headshot from '../assets/headshot.jpg';
 import sketchA from '../assets/sketches/wrench.png';
 import sketchB from '../assets/sketches/bracket.png';
 import sketchC from '../assets/sketches/support.png';
-// Hero photos (crossfade with a slow zoom). Picked for sharpness at full width.
+// Hero photos, shown in this order with a quick wipe between them
+import heroLanakila from '../assets/featured/lanakila-express.jpg';
+import heroWsp from '../assets/hero/wsp-site-visit.jpg';
 import heroPantograph from '../assets/hero/pantograph.jpg';
-import heroRube from '../assets/hero/rube-goldberg.jpg';
+import heroShop from '../assets/hero/shop.jpg';
+import heroRope from '../content/projects/rope-climbing-robot/02_robot_on_rope.jpg';
+import heroSloth from '../assets/hero/sloth.jpg';
 import heroKart from '../assets/hero/go-kart.jpg';
 import wspTeam from '../content/experience/wsp/00_wsp_team.jpg';
 import wspSite from '../content/experience/wsp/ulana_03.jpg';
@@ -20,17 +24,21 @@ import wspPlan from '../content/experience/wsp/spa_plan_04.jpg';
 import wspExcel from '../content/experience/wsp/building-pressurization-excel-sheet-walk-through.jpg';
 
 const heroSlides = [
-  { src: heroPantograph, alt: '2x magnifying pantograph on an optical breadboard', caption: '2x Magnifying Pantograph', position: '50% 55%' },
-  { src: heroRube, alt: 'Rube Goldberg machine on a plywood board', caption: 'Rube Goldberg Machine', position: '50% 45%' },
-  { src: heroKart, alt: 'Assembled go-kart frame with steering and drive system', caption: 'Go-Kart, Punahou School', position: '50% 50%' },
+  { src: heroLanakila, caption: 'Lanakila Express, Punahou School', position: '50% 60%' },
+  { src: heroWsp, caption: 'WSP site visit', position: '50% 45%' },
+  { src: heroPantograph, caption: '2x Magnifying Pantograph', position: '50% 55%' },
+  { src: heroShop, caption: 'In the shop', position: '50% 40%' },
+  { src: heroRope, caption: 'Rope Climbing Robot', position: '50% 40%' },
+  { src: heroSloth, caption: 'Waikiki Zootopia sloth toy at the Honolulu Zoo', position: '50% 48%' },
+  { src: heroKart, caption: 'Go-Kart, Punahou School', position: '50% 50%' },
 ];
 ---
 
 <BaseLayout>
   <section class="hero" aria-label="Introduction">
-    <div class="slides" aria-hidden="true">
+    <div class="slides" aria-hidden="true" data-hero>
       {heroSlides.map((h, i) => (
-        <div class="slide-frame" style={`--i: ${i}; --pos: ${h.position}`}>
+        <div class:list={['slide-frame', i === 0 && 'is-active']} style={`--pos: ${h.position}`}>
           <Image src={h.src} alt="" widths={[900, 1400, 2000, 2400]} sizes="100vw" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} />
           <span class="slide-caption">{h.caption}</span>
         </div>
@@ -38,7 +46,7 @@ const heroSlides = [
     </div>
     <div class="shade" aria-hidden="true"></div>
     <div class="wrap hero-content">
-      <h1>Kasin Ito-Sato.</h1>
+      <h1>Kasin Ito-Sato</h1>
       <p class="role">MECHANICAL ENGINEER</p>
       <p class="focus">MECHANICAL DESIGN · THERMAL & FLOW ANALYSIS · ASSEMBLY & TEST · GD&T</p>
       <div class="hero-btns">
@@ -59,13 +67,30 @@ const heroSlides = [
         <Image class="sk sk-b" src={sketchB} alt="" width={460} />
         <Image class="sk sk-c" src={sketchC} alt="" width={300} />
       </div>
-      <h2 id="about-title">About.</h2>
-      <p class="lead">
-        I'm a mechanical engineering student at Loyola Marymount University, graduating in May 2027. Originally from Oahu,
-        now based in Los Angeles. I take parts from CAD to the shop floor, and as an intern at WSP I worked on HVAC design
-        and built three Excel analysis tools my team adopted. Right now I'm on our team for the 2027 SAE Aero Design Regular
-        Class competition.
-      </p>
+      <h2 id="about-title">About</h2>
+      <div class="about-copy">
+        <p>
+          I grew up on Oahu and went to Punahou School, where I spent most of my free time in the engineering shop. That's
+          where I learned to machine, weld, and wire, building things like a go-kart and a solar charger. For my senior
+          capstone, I designed an automated sand and trash filter. I also helped teach younger students as a junior robotics TA.
+        </p>
+        <p>
+          Currently I'm a fourth-year mechanical engineering student at Loyola Marymount University, graduating in May 2027.
+          At LMU, I've designed and machined a 2.0x pantograph accurate to within 1%, built a rope-climbing robot, and run
+          heat transfer and flow experiments in the lab. Right now I'm on our team for the 2027 SAE Aero Design Regular Class
+          competition.
+        </p>
+        <p>
+          At WSP, I interned in HVAC and plumbing design for commercial and residential projects. I sized equipment from load
+          calculations in IES-VE and TRACE 700, revised layouts in Revit and AutoCAD, worked with architects and manufacturers,
+          and built three Excel analysis tools my team adopted.
+        </p>
+        <p>
+          What I enjoy most is figuring out why a system behaves the way it does, then building it, testing it, and adjusting
+          until it works. I'm looking for a full-time role where I can keep doing that.
+        </p>
+      </div>
+      <p class="facts-row">LOS ANGELES, CA · FE MECHANICAL EXAM NOV 2026 · ENGLISH & JAPANESE</p>
     </div>
   </section>
 
@@ -151,30 +176,23 @@ const heroSlides = [
     color: #fff;
   }
   .slides { position: absolute; inset: 0; }
+  /* Each new photo wipes in from left to right over the last one, with a thin tan edge */
   .slide-frame {
     position: absolute; inset: 0;
-    opacity: 0;
-    animation: heroFade 24s linear infinite;
-    animation-delay: calc(var(--i) * 8s - 2s);
+    clip-path: inset(0 100% 0 0);
+    z-index: 0;
   }
-  .slide-frame :global(img) {
-    width: 100%; height: 100%; object-fit: cover; object-position: var(--pos);
-    animation: heroZoom 24s linear infinite;
-    animation-delay: calc(var(--i) * 8s - 2s);
+  .slide-frame.is-active { clip-path: inset(0 0 0 0); z-index: 2; }
+  .slide-frame.is-entering { z-index: 3; animation: heroWipe 0.9s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
+  .slide-frame.is-leaving { clip-path: inset(0 0 0 0); z-index: 1; }
+  .slide-frame::after {
+    content: ''; position: absolute; top: 0; bottom: 0; right: 0; width: 3px; background: var(--accent);
+    opacity: 0; z-index: 2;
   }
-  /* Each photo: fades in over 2s, holds about 6s, fades out over 2s, then waits its turn */
-  @keyframes heroFade {
-    0% { opacity: 0; }
-    8.3% { opacity: 1; }
-    33.3% { opacity: 1; }
-    41.6% { opacity: 0; }
-    100% { opacity: 0; }
-  }
-  @keyframes heroZoom {
-    0% { transform: scale(1); }
-    41.6% { transform: scale(1.08); }
-    100% { transform: scale(1.08); }
-  }
+  .slide-frame.is-entering::after { opacity: 1; animation: heroEdge 0.9s linear forwards; }
+  @keyframes heroWipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes heroEdge { 0%, 85% { opacity: 1; } 100% { opacity: 0; } }
+  .slide-frame :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos); }
   .slide-caption {
     position: absolute; right: clamp(16px, 4vw, 48px); bottom: clamp(16px, 3vw, 32px); z-index: 2;
     font-size: 0.68rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255, 255, 255, 0.75);
@@ -200,10 +218,9 @@ const heroSlides = [
   .hero-btns .btn { min-width: 180px; background: #fff; color: var(--ink); border-color: #fff; }
   .hero-btns .btn:hover { background: var(--accent); border-color: var(--accent); color: var(--ink); }
 
-  /* Reduced motion: one still photo, no crossfade or zoom */
+  /* Reduced motion: the script leaves the first photo up and never switches */
   @media (prefers-reduced-motion: reduce) {
-    .slide-frame, .slide-frame :global(img) { animation: none !important; }
-    .slide-frame:first-child { opacity: 1; }
+    .slide-frame.is-entering, .slide-frame.is-entering::after { animation: none !important; }
   }
 
   /* About section: headshot on one side, text on the other */
@@ -211,14 +228,16 @@ const heroSlides = [
     display: grid;
     grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     gap: clamp(32px, 6vw, 88px);
-    align-items: center;
+    align-items: start;
     padding-block: clamp(72px, 10vw, 130px);
     overflow-x: clip;
   }
   .about-photo :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0%; border-radius: 4px; }
   .about-text { position: relative; padding: 24px 0; }
   .about-text h2 { position: relative; z-index: 1; font-size: clamp(2rem, 4vw, 3rem); }
-  .about-text .lead { position: relative; z-index: 1; max-width: 50ch; font-size: 1.08rem; }
+  .about-copy { position: relative; z-index: 1; max-width: 62ch; text-align: left; }
+  .about-copy p { font-size: 1.02rem; margin: 0 0 1em; }
+  .facts-row { position: relative; z-index: 1; margin: 1.6em 0 0; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.1em; text-wrap: balance; text-transform: uppercase; color: var(--steel); }
 
   /* Faint line drawings, kept out at the edges and never behind the heading */
   .sketches { position: absolute; inset: 0; pointer-events: none; }
@@ -266,6 +285,36 @@ const heroSlides = [
 </style>
 
 <script>
+  // Hero: show each photo for about 4.5 seconds, then wipe to the next one.
+  // With "reduce motion" turned on, the first photo stays up and nothing moves.
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (hero && !reduceMotion) {
+    const frames = Array.from(hero.querySelectorAll<HTMLElement>('.slide-frame'));
+    let current = 0;
+    const next = () => {
+      if (document.hidden) return; // don't run while the tab is in the background
+      const prev = frames[current];
+      current = (current + 1) % frames.length;
+      const incoming = frames[current];
+      prev.classList.remove('is-active');
+      prev.classList.add('is-leaving');
+      incoming.classList.add('is-entering');
+      // Finish the swap when the wipe ends (with a timer backup in case the browser skips the event)
+      let finished = false;
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        incoming.classList.remove('is-entering');
+        incoming.classList.add('is-active');
+        prev.classList.remove('is-leaving');
+      };
+      incoming.addEventListener('animationend', (e) => { if (e.target === incoming) finish(); }, { once: true });
+      setTimeout(finish, 1000);
+    };
+    setInterval(next, 5400);
+  }
+
   // Back to top: scroll smoothly (or jump, for people who prefer reduced motion)
   document.querySelector('[data-top]')?.addEventListener('click', (e) => {
     e.preventDefault();

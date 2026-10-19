@@ -1,0 +1,116 @@
+---
+// The Projects menu in the top bar: Browse by skill, LMU (with WSP under it),
+// and Punahou School. It builds itself from your content files, so new
+// projects and categories show up automatically.
+// On phones each group folds open and closed.
+import { getCollection } from 'astro:content';
+import { url } from '../lib/url';
+import { punahouSections } from '../lib/site';
+import { categories } from '../lib/categories';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const punahou = (await getCollection('punahou')).filter((p) => !p.data.hidden).sort((a, b) => a.data.order - b.data.order);
+const groups = punahouSections.map((s) => ({ ...s, pages: punahou.filter((p) => p.data.section === s.id) }));
+---
+
+<div class="pmenu" data-pmenu>
+  <section class="pm-col" data-open="true">
+    <button class="pm-toggle" type="button" aria-expanded="true" aria-controls="pm-skill">Browse by skill</button>
+    <p class="pm-head">Browse by skill</p>
+    <div class="pm-body" id="pm-skill">
+      <ul>
+        {categories.map((c) => <li><a href={url(`/projects/${c.slug}/`)}>{c.name}</a></li>)}
+      </ul>
+      <a class="pm-all" href={url('/projects/')}>All projects <span aria-hidden="true">›</span></a>
+    </div>
+  </section>
+
+  <section class="pm-col" data-open="false">
+    <button class="pm-toggle" type="button" aria-expanded="false" aria-controls="pm-lmu">LMU and WSP</button>
+    <div class="pm-body" id="pm-lmu">
+      <p class="pm-head pm-head-link"><a href={url('/projects/')}>LMU</a></p>
+      <ul>
+        {projects.map((p) => <li><a href={url(`/projects/${p.id}/`)}>{p.data.title}</a></li>)}
+      </ul>
+      <p class="pm-head pm-head-link pm-head-gap"><a href={url('/experience/wsp/')}>WSP Internship</a></p>
+      <ul>
+        <li><a href={url('/experience/wsp/')}>Mechanical Engineering Intern</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="pm-col" data-open="false">
+    <button class="pm-toggle" type="button" aria-expanded="false" aria-controls="pm-punahou">Punahou School</button>
+    <div class="pm-body" id="pm-punahou">
+      <p class="pm-head pm-head-link"><a href={url('/punahou/')}>Punahou School</a></p>
+      {groups.map((g) => (
+        <details class="pm-section">
+          <summary>{g.name}<span class="pm-caret" aria-hidden="true"></span></summary>
+          <ul>
+            <li><a class="pm-overview" href={url(`/punahou/#${g.id}`)}>{g.name} overview</a></li>
+            {g.pages.map((p) => <li><a href={url(`/punahou/${p.id}/`)}>{p.data.title}</a></li>)}
+          </ul>
+        </details>
+      ))}
+    </div>
+  </section>
+</div>
+
+<style>
+  .pmenu { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1.1fr); gap: clamp(28px, 4vw, 56px); }
+  .pmenu ul { list-style: none; margin: 0; padding: 0; }
+  .pmenu li a { display: block; padding: 3px 0; font-size: 0.92rem; color: var(--charcoal); text-decoration: none; }
+  .pmenu li a:hover { color: var(--ink); text-decoration: underline; }
+  .pmenu a:focus-visible, .pmenu summary:focus-visible, .pm-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .pm-head { margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); font-size: 1.15rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); }
+  .pm-head a { color: var(--ink); text-decoration: none; }
+  .pm-head a:hover { text-decoration: underline; }
+  .pm-head-gap { margin-top: 22px; }
+  .pm-all { display: inline-block; margin-top: 14px; font-weight: 700; font-size: 0.9rem; color: var(--ink); text-decoration: none; }
+  .pm-all:hover { text-decoration: underline; }
+
+  .pm-section { border-bottom: 1px solid var(--mist); }
+  .pm-section summary {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; cursor: pointer; list-style: none;
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink);
+  }
+  .pm-section summary::-webkit-details-marker { display: none; }
+  .pm-caret { width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.2s var(--ease); flex: none; }
+  .pm-section[open] .pm-caret { transform: translateY(1px) rotate(-135deg); }
+  .pm-section ul { padding: 0 0 10px 2px; }
+  .pm-overview { font-weight: 600; }
+
+  .pm-toggle { display: none; }
+
+  /* Phones: each group is a fold-out list */
+  @media (max-width: 900px) {
+    .pmenu { grid-template-columns: 1fr; gap: 0; }
+    .pm-col { border-top: 1px solid var(--mist); }
+    .pm-col:first-child { border-top: 0; }
+    .pm-head:not(.pm-head-link) { display: none; }
+    .pm-toggle {
+      display: flex; width: 100%; align-items: center; justify-content: space-between; padding: 14px 0; background: none; border: 0; cursor: pointer;
+      font: 700 0.78rem/1 var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink);
+    }
+    .pm-toggle::after { content: ''; width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.2s var(--ease); }
+    .pm-toggle[aria-expanded='true']::after { transform: translateY(1px) rotate(-135deg); }
+    .pm-col[data-open='false'] .pm-body { display: none; }
+    .pm-body { padding: 0 0 14px 12px; }
+    .pm-head { font-size: 0.85rem; border-bottom-width: 1px; padding-bottom: 6px; }
+    .pmenu li a { padding: 7px 0; }
+  }
+</style>
+
+<script>
+  // Phones: open and close each group
+  document.querySelectorAll<HTMLButtonElement>('[data-pmenu] .pm-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const col = btn.closest<HTMLElement>('.pm-col');
+      if (!col) return;
+      const open = col.dataset.open !== 'true';
+      col.dataset.open = String(open);
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+</script>

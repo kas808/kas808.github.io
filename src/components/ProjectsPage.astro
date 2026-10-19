@@ -1,0 +1,237 @@
+---
+// The Projects page, used at /projects/ and at each skill filter like /projects/thermal/.
+// The order of the regular cards lives in src/lib/projects-page.ts, and the
+// skill categories in src/lib/categories.ts.
+//
+// Every version of the page holds all the filters, so the chips can switch
+// between them without reloading. Each /projects/<skill>/ address is also a
+// real page with that filter already on, so shared links open filtered and
+// still work with JavaScript turned off.
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from './ProjectCard.astro';
+import AllProjectsButton from './AllProjectsButton.astro';
+import BackHome from './BackHome.astro';
+import SkillChips from './SkillChips.astro';
+import { punahouSections } from '../lib/site';
+import { largeCards, smallCards, type CardEntry } from '../lib/projects-page';
+import { categories, categoryBySlug, type CategorySlug } from '../lib/categories';
+import { categoryCards } from '../lib/category-cards';
+import { url } from '../lib/url';
+
+interface Props { active?: CategorySlug }
+const { active } = Astro.props;
+
+const projects = await getCollection('projects');
+const punahou = await getCollection('punahou');
+
+// Turn each entry in the order file into the details a card needs.
+const toCard = (entry: CardEntry) => {
+  if ('project' in entry) {
+    const p = projects.find((x) => x.id === entry.project);
+    if (!p) throw new Error(`projects-page.ts: no project folder named "${entry.project}"`);
+    return {
+      href: `/projects/${p.id}/`,
+      title: p.data.title,
+      summary: p.data.summary,
+      meta: [p.data.course, p.data.date].filter(Boolean).join(' · '),
+      cover: p.data.cover,
+      coverAlt: p.data.coverAlt,
+      coverPosition: p.data.coverPosition,
+      coverFit: undefined,
+      tools: p.data.tools,
+      status: p.data.status,
+      label: p.data.course,
+    };
+  }
+  const page = punahou.find((x) => x.id === entry.punahou);
+  if (!page) throw new Error(`projects-page.ts: no Punahou page named "${entry.punahou}"`);
+  const section = punahouSections.find((s) => s.id === page.data.section)?.name;
+  return {
+    href: entry.href ?? `/punahou/${page.id}/`,
+    title: entry.title ?? page.data.title,
+    summary: entry.summary,
+    meta: ['Punahou School', section, entry.date].filter(Boolean).join(' · '),
+    cover: entry.cover ?? page.data.cover ?? page.data.banner,
+    coverAlt: entry.coverAlt ?? '',
+    coverPosition: entry.coverPosition,
+    coverFit: entry.fit,
+    tools: entry.tools ?? [],
+    status: undefined,
+    label: 'Punahou School',
+  };
+};
+
+const large = largeCards.map(toCard);
+const small = smallCards.map(toCard);
+
+// Cards for every skill filter
+const filters = await Promise.all(categories.map(async (c) => ({ cat: c, cards: await categoryCards(c.slug) })));
+
+// Page title, description and link preview for this version of the page
+const cat = active ? categoryBySlug(active)! : undefined;
+const pageTitle = (name?: string) => (name ? `${name} Projects` : 'Projects');
+const defaultDescription = 'Engineering projects by Kasin Ito-Sato from LMU and Punahou School: design, manufacturing, CAD, analysis and testing.';
+let shareSrc: string | undefined;
+if (cat) {
+  const cards = filters.find((f) => f.cat.slug === cat.slug)!.cards;
+  const pick = (cat.shareFrom && cards.find((c) => c.href.startsWith(cat.shareFrom!) && c.cover)) || cards.find((c) => c.cover);
+  if (pick?.cover) shareSrc = (await getImage({ src: pick.cover, width: 1200, height: 630, fit: 'cover', position: 'attention', format: 'jpg', quality: 80 })).src;
+}
+
+// What the script needs to switch filters without a reload
+const filterInfo = {
+  base: url('/projects/'),
+  siteName: 'Kasin Ito-Sato',
+  all: { title: pageTitle(), description: defaultDescription },
+  filters: Object.fromEntries(
+    filters.map(({ cat: c, cards }) => [c.slug, { name: c.name, title: pageTitle(c.name), description: c.description, count: cards.length }]),
+  ),
+};
+---
+
+<BaseLayout title={pageTitle(cat?.name)} description={cat?.description ?? defaultDescription} image={shareSrc}>
+  <div data-projects-page>
+    <header class="page-head wrap">
+      <p class="eyebrow">LMU and Punahou School</p>
+      <h1>Projects</h1>
+      <p class="lead">Design, manufacturing and testing work from my mechanical engineering classes at LMU and my engineering classes at Punahou School.</p>
+      <div class="filter-row"><SkillChips label="Browse by skill" filter current={active} /></div>
+      <p class="visually-hidden" aria-live="polite" data-announce></p>
+    </header>
+
+    <!-- No filter: the regular page -->
+    <div class="panel" data-panel="" hidden={Boolean(active)}>
+      <section class="wrap">
+        <div class="big-grid">
+          {large.map((c) => (
+            <ProjectCard href={c.href} title={c.title} summary={c.summary} meta={c.meta} cover={c.cover} coverAlt={c.coverAlt}
+              coverPosition={c.coverPosition} coverFit={c.coverFit} tools={c.tools} status={c.status} label={c.label} />
+          ))}
+        </div>
+      </section>
+
+      <section class="section wrap">
+        <h2 class="reveal">Other projects</h2>
+        <div class="small-grid">
+          {small.map((c) => (
+            <ProjectCard href={c.href} title={c.title} summary={c.summary} meta={c.meta} cover={c.cover} coverAlt={c.coverAlt}
+              coverPosition={c.coverPosition} coverFit={c.coverFit} status={c.status} size="small" label={c.label} />
+          ))}
+        </div>
+        <AllProjectsButton />
+        <BackHome />
+      </section>
+    </div>
+
+    <!-- One panel per skill filter -->
+    {filters.map(({ cat: c, cards }) => (
+      <div class="panel" data-panel={c.slug} hidden={active !== c.slug}>
+        <section class="wrap filter-intro" aria-labelledby={`skill-${c.slug}`}>
+          <h2 id={`skill-${c.slug}`}>{c.name}</h2>
+          <p class="filter-lead">{c.intro}</p>
+          <ul class="tags skills" aria-label={`${c.name} skills and tools`}>
+            {c.skills.map((s) => <li>{s}</li>)}
+          </ul>
+        </section>
+        <section class="wrap filter-cards">
+          <div class="cat-grid">
+            {cards.map((k) => (
+              <ProjectCard href={k.href} title={k.title} summary={k.blurb} meta={k.meta} cover={k.cover} coverAlt={k.coverAlt}
+                coverPosition={k.coverPosition} status={k.status} label={k.label} />
+            ))}
+          </div>
+          <BackHome />
+        </section>
+      </div>
+    ))}
+  </div>
+  <script type="application/json" data-filter-info set:html={JSON.stringify(filterInfo)} />
+</BaseLayout>
+
+<style>
+  .filter-row { margin-top: 24px; }
+  .big-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  @media (max-width: 760px) { .big-grid { grid-template-columns: 1fr; } }
+  .small-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-top: 24px; }
+
+  .filter-intro { margin-bottom: 28px; }
+  .filter-intro h2 { margin: 0 0 8px; font-size: clamp(1.5rem, 3vw, 2rem); }
+  .filter-lead { margin: 0; font-size: 1.05rem; max-width: 70ch; }
+  .skills { margin-top: 16px; max-width: 900px; }
+  .skills li { font-size: 0.8rem; }
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 24px; }
+
+  .panel[hidden] { display: none; }
+  .panel.fade-in { animation: panelIn 0.35s var(--ease) both; }
+  @keyframes panelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .panel.fade-in { animation: none; } }
+
+  .filter-cards { padding-bottom: clamp(56px, 9vw, 112px); }
+</style>
+
+<script>
+  // Lets the "Browse by skill" chips filter the page in place, keeps the
+  // address bar in step (/projects/thermal/), and makes Back and Forward work.
+  type Info = {
+    base: string;
+    siteName: string;
+    all: { title: string; description: string };
+    filters: Record<string, { name: string; title: string; description: string; count: number }>;
+  };
+
+  const page = document.querySelector<HTMLElement>('[data-projects-page]');
+  const infoEl = document.querySelector('[data-filter-info]');
+  if (page && infoEl) {
+    const info: Info = JSON.parse(infoEl.textContent ?? '{}');
+    const panels = Array.from(page.querySelectorAll<HTMLElement>('[data-panel]'));
+    const chips = Array.from(page.querySelectorAll<HTMLAnchorElement>('[data-chip]'));
+    const announce = page.querySelector<HTMLElement>('[data-announce]');
+    const description = document.querySelector('meta[name="description"]');
+
+    const slugFromPath = () => {
+      const rest = location.pathname.slice(info.base.length).replace(/\/$/, '');
+      return info.filters[rest] ? rest : '';
+    };
+    const hrefFor = (slug: string) => (slug ? `${info.base}${slug}/` : info.base);
+    let current = slugFromPath();
+
+    const show = (slug: string, fromHistory = false) => {
+      const changed = slug !== current;
+      current = slug;
+      panels.forEach((p) => {
+        const on = p.dataset.panel === slug;
+        p.hidden = !on;
+        p.classList.remove('fade-in');
+        if (on && changed) { void p.offsetWidth; p.classList.add('fade-in'); }
+      });
+      chips.forEach((c) => {
+        const own = c.dataset.chip ?? '';
+        const on = own === slug;
+        if (on) c.setAttribute('aria-current', 'page'); else c.removeAttribute('aria-current');
+        // The selected chip links back to all projects, so clicking it again clears the filter
+        c.href = on && own ? info.base : hrefFor(own);
+      });
+      const f = info.filters[slug];
+      document.title = `${f ? f.title : info.all.title} | ${info.siteName}`;
+      description?.setAttribute('content', f ? f.description : info.all.description);
+      if (announce && changed) {
+        announce.textContent = f ? `Showing ${f.count} ${f.name} projects` : 'Showing all projects';
+      }
+      if (!fromHistory && changed) history.pushState({ skill: slug }, '', hrefFor(slug));
+    };
+
+    chips.forEach((c) =>
+      c.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return; // let "open in new tab" work
+        e.preventDefault();
+        const own = c.dataset.chip ?? '';
+        show(own === current ? '' : own);
+      }),
+    );
+    window.addEventListener('popstate', () => show(slugFromPath(), true));
+    history.replaceState({ skill: current }, '');
+    show(current, true);
+  }
+</script>

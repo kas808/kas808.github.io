@@ -1,6 +1,7 @@
 ---
 import { url } from '../lib/url';
 import { site } from '../lib/site';
+import { categories } from '../lib/categories';
 const year = new Date().getFullYear();
 ---
 
@@ -10,6 +11,12 @@ const year = new Date().getFullYear();
       <p class="name">{site.name}</p>
       <p class="muted-light">Mechanical Engineer</p>
     </div>
+    <nav class="skills" aria-label="Browse by skill">
+      <p class="col-head">Browse by skill</p>
+      <ul>
+        {categories.map((c) => <li><a href={url(`/projects/${c.slug}/`)}>{c.name}</a></li>)}
+      </ul>
+    </nav>
     <ul class="links">
       <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
       <li><a href={site.linkedin} rel="noopener">LinkedIn</a></li>
@@ -27,5 +34,12 @@ const year = new Date().getFullYear();
   .links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 28px; }
   .links a { text-decoration: none; font-size: 0.95rem; }
   .links a:hover { text-decoration: underline; }
+  .skills { flex: 0 1 auto; }
+  .col-head { margin: 0 0 10px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--steel); }
+  .skills ul { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 32px; }
+  .skills li { break-inside: avoid; }
+  .skills a { display: inline-block; padding: 3px 0; font-size: 0.9rem; text-decoration: none; }
+  .skills a:hover { text-decoration: underline; }
+  @media (max-width: 560px) { .skills { flex-basis: 100%; } .skills ul { columns: 1; } }
   .legal { margin-top: 32px; font-size: 0.8rem; color: var(--steel); }
 </style>

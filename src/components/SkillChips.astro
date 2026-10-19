@@ -1,6 +1,10 @@
 ---
-// A row of links to the skill category pages (Projects page, home page,
-// category pages). `only` limits it to some categories, `current` highlights one.
+// A row of links to the skill filters on the Projects page (/projects/<skill>/).
+// Used on the Projects page, the home page and the top of each project page.
+//   filter:  the Projects page version, with a "Show all" chip; the page's script
+//            turns these into in-place toggles (without JavaScript they stay links)
+//   current: the selected skill
+//   only:    limit the row to some categories (the tags on a project page)
 import { url } from '../lib/url';
 import { categories, type Category } from '../lib/categories';
 
@@ -8,20 +12,29 @@ interface Props {
   label?: string;
   only?: Category[];
   current?: string;
+  filter?: boolean;
   small?: boolean; // compact tags for the top of project pages
   onDark?: boolean; // white text, for photo banners
 }
-const { label, only, current, small = false, onDark = false } = Astro.props;
+const { label, only, current, filter = false, small = false, onDark = false } = Astro.props;
 const list = only ?? categories;
+const href = (slug: string) => url(slug ? `/projects/${slug}/` : '/projects/');
+// On the Projects page, the selected chip links back to all projects so a second click clears it
+const chipHref = (slug: string) => (filter && slug && slug === current ? href('') : href(slug));
 ---
 
 {list.length > 0 && (
-  <nav class:list={['chips', { small, 'on-dark': onDark }]} aria-label={label ?? 'Browse by skill'}>
+  <nav class:list={['chips', { small, 'on-dark': onDark, filter }]} aria-label={label ?? 'Browse by skill'}>
     {label && <span class="chips-label">{label}</span>}
     <ul>
+      {filter && (
+        <li>
+          <a href={href('')} data-chip="" aria-current={!current ? 'page' : undefined}>Show all</a>
+        </li>
+      )}
       {list.map((c) => (
         <li>
-          <a href={url(`/${c.slug}/`)} aria-current={c.slug === current ? 'page' : undefined}>{c.name}</a>
+          <a href={chipHref(c.slug)} data-chip={filter ? c.slug : undefined} aria-current={c.slug === current ? 'page' : undefined}>{c.name}</a>
         </li>
       ))}
     </ul>
@@ -33,12 +46,19 @@ const list = only ?? categories;
   .chips ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
   .chips-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--steel); }
   .chips a {
-    display: inline-block; padding: 0.5em 1em; font-size: 0.85rem; font-weight: 600; line-height: 1.2;
+    display: inline-flex; align-items: center; gap: 6px; padding: 0.5em 1em; font-size: 0.85rem; font-weight: 600; line-height: 1.2;
     color: var(--ink); background: var(--white); border: 1px solid var(--mist); border-radius: 999px;
     text-decoration: none; transition: background 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease);
   }
   .chips a:hover { border-color: var(--ink); }
-  .chips a[aria-current='page'] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .chips a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* The selected filter: solid navy with a check mark, so it stands out on a phone too */
+  .filter a[aria-current='page'] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .filter a[aria-current='page']::before {
+    content: ''; width: 9px; height: 5px; margin-top: -3px;
+    border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg);
+  }
 
   .small { gap: 8px 10px; }
   .small ul { gap: 6px; }
@@ -50,5 +70,6 @@ const list = only ?? categories;
 
   @media (max-width: 560px) {
     .chips:not(.small) a { font-size: 0.8rem; }
+    .filter a { padding: 0.6em 1em; } /* bigger tap targets */
   }
 </style>

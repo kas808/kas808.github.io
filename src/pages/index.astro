@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import sharp from 'sharp';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import AllProjectsButton from '../components/AllProjectsButton.astro';
 import FeaturedCarousel from '../components/FeaturedCarousel.astro';
@@ -11,40 +12,69 @@ import sketchA from '../assets/sketches/wrench.png';
 import sketchB from '../assets/sketches/bracket.png';
 import sketchC from '../assets/sketches/support.png';
 // Hero photos, shown in this order with a quick wipe between them
-import heroLanakila from '../assets/featured/lanakila-express.jpg';
+import heroLanakila from '../assets/hero/lanakila-express.jpg';
 import heroWsp from '../assets/hero/wsp-site-visit.jpg';
 import heroPantograph from '../assets/hero/pantograph.jpg';
 import heroShop from '../assets/hero/shop.jpg';
 import heroRope from '../content/projects/rope-climbing-robot/02_robot_on_rope.jpg';
-import heroSloth from '../assets/hero/sloth.jpg';
+import heroRube from '../assets/hero/rube-goldberg.jpg';
 import heroKart from '../assets/hero/go-kart.jpg';
 import wspTeam from '../content/experience/wsp/00_wsp_team.jpg';
 import wspSite from '../content/experience/wsp/ulana_03.jpg';
 import wspPlan from '../content/experience/wsp/spa_plan_04.jpg';
 import wspExcel from '../content/experience/wsp/building-pressurization-excel-sheet-walk-through.jpg';
 
+// Each slide also records the photo file, so the site can measure how bright it is
+// behind the text when it builds. Light photos get navy text, darker ones white text.
+const heroFiles = {
+  lanakila: 'src/assets/hero/lanakila-express.jpg',
+  wsp: 'src/assets/hero/wsp-site-visit.jpg',
+  pantograph: 'src/assets/hero/pantograph.jpg',
+  shop: 'src/assets/hero/shop.jpg',
+  rope: 'src/content/projects/rope-climbing-robot/02_robot_on_rope.jpg',
+  rube: 'src/assets/hero/rube-goldberg.jpg',
+  kart: 'src/assets/hero/go-kart.jpg',
+};
 const heroSlides = [
-  { src: heroLanakila, caption: 'Lanakila Express, Punahou School', position: '50% 60%' },
-  { src: heroWsp, caption: 'WSP site visit', position: '50% 45%' },
-  { src: heroPantograph, caption: '2x Magnifying Pantograph', position: '50% 55%' },
-  { src: heroShop, caption: 'In the shop', position: '50% 40%' },
-  { src: heroRope, caption: 'Rope Climbing Robot', position: '50% 40%' },
-  { src: heroSloth, caption: 'Waikiki Zootopia sloth toy at the Honolulu Zoo', position: '50% 48%' },
-  { src: heroKart, caption: 'Go-Kart, Punahou School', position: '50% 50%' },
+  { src: heroLanakila, file: heroFiles.lanakila, caption: 'Lanakila Express, Punahou School', position: '50% 62%' },
+  { src: heroWsp, file: heroFiles.wsp, caption: 'WSP site visit', position: '50% 45%' },
+  { src: heroPantograph, file: heroFiles.pantograph, caption: '2x Magnifying Pantograph', position: '50% 55%' },
+  { src: heroShop, file: heroFiles.shop, caption: 'In the shop', position: '50% 45%' },
+  { src: heroRope, file: heroFiles.rope, caption: 'Rope Climbing Robot', position: '50% 40%' },
+  { src: heroRube, file: heroFiles.rube, caption: 'Rube Goldberg Machine', position: '50% 45%' },
+  { src: heroKart, file: heroFiles.kart, caption: 'Go-Kart, Punahou School', position: '50% 50%' },
 ];
+
+// Brightness (0 = black, 1 = white) of the area behind the text: the left 60%, middle to lower part.
+// Above LIGHT_PHOTO, the slide uses navy text; otherwise white text.
+const LIGHT_PHOTO = 0.52;
+const tones = await Promise.all(
+  heroSlides.map(async (h) => {
+    const img = sharp(h.file);
+    const { width = 1, height = 1 } = await img.metadata();
+    const viewH = Math.min(height, Math.round(width * 0.55));
+    const top = Math.round((height - viewH) / 2);
+    const stats = await sharp(h.file)
+      .extract({ left: 0, top: top + Math.round(viewH * 0.3), width: Math.round(width * 0.6), height: Math.round(viewH * 0.55) })
+      .greyscale()
+      .stats();
+    return stats.channels[0].mean / 255 > LIGHT_PHOTO ? 'light' : 'dark';
+  }),
+);
 ---
 
 <BaseLayout>
-  <section class="hero" aria-label="Introduction">
+  <section class="hero" aria-label="Introduction" data-tone={tones[0]}>
     <div class="slides" aria-hidden="true" data-hero>
       {heroSlides.map((h, i) => (
-        <div class:list={['slide-frame', i === 0 && 'is-active']} style={`--pos: ${h.position}`}>
+        <div class:list={['slide-frame', i === 0 && 'is-active']} style={`--pos: ${h.position}`} data-tone={tones[i]}>
           <Image src={h.src} alt="" widths={[900, 1400, 2000, 2400]} sizes="100vw" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} />
           <span class="slide-caption">{h.caption}</span>
         </div>
       ))}
     </div>
-    <div class="shade" aria-hidden="true"></div>
+    <div class="shade shade-dark" aria-hidden="true"></div>
+    <div class="shade shade-light" aria-hidden="true"></div>
     <div class="wrap hero-content">
       <h1>Kasin Ito-Sato</h1>
       <p class="role">MECHANICAL ENGINEER</p>
@@ -175,7 +205,7 @@ const heroSlides = [
     background: var(--ink);
     color: #fff;
   }
-  .slides { position: absolute; inset: 0; }
+  .slides { position: absolute; inset: 0; z-index: 0; }
   /* Each new photo wipes in from left to right over the last one, with a thin tan edge */
   .slide-frame {
     position: absolute; inset: 0;
@@ -183,7 +213,7 @@ const heroSlides = [
     z-index: 0;
   }
   .slide-frame.is-active { clip-path: inset(0 0 0 0); z-index: 2; }
-  .slide-frame.is-entering { z-index: 3; animation: heroWipe 0.9s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
+  .slide-frame.is-entering { z-index: 3; animation: heroWipe 0.7s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
   .slide-frame.is-leaving { clip-path: inset(0 0 0 0); z-index: 1; }
   .slide-frame::after {
     content: ''; position: absolute; top: 0; bottom: 0; right: 0; width: 3px; background: var(--accent);
@@ -195,27 +225,46 @@ const heroSlides = [
   .slide-frame :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos); }
   .slide-caption {
     position: absolute; right: clamp(16px, 4vw, 48px); bottom: clamp(16px, 3vw, 32px); z-index: 2;
-    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255, 255, 255, 0.75);
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--hero-cap);
   }
-  .shade {
-    position: absolute; inset: 0;
+  /* Two overlays: dark (for white text) and light (for navy text). The hero's data-tone picks one. */
+  .shade { position: absolute; inset: 0; z-index: 1; transition: opacity 0.6s var(--ease); }
+  .shade-dark {
     background:
-      linear-gradient(90deg, rgba(20, 29, 40, 0.9) 0%, rgba(20, 29, 40, 0.68) 45%, rgba(20, 29, 40, 0.25) 100%),
+      linear-gradient(90deg, rgba(20, 29, 40, 0.9) 0%, rgba(20, 29, 40, 0.7) 45%, rgba(20, 29, 40, 0.28) 100%),
       linear-gradient(0deg, rgba(20, 29, 40, 0.75) 0%, rgba(20, 29, 40, 0) 55%);
   }
+  /* Light photos: a soft warm-gray wash only behind the text (bottom left), fading out well before the middle */
+  .shade-light {
+    opacity: 0;
+    background:
+      radial-gradient(ellipse 80% 72% at 0% 100%, rgba(205, 203, 196, 0.84) 0%, rgba(205, 203, 196, 0.62) 50%, rgba(205, 203, 196, 0) 100%),
+      linear-gradient(90deg, rgba(205, 203, 196, 0.35) 0%, rgba(205, 203, 196, 0) 50%);
+  }
+  .hero[data-tone='light'] .shade-dark { opacity: 0; }
+  .hero[data-tone='light'] .shade-light { opacity: 1; }
+
+  /* Text colors for each tone: white and light gray on dark photos, navy and charcoal on light ones */
+  .hero { --hero-text: #fff; --hero-sub: #c9d0d7; --hero-cap: rgba(255, 255, 255, 0.75); }
+  .hero[data-tone='light'] { --hero-text: var(--ink); --hero-sub: var(--charcoal); --hero-cap: rgba(37, 52, 71, 0.75); }
+  .hero h1, .role, .focus { transition: color 0.6s var(--ease), text-shadow 0.6s var(--ease); }
   .hero-content { position: relative; z-index: 3; padding-block: clamp(80px, 12vw, 140px) clamp(56px, 8vw, 96px); }
   .hero h1 {
-    color: #fff;
+    color: var(--hero-text);
     font-size: clamp(2.8rem, 7vw, 5.4rem);
     font-weight: 800;
     letter-spacing: 0.005em;
     margin-bottom: 0.2em;
     text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
   }
-  .role { margin: 0 0 1em; font-size: clamp(0.85rem, 1.4vw, 1rem); font-weight: 600; letter-spacing: 0.24em; color: #fff; }
-  .focus { font-size: 0.74rem; font-weight: 600; letter-spacing: 0.1em; text-wrap: balance; text-transform: uppercase; color: #c9d0d7; margin-bottom: 2em; }
+  /* a faint light glow keeps navy text clear where the photo behind it is darker */
+  .hero[data-tone='light'] h1 { text-shadow: 0 1px 18px rgba(225, 223, 217, 0.7); }
+  .hero[data-tone='light'] .role, .hero[data-tone='light'] .focus { text-shadow: 0 1px 10px rgba(225, 223, 217, 0.8); }
+  .role { margin: 0 0 1em; font-size: clamp(0.85rem, 1.4vw, 1rem); font-weight: 600; letter-spacing: 0.24em; color: var(--hero-text); }
+  .focus { font-size: 0.74rem; font-weight: 600; letter-spacing: 0.1em; text-wrap: balance; text-transform: uppercase; color: var(--hero-sub); margin-bottom: 2em; }
   .hero-btns { display: flex; flex-wrap: wrap; gap: 12px; }
-  .hero-btns .btn { min-width: 180px; background: #fff; color: var(--ink); border-color: #fff; }
+  .hero-btns .btn { min-width: 180px; background: #fff; color: var(--ink); border-color: #fff; transition: background 0.6s var(--ease), color 0.6s var(--ease), border-color 0.6s var(--ease), transform 0.2s var(--ease); }
+  .hero[data-tone='light'] .hero-btns .btn { background: var(--ink); color: #fff; border-color: var(--ink); }
   .hero-btns .btn:hover { background: var(--accent); border-color: var(--accent); color: var(--ink); }
 
   /* Reduced motion: the script leaves the first photo up and never switches */
@@ -227,17 +276,19 @@ const heroSlides = [
   .about {
     display: grid;
     grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-    gap: clamp(32px, 6vw, 88px);
-    align-items: start;
+    gap: clamp(32px, 5vw, 64px);
+    align-items: stretch; /* photo runs the full height of the text */
     padding-block: clamp(72px, 10vw, 130px);
     overflow-x: clip;
   }
-  .about-photo :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0%; border-radius: 4px; }
-  .about-text { position: relative; padding: 24px 0; }
-  .about-text h2 { position: relative; z-index: 1; font-size: clamp(2rem, 4vw, 3rem); }
+  .about-photo { position: relative; min-height: 420px; }
+  .about-photo :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; border-radius: 4px; }
+  .about-text { position: relative; padding: 0; display: flex; flex-direction: column; }
+  .about-text h2 { position: relative; z-index: 1; font-size: clamp(2rem, 4vw, 3rem); margin: -0.12em 0 0.45em; line-height: 1; }
   .about-copy { position: relative; z-index: 1; max-width: 62ch; text-align: left; }
   .about-copy p { font-size: 1.02rem; margin: 0 0 1em; }
-  .facts-row { position: relative; z-index: 1; margin: 1.6em 0 0; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.1em; text-wrap: balance; text-transform: uppercase; color: var(--steel); }
+  .about-copy p:last-child { margin-bottom: 0; }
+  .facts-row { position: relative; z-index: 1; margin: 1.4em 0 0; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.1em; text-wrap: balance; text-transform: uppercase; color: var(--steel); }
 
   /* Faint line drawings, kept out at the edges and never behind the heading */
   .sketches { position: absolute; inset: 0; pointer-events: none; }
@@ -249,7 +300,7 @@ const heroSlides = [
 
   @media (max-width: 860px) {
     .about { grid-template-columns: 1fr; padding-top: 56px; }
-    .about-photo { max-width: 420px; margin-inline: auto; width: 100%; }
+    .about-photo { max-width: 420px; margin-inline: auto; width: 100%; min-height: 0; aspect-ratio: 4 / 5; }
     .sketches { display: none; }
   }
 
@@ -300,6 +351,8 @@ const heroSlides = [
       prev.classList.remove('is-active');
       prev.classList.add('is-leaving');
       incoming.classList.add('is-entering');
+      const heroSection = hero.closest<HTMLElement>('.hero');
+      if (heroSection && incoming.dataset.tone) heroSection.dataset.tone = incoming.dataset.tone;
       // Finish the swap when the wipe ends (with a timer backup in case the browser skips the event)
       let finished = false;
       const finish = () => {
@@ -310,9 +363,9 @@ const heroSlides = [
         prev.classList.remove('is-leaving');
       };
       incoming.addEventListener('animationend', (e) => { if (e.target === incoming) finish(); }, { once: true });
-      setTimeout(finish, 1000);
+      setTimeout(finish, 800);
     };
-    setInterval(next, 5400);
+    setInterval(next, 4000);
   }
 
   // Back to top: scroll smoothly (or jump, for people who prefer reduced motion)

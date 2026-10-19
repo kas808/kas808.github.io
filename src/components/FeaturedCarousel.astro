@@ -90,7 +90,16 @@ const copies = [0, 1, 2];
     const slides = Array.from(rail.querySelectorAll<HTMLElement>('.slide'));
     const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('.dot'));
     const n = dots.length;
-    let index = n; // start on the first real slide (middle copy)
+    // Start on a different project each visit: step to the next one after
+    // the project shown last time (remembered in this browser only).
+    // If the browser blocks storage, pick a random project instead.
+    let start = Math.floor(Math.random() * n);
+    try {
+      const last = Number(localStorage.getItem('featured-start'));
+      if (Number.isInteger(last) && last >= 0 && last < n) start = (last + 1) % n;
+      localStorage.setItem('featured-start', String(start));
+    } catch {}
+    let index = n + start; // middle copy of the slides
     let busy = false;
 
     const step = () => slides[0].offsetWidth + parseFloat(getComputedStyle(rail).columnGap || '0');

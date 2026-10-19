@@ -5,7 +5,7 @@ course: MECH 2100 Design & Manufacturing
 date: Fall 2024
 team: "Partner: Evan Soleimani"
 role: Two-person team. Linkage layout, SolidWorks model, GD&T drawings, machining and testing.
-tools: [Linkage Design, SolidWorks, Milling, Bandsaw, 3D Printing, GD&T, Tolerance Analysis, Prototyping]
+tools: [Linkage Design, SolidWorks, GD&T, Milling, Bandsaw, 3D Printing, Tolerance Analysis, Prototyping]
 featured: true
 order: 2
 cover: ./01_pantograph_final_build.jpg

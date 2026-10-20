@@ -22,9 +22,6 @@ export type OgPage = {
   photos: Photo[];
 };
 
-// The three photos along the bottom of the home page preview (and the plain pages)
-const strip: Photo[] = featured.slice(0, 3).map((f) => ({ image: f.image, position: f.position }));
-
 // The image file for a page address like '/projects/thermal/'
 export const ogFile = (key: string) => `${key.replace(/^\/+|\/+$/g, '').replace(/\//g, '--') || 'home'}.jpg`;
 
@@ -32,6 +29,12 @@ let cache: Promise<OgPage[]> | undefined;
 
 async function build(): Promise<OgPage[]> {
   const [projects, punahou, experience] = await Promise.all([getCollection('projects'), getCollection('punahou'), getCollection('experience')]);
+  // The three photos along the bottom of the home page preview (and the plain pages):
+  // the cover photos of the home page's featured projects
+  const strip: Photo[] = featured.flatMap((f) => {
+    const p = projects.find((x) => x.id === f.slug);
+    return p?.data.cover ? [{ image: p.data.cover, position: p.data.coverPosition }] : [];
+  });
   const plain = (key: string, title: string, label?: string): OgPage => ({ key, kind: 'plain', title, label, photos: strip });
 
   const pages: OgPage[] = [

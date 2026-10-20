@@ -51,7 +51,7 @@ const chipHref = (slug: string) => (filter && slug && slug === current ? href(''
     text-decoration: none; transition: background 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease);
   }
   .chips a:hover { border-color: var(--ink); }
-  .chips a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .chips a:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
   /* The selected filter: solid navy with a check mark, so it stands out on a phone too */
   .filter a[aria-current='page'] { background: var(--ink); border-color: var(--ink); color: #fff; }

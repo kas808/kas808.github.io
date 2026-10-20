@@ -5,7 +5,9 @@
 :root {
   --ink: #253447;        /* deep slate navy: dark sections, buttons */
   --charcoal: #454a50;   /* body text */
-  --steel: #8b959e;      /* secondary text */
+  --steel: #5f6a75;      /* secondary text (4.8:1 on paper; dark sections swap in a lighter one below) */
+  --steel-on-dark: #a9b3bd; /* secondary text on navy (5.9:1) */
+  --focus-ring: var(--ink); /* keyboard focus outline; tan on dark backgrounds (set below) */
   --mist: #c6c8c5;       /* lines and borders */
   --paper: #f1f0ec;      /* main background */
   --white: #fbfbf9;      /* cards */
@@ -61,6 +63,8 @@ p { margin: 0 0 1em; }
 
 .section { padding-block: clamp(56px, 9vw, 112px); }
 .section-dark { background: var(--ink); color: #dfe3e7; }
+/* Dark backgrounds: lighter secondary text and a tan focus outline, so both stay readable */
+.section-dark, .on-dark, .lightbox { --steel: var(--steel-on-dark); --focus-ring: var(--accent); }
 .section-dark h1, .section-dark h2, .section-dark h3 { color: #fff; }
 .section-dark a { color: #fff; }
 
@@ -179,7 +183,7 @@ hr { border: 0; border-top: 1px solid var(--mist); margin: 2.5rem 0; }
 .skip-link { position: absolute; left: -999px; top: 8px; z-index: 100; }
 .skip-link:focus { left: 8px; }
 
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
 /* Several photos in a row inside page text */
 .prose .img-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 1.5em 0; }

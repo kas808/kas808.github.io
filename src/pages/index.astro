@@ -90,7 +90,8 @@ const tones = await Promise.all(
 
   <section class="about wrap" aria-labelledby="about-title">
     <div class="about-photo reveal">
-      <Image src={headshot} alt="Portrait of Kasin Ito-Sato" widths={[360, 560, 800]} sizes="(max-width: 860px) 80vw, 40vw" />
+      <!-- Larger sizes and higher quality than other photos, so the headshot stays sharp on high-resolution screens -->
+      <Image src={headshot} alt="Portrait of Kasin Ito-Sato" widths={[480, 720, 1000, 1337]} sizes="(max-width: 860px) 80vw, 40vw" quality={92} />
     </div>
     <div class="about-text reveal">
       <div class="sketches" aria-hidden="true">

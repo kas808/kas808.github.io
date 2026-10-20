@@ -64,7 +64,7 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
     border-bottom: 1px solid var(--mist);
   }
   .bar { height: var(--header-h); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-  .brand { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; white-space: nowrap; }
+  .brand { font-weight: 800; font-size: var(--fs-lead); letter-spacing: -0.02em; color: var(--ink); text-decoration: none; white-space: nowrap; }
 
   .nav-list { display: flex; align-items: center; gap: 4px; margin: 0; padding: 0; list-style: none; }
   .nav-list > li > a,
@@ -74,9 +74,7 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
     align-items: center;
     gap: 6px;
     padding: 8px 14px;
-    font: 500 0.78rem/1 var(--font);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font: 500 var(--fs-small)/1 var(--font);
     color: var(--ink);
     text-decoration: none;
     background: none;
@@ -140,8 +138,8 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
   .drop-list { list-style: none; margin: 0; padding: 8px 0; }
   .drop-list a { display: flex; flex-direction: column; gap: 2px; padding: 10px 20px; text-decoration: none; color: var(--ink); }
   .drop-list a:hover { background: var(--paper); }
-  .drop-list strong { font-size: 0.95rem; }
-  .drop-list span { font-size: 0.82rem; color: var(--steel); }
+  .drop-list strong { font-size: var(--fs-small); }
+  .drop-list span { font-size: var(--fs-small); color: var(--steel); }
 
   .menu-toggle { display: none; }
 
@@ -184,9 +182,9 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
     .nav.open { display: block; }
     .nav-list { flex-direction: column; align-items: stretch; gap: 0; }
     .nav-list > li { border-bottom: 1px solid var(--mist); }
-    .nav-list > li > a, .menu-btn { width: 100%; justify-content: space-between; padding: 16px 0; font-size: 0.85rem; }
+    .nav-list > li > a, .menu-btn { width: 100%; justify-content: space-between; padding: 16px 0; font-size: var(--fs-body); }
     .nav-list > li > a::after, .menu-btn::after, .split > a::after { display: none; }
-    .split > a { flex: 1; padding: 16px 0; font-size: 0.85rem; }
+    .split > a { flex: 1; padding: 16px 0; font-size: var(--fs-body); }
     .caret-btn { width: 48px; justify-content: center; padding: 16px 0; }
     .mega { position: static; box-shadow: none; border: 0; background: transparent; transform: none; max-height: none; overflow: visible; display: none; opacity: 1; visibility: visible; }
     .has-menu.open .mega { display: block; }

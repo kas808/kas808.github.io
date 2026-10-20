@@ -44,9 +44,9 @@ const chipHref = (slug: string) => (filter && slug && slug === current ? href(''
 <style>
   .chips { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
   .chips ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
-  .chips-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--steel); }
+  .chips-label { font-size: var(--fs-small); font-weight: 600; color: var(--steel); }
   .chips a {
-    display: inline-flex; align-items: center; gap: 6px; padding: 0.5em 1em; font-size: 0.85rem; font-weight: 600; line-height: 1.2;
+    display: inline-flex; align-items: center; gap: 6px; padding: 0.5em 1em; font-size: var(--fs-small); font-weight: 600; line-height: 1.2;
     color: var(--ink); background: var(--white); border: 1px solid var(--mist); border-radius: 999px;
     text-decoration: none; transition: background 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease);
   }
@@ -62,14 +62,13 @@ const chipHref = (slug: string) => (filter && slug && slug === current ? href(''
 
   .small { gap: 8px 10px; }
   .small ul { gap: 6px; }
-  .small a { padding: 0.35em 0.8em; font-size: 0.75rem; }
+  .small a { padding: 0.35em 0.8em; }
 
   .on-dark .chips-label { color: rgba(255, 255, 255, 0.75); }
   .on-dark a { color: #fff; background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.45); }
   .on-dark a:hover { background: #fff; color: var(--ink); border-color: #fff; }
 
   @media (max-width: 560px) {
-    .chips:not(.small) a { font-size: 0.8rem; }
     .filter a { padding: 0.6em 1em; } /* bigger tap targets */
   }
 </style>

@@ -16,3 +16,15 @@ START-HERE.md
 
 # Python cache
 __pycache__/
+
+# Agent skills installed with `npx skills add` (local only)
+.agents/
+skills-lock.json
+# Impeccable design skills, agents and hooks (local only)
+.codex/
+.github/agents/
+.github/hooks/
+.github/skills/
+.impeccable/
+# tasteskill inspector screenshots and reports (local only)
+.taste-skill/

@@ -42,13 +42,13 @@ const groups = punahouSections.map((s) => ({ ...s, pages: punahou.filter((p) => 
 <style is:global>
   .pindex { display: grid; grid-template-columns: 1fr 2.4fr; gap: 40px; }
   .pindex ul { list-style: none; margin: 0 0 18px; padding: 0; }
-  .pindex li a { display: block; padding: 3px 0; font-size: 0.92rem; color: var(--charcoal); text-decoration: none; }
+  .pindex li a { display: block; padding: 3px 0; font-size: var(--fs-small); color: var(--charcoal); text-decoration: none; }
   .pindex li a:hover { color: var(--ink); text-decoration: underline; }
-  .pi-head { margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); font-size: 1.15rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+  .pi-head { margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); font-size: var(--fs-lead); font-weight: 800; letter-spacing: -0.01em; }
   .pi-head:not(:first-child) { margin-top: 10px; }
   .pi-head a, .pi-sub a { color: var(--ink); text-decoration: none; }
   .pi-head a:hover, .pi-sub a:hover { text-decoration: underline; }
-  .pi-sub { margin: 4px 0 4px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+  .pi-sub { margin: 4px 0 4px; font-size: var(--fs-small); font-weight: 700; }
   .pi-sub a { color: var(--steel) !important; }
   .pi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 28px; }
   @media (max-width: 900px) {

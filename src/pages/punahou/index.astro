@@ -48,7 +48,7 @@ const sections = punahouSections.map((s) => ({ ...s, pages: pages.filter((p) => 
   .end { padding-block: 16px 96px; }
   .jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
   .jump a {
-    font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none;
+    font-size: var(--fs-small); font-weight: 600; text-decoration: none;
     padding: 0.5em 1em; border: 1px solid var(--ink); border-radius: 12px 0 12px 0; color: var(--ink);
     transition: background 0.2s var(--ease), color 0.2s var(--ease);
   }

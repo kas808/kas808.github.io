@@ -59,21 +59,21 @@ const groups = punahouSections.map((s) => ({ ...s, pages: punahou.filter((p) => 
 <style>
   .pmenu { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1.1fr); gap: clamp(28px, 4vw, 56px); }
   .pmenu ul { list-style: none; margin: 0; padding: 0; }
-  .pmenu li a { display: block; padding: 3px 0; font-size: 0.92rem; color: var(--charcoal); text-decoration: none; }
+  .pmenu li a { display: block; padding: 3px 0; font-size: var(--fs-small); color: var(--charcoal); text-decoration: none; }
   .pmenu li a:hover { color: var(--ink); text-decoration: underline; }
   .pmenu a:focus-visible, .pmenu summary:focus-visible, .pm-toggle:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
-  .pm-head { margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); font-size: 1.15rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); }
+  .pm-head { margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); font-size: var(--fs-lead); font-weight: 800; letter-spacing: -0.01em; color: var(--ink); }
   .pm-head a { color: var(--ink); text-decoration: none; }
   .pm-head a:hover { text-decoration: underline; }
   .pm-head-gap { margin-top: 22px; }
-  .pm-all { display: inline-block; margin-top: 14px; font-weight: 700; font-size: 0.9rem; color: var(--ink); text-decoration: none; }
+  .pm-all { display: inline-block; margin-top: 14px; font-weight: 700; font-size: var(--fs-small); color: var(--ink); text-decoration: none; }
   .pm-all:hover { text-decoration: underline; }
 
   .pm-section { border-bottom: 1px solid var(--mist); }
   .pm-section summary {
     display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; cursor: pointer; list-style: none;
-    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink);
+    font-size: var(--fs-small); font-weight: 700; color: var(--ink);
   }
   .pm-section summary::-webkit-details-marker { display: none; }
   .pm-caret { width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.2s var(--ease); flex: none; }
@@ -91,13 +91,13 @@ const groups = punahouSections.map((s) => ({ ...s, pages: punahou.filter((p) => 
     .pm-head:not(.pm-head-link) { display: none; }
     .pm-toggle {
       display: flex; width: 100%; align-items: center; justify-content: space-between; padding: 14px 0; background: none; border: 0; cursor: pointer;
-      font: 700 0.78rem/1 var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink);
+      font: 700 var(--fs-small)/1 var(--font); color: var(--ink);
     }
     .pm-toggle::after { content: ''; width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.2s var(--ease); }
     .pm-toggle[aria-expanded='true']::after { transform: translateY(1px) rotate(-135deg); }
     .pm-col[data-open='false'] .pm-body { display: none; }
     .pm-body { padding: 0 0 14px 12px; }
-    .pm-head { font-size: 0.85rem; border-bottom-width: 1px; padding-bottom: 6px; }
+    .pm-head { font-size: var(--fs-small); border-bottom-width: 1px; padding-bottom: 6px; }
     .pmenu li a { padding: 7px 0; }
   }
 </style>

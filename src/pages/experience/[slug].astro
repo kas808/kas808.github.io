@@ -73,18 +73,18 @@ const d = entry.data;
   .banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(37, 52, 71, 0) 40%, rgba(23, 33, 45, 0.88)); }
   .banner-text { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding-bottom: clamp(24px, 4vw, 52px); }
   .banner h1 { color: #fff; margin: 0 0 8px; }
-  .banner-meta { color: #dfe3e7; margin: 0; font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase; }
-  .crumbs { font-size: 0.8rem; color: #dfe3e7; margin-bottom: 12px; }
+  .banner-meta { color: #dfe3e7; margin: 0; font-size: var(--fs-body); font-weight: 500; }
+  .crumbs { font-size: var(--fs-small); color: #dfe3e7; margin-bottom: 12px; }
   .crumbs a { color: #dfe3e7; }
 
   .intro { padding-block: clamp(36px, 5vw, 64px) 8px; }
   .intro-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); }
   @media (max-width: 860px) { .intro-grid { grid-template-columns: 1fr; } }
-  .highlights { margin: 0; padding-left: 1.1em; font-size: 1.05rem; }
+  .highlights { margin: 0; padding-left: 1.1em; font-size: var(--fs-body); }
   .highlights li { margin-bottom: 0.8em; }
   .highlights li::marker { color: var(--accent); }
   .facts { border-top: 2px solid var(--ink); padding-top: 16px; }
-  .related { margin-top: 18px; font-size: 0.95rem; }
+  .related { margin-top: 18px; font-size: var(--fs-body); }
 
   .exp-prose { max-width: 1000px; margin-inline: auto; }
   .exp-prose :global(p), .exp-prose :global(ul) { max-width: 76ch; }
@@ -93,7 +93,7 @@ const d = entry.data;
   .exp-prose :global(h3) { scroll-margin-top: calc(var(--header-h) + 16px); }
 
   .pager { padding-block: 56px 80px; margin-top: 40px; border-top: 1px solid var(--mist); }
-  .pager a { display: flex; flex-direction: column; gap: 4px; text-decoration: none; font-weight: 700; font-size: 1.15rem; color: var(--ink); }
+  .pager a { display: flex; flex-direction: column; gap: 4px; text-decoration: none; font-weight: 700; font-size: var(--fs-lead); color: var(--ink); }
   .pager .eyebrow { margin: 0; }
   .skill-tags { margin-top: 14px; }
   .skill-tags:empty { display: none; }

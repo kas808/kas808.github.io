@@ -18,7 +18,7 @@ const { hidePlaceholders = false } = Astro.props;
 
 <style>
   .all-projects { margin-top: 36px; display: flex; flex-direction: column; align-items: center; }
-  .all-btn { font-size: 0.9rem; padding: 1em 2.6em; min-width: 280px; border-radius: 16px 0 16px 0; box-shadow: 0 10px 24px -14px rgba(37, 52, 71, 0.7); }
+  .all-btn { padding: 1em 2.6em; min-width: 280px; border-radius: 16px 0 16px 0; box-shadow: 0 10px 24px -14px rgba(37, 52, 71, 0.7); }
   .all-btn .caret { width: 8px; height: 8px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.2s var(--ease); }
   .all-btn[aria-expanded='true'] .caret { transform: translateY(1px) rotate(-135deg); }
   .all-panel { width: 100%; margin-top: 24px; padding: 28px; background: var(--paper); border: 1px solid var(--mist); border-radius: var(--radius); animation: drop 0.25s var(--ease); }

@@ -80,7 +80,7 @@ const media = (file: string) => `/media/${entry.id}/${file}`;
 <style>
   .project-head { padding-block: clamp(40px, 6vw, 80px) 32px; }
   .project-head .lead { margin-top: 0.5em; }
-  .crumbs { font-size: 0.8rem; color: var(--steel); margin-bottom: 28px; }
+  .crumbs { font-size: var(--fs-small); color: var(--steel); margin-bottom: 28px; }
   .crumbs a { color: var(--steel); }
   .cover { border-radius: var(--radius); overflow: hidden; background: var(--white); border: 1px solid var(--mist); }
   .cover :global(img) { width: 100%; max-height: 74vh; object-fit: contain; }
@@ -90,13 +90,13 @@ const media = (file: string) => `/media/${entry.id}/${file}`;
   .facts { position: sticky; top: calc(var(--header-h) + 24px); border-top: 2px solid var(--ink); padding-top: 18px; }
   @media (max-width: 900px) { .facts { position: static; } }
   .facts dl { margin: 0; }
-  .facts dt { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--steel); margin-top: 18px; }
+  .facts dt { font-size: var(--fs-small); font-weight: 600; color: var(--steel); margin-top: 18px; }
   .facts dt:first-child { margin-top: 0; }
-  .facts dd { margin: 6px 0 0; font-size: 0.95rem; }
+  .facts dd { margin: 4px 0 0; font-size: var(--fs-body); }
   .facts .tags { margin-top: 4px; }
 
   .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-block: 56px 80px; margin-top: 40px; border-top: 1px solid var(--mist); }
-  .pager a { display: flex; flex-direction: column; gap: 4px; text-decoration: none; font-weight: 700; font-size: 1.1rem; color: var(--ink); }
+  .pager a { display: flex; flex-direction: column; gap: 4px; text-decoration: none; font-weight: 700; font-size: var(--fs-lead); color: var(--ink); }
   .pager .eyebrow { margin: 0; }
   .pager .next { text-align: right; align-items: flex-end; }
   .pager a:hover { color: var(--ink-soft); text-decoration: underline; }

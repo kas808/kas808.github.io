@@ -29,17 +29,17 @@ const year = new Date().getFullYear();
 <style>
   .site-footer { padding-block: 48px 28px; margin-top: 0; }
   .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; align-items: flex-start; }
-  .name { font-weight: 800; font-size: 1.3rem; color: #fff; margin: 0; letter-spacing: -0.02em; }
-  .muted-light { color: var(--steel); margin: 0; font-size: 0.9rem; }
+  .name { font-weight: 800; font-size: var(--fs-lead); color: #fff; margin: 0; letter-spacing: -0.02em; }
+  .muted-light { color: var(--steel); margin: 0; font-size: var(--fs-small); }
   .links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 28px; }
-  .links a { text-decoration: none; font-size: 0.95rem; }
+  .links a { text-decoration: none; font-size: var(--fs-small); }
   .links a:hover { text-decoration: underline; }
   .skills { flex: 0 1 auto; }
-  .col-head { margin: 0 0 10px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--steel); }
+  .col-head { margin: 0 0 10px; font-size: var(--fs-small); font-weight: 600; color: var(--steel); }
   .skills ul { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 32px; }
   .skills li { break-inside: avoid; }
-  .skills a { display: inline-block; padding: 3px 0; font-size: 0.9rem; text-decoration: none; }
+  .skills a { display: inline-block; padding: 3px 0; font-size: var(--fs-small); text-decoration: none; }
   .skills a:hover { text-decoration: underline; }
   @media (max-width: 560px) { .skills { flex-basis: 100%; } .skills ul { columns: 1; } }
-  .legal { margin-top: 32px; font-size: 0.8rem; color: var(--steel); }
+  .legal { margin-top: 32px; font-size: var(--fs-small); color: var(--steel); }
 </style>

@@ -40,7 +40,7 @@ const jobs = (await getCollection('experience')).sort((a, b) => a.data.order - b
   .job:hover .job-img :global(img) { transform: scale(1.03); }
   .job-text { display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: clamp(24px, 4vw, 48px); }
   .job-text .eyebrow { margin: 0; }
-  .job-title { font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 800; color: var(--ink); line-height: 1.1; letter-spacing: -0.02em; }
-  .job-sum { font-size: 1rem; }
+  .job-title { font-size: var(--fs-heading); font-weight: 800; color: var(--ink); line-height: 1.1; letter-spacing: -0.02em; }
+  .job-sum { font-size: var(--fs-body); }
   .job-text .btn { align-self: flex-start; margin-top: 8px; }
 </style>

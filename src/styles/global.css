@@ -15,6 +15,13 @@
   --ink-soft: #33465c;
 
   --font: "Work Sans Variable", "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* The five type sizes. Every piece of text on the site uses one of these. */
+  --fs-display: clamp(2.6rem, 6.5vw, 5rem);    /* page titles (h1) */
+  --fs-heading: clamp(1.6rem, 3.2vw, 2.4rem);  /* section headings (h2) */
+  --fs-lead: 1.25rem;                          /* h3, card titles, intro lines */
+  --fs-body: 1.0625rem;                        /* running text */
+  --fs-small: 0.875rem;                        /* labels, captions, buttons, nav (never smaller) */
   --radius: 3px;
   --max: 1200px;
   --gutter: clamp(16px, 4vw, 40px);
@@ -34,7 +41,7 @@ body {
   background: var(--paper);
   color: var(--charcoal);
   font-family: var(--font);
-  font-size: 1.0625rem;
+  font-size: var(--fs-body);
   line-height: 1.65;
   text-rendering: optimizeLegibility;
   overflow-x: clip; /* never let wide content make the whole page scroll sideways */
@@ -53,9 +60,9 @@ h1, h2, h3, h4 {
   margin: 0 0 0.5em;
   font-weight: 800;
 }
-h1 { font-size: clamp(2.4rem, 6vw, 4.25rem); }
-h2 { font-size: clamp(1.6rem, 3.4vw, 2.3rem); }
-h3 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: var(--fs-display); }
+h2 { font-size: var(--fs-heading); }
+h3 { font-size: var(--fs-lead); font-weight: 700; letter-spacing: -0.01em; }
 p { margin: 0 0 1em; }
 
 .wrap { width: 100%; max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
@@ -69,14 +76,12 @@ p { margin: 0 0 1em; }
 .section-dark a { color: #fff; }
 
 .eyebrow {
-  font-size: 0.75rem;
+  font-size: var(--fs-small);
   font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
   color: var(--steel);
   margin: 0 0 0.75rem;
 }
-.lead { font-size: 1.15rem; max-width: 62ch; }
+.lead { font-size: var(--fs-lead); max-width: 62ch; }
 .muted { color: var(--steel); }
 .center { text-align: center; }
 .center .lead { margin-inline: auto; }
@@ -85,7 +90,7 @@ p { margin: 0 0 1em; }
 .page-head { padding-block: clamp(48px, 8vw, 96px) clamp(24px, 4vw, 40px); }
 .page-head h1 { margin-bottom: 0.3em; }
 
-/* Buttons: dark slate, uppercase, letter-spaced, one sharp and one rounded corner */
+/* Buttons: dark slate, sentence case, one sharp and one rounded corner */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -97,9 +102,7 @@ p { margin: 0 0 1em; }
   color: #fff;
   border: 1px solid var(--ink);
   border-radius: 12px 0 12px 0;
-  font: 500 0.78rem/1.2 var(--font);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font: 600 var(--fs-small)/1.2 var(--font);
   text-decoration: none;
   cursor: pointer;
   transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.2s var(--ease);
@@ -114,7 +117,7 @@ p { margin: 0 0 1em; }
 /* Small tags for tools */
 .tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
 .tags li {
-  font-size: 0.75rem;
+  font-size: var(--fs-small);
   padding: 0.25em 0.7em;
   border: 1px solid var(--mist);
   border-radius: 2px;
@@ -124,10 +127,8 @@ p { margin: 0 0 1em; }
 
 .status {
   display: inline-block;
-  font-size: 0.7rem;
+  font-size: var(--fs-small);
   font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
   padding: 0.3em 0.75em;
   background: var(--accent);
   color: var(--ink);
@@ -138,9 +139,9 @@ hr { border: 0; border-top: 1px solid var(--mist); margin: 2.5rem 0; }
 
 /* Long-form text from Markdown files */
 .prose { max-width: 72ch; }
-.prose h2 { margin-top: 2.2em; font-size: clamp(1.4rem, 2.6vw, 1.8rem); }
+.prose h2 { margin-top: 2.2em; font-size: var(--fs-heading); }
 .prose h3 { margin-top: 1.8em; }
-.prose h4 { margin-top: 1.4em; font-size: 1.05rem; font-weight: 700; }
+.prose h4 { margin-top: 1.4em; font-size: var(--fs-body); font-weight: 700; }
 .prose ul, .prose ol { padding-left: 1.25em; margin: 0 0 1em; }
 .prose li { margin-bottom: 0.3em; }
 .prose img {
@@ -156,7 +157,7 @@ hr { border: 0; border-top: 1px solid var(--mist); margin: 2.5rem 0; }
   padding: 1.1em 1.25em;
   overflow-x: auto;
   border-radius: var(--radius);
-  font-size: 0.85rem;
+  font-size: var(--fs-small);
   line-height: 1.5;
 }
 .prose code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
@@ -194,7 +195,7 @@ hr { border: 0; border-top: 1px solid var(--mist); margin: 2.5rem 0; }
 @media (max-width: 640px) { .prose .img-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* Tables in page text */
-.prose table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font-size: 0.92rem; display: block; overflow-x: auto; }
+.prose table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font-size: var(--fs-small); display: block; overflow-x: auto; }
 .prose th, .prose td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--mist); white-space: nowrap; }
 .prose th { color: var(--ink); font-weight: 700; }
 
@@ -206,9 +207,9 @@ hr { border: 0; border-top: 1px solid var(--mist); margin: 2.5rem 0; }
 .yt-thumb:hover img { opacity: 1; }
 .yt-play { position: absolute; left: 50%; top: 50%; width: 68px; height: 48px; transform: translate(-50%, -50%); background: var(--ink); border-radius: 12px 0 12px 0; }
 .yt-play::after { content: ''; position: absolute; left: 28px; top: 14px; border-style: solid; border-width: 10px 0 10px 16px; border-color: transparent transparent transparent #fff; }
-.yt-title { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 14px; text-align: left; color: #fff; font: 600 0.85rem/1.3 var(--font); background: linear-gradient(transparent, rgba(0, 0, 0, 0.7)); }
+.yt-title { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 14px; text-align: left; color: #fff; font: 600 var(--fs-small)/1.3 var(--font); background: linear-gradient(transparent, rgba(0, 0, 0, 0.7)); }
 
 /* Short looping clips inside page text (like a GIF, but much smaller) */
 .prose .inline-video { margin: 1.5em 0; }
 .prose .inline-video video { width: 100%; max-width: 640px; border: 1px solid var(--mist); border-radius: var(--radius); background: #fff; }
-.prose .inline-video figcaption { font-size: 0.85rem; color: var(--steel); margin-top: 8px; }
+.prose .inline-video figcaption { font-size: var(--fs-small); color: var(--steel); margin-top: 8px; }

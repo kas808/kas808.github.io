@@ -51,11 +51,10 @@ const { href, title, summary, meta, cover, coverAlt = '', coverPosition, coverFi
   .card-status { position: absolute; top: 12px; left: 12px; }
   .card-body { display: flex; flex-direction: column; gap: 10px; padding: 22px 22px 24px; flex: 1; }
   .card-body .eyebrow { margin: 0; }
-  .card-body h3 { margin: 0; font-size: 1.35rem; font-weight: 800; }
-  .card-small h3 { font-size: 1.12rem; }
+  .card-body h3 { margin: 0; font-size: var(--fs-lead); font-weight: 800; }
   .card-body h3 a { color: var(--ink); text-decoration: none; }
-  .summary { margin: 0; font-size: 0.95rem; color: var(--charcoal); }
-  .card-small .summary { font-size: 0.9rem; }
+  .summary { margin: 0; font-size: var(--fs-body); color: var(--charcoal); }
+  .card-small .summary { font-size: var(--fs-small); }
   .card-body .btn { margin-top: auto; align-self: flex-start; }
   .card-body .tags { margin-bottom: 6px; }
 
@@ -69,5 +68,5 @@ const { href, title, summary, meta, cover, coverAlt = '', coverPosition, coverFi
       linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
     background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
   }
-  .blueprint span { color: #fff; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.85; }
+  .blueprint span { color: #fff; font-weight: 700; font-size: var(--fs-small); opacity: 0.85; }
 </style>

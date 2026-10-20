@@ -5,13 +5,11 @@ import BackHome from '../components/BackHome.astro';
 import { url } from '../lib/url';
 import { site } from '../lib/site';
 import headshot from '../assets/headshot.jpg';
-import sketch from '../assets/sketches/bracket.png';
 ---
 
 <BaseLayout title="Contact" description="Contact Kasin Ito-Sato, mechanical engineering student at Loyola Marymount University.">
   <section class="wrap contact">
     <div class="intro reveal">
-      <Image class="sketch" src={sketch} alt="" width={460} aria-hidden="true" />
       <p class="eyebrow">Get in touch</p>
       <h1>Contact</h1>
       <p class="lead">
@@ -78,10 +76,6 @@ import sketch from '../assets/sketches/bracket.png';
   }
   @media (max-width: 880px) { .contact { grid-template-columns: 1fr; } }
 
-  .intro { position: relative; }
-  .intro > :not(.sketch) { position: relative; z-index: 1; }
-  .sketch { position: absolute; width: 230px; height: auto; right: -20px; bottom: -230px; opacity: 0.1; pointer-events: none; }
-  @media (max-width: 880px) { .sketch { display: none; } }
   .intro .lead { margin-bottom: 28px; }
 
   .card {

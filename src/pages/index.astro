@@ -8,10 +8,6 @@ import { url } from '../lib/url';
 import { site } from '../lib/site';
 import { featured, punahou } from '../lib/featured';
 import headshot from '../assets/headshot.jpg';
-// Faint line drawings from my own AutoCAD and SolidWorks work (made transparent for the background)
-import sketchA from '../assets/sketches/wrench.png';
-import sketchB from '../assets/sketches/bracket.png';
-import sketchC from '../assets/sketches/support.png';
 // Hero photos, shown in this order with a quick wipe between them
 import heroLanakila from '../assets/hero/lanakila-express.jpg';
 import heroWsp from '../assets/hero/wsp-site-visit.jpg';
@@ -107,11 +103,6 @@ const tones = await Promise.all(
       <Image src={headshot} alt="Portrait of Kasin Ito-Sato" widths={[480, 720, 1000, 1337]} sizes="(max-width: 860px) 80vw, 40vw" quality={92} />
     </div>
     <div class="about-text reveal">
-      <div class="sketches" aria-hidden="true">
-        <Image class="sk sk-a" src={sketchA} alt="" width={520} />
-        <Image class="sk sk-b" src={sketchB} alt="" width={460} />
-        <Image class="sk sk-c" src={sketchC} alt="" width={300} />
-      </div>
       <h2 id="about-title">About</h2>
       <div class="about-copy">
         <p>
@@ -338,26 +329,17 @@ const tones = await Promise.all(
      and the eyes sit about a third of the way down */
   .about-photo { position: relative; aspect-ratio: 4 / 5; }
   .about-photo :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; border-radius: 4px; }
-  .about-text { position: relative; padding: 0; display: flex; flex-direction: column; }
-  .about-text h2 { position: relative; z-index: 1; margin: -0.12em 0 0.45em; line-height: 1; }
-  .about-copy { position: relative; z-index: 1; max-width: 62ch; text-align: left; }
+  .about-text { display: flex; flex-direction: column; }
+  .about-text h2 { margin: -0.12em 0 0.45em; line-height: 1; }
+  .about-copy { max-width: 62ch; }
   .about-copy p { font-size: var(--fs-body); margin: 0 0 1em; }
   .about-copy p:last-child { margin-bottom: 0; }
-  .facts-row { position: relative; z-index: 1; margin: 1.4em 0 0; font-size: var(--fs-small); font-weight: 600; text-wrap: balance; color: var(--steel); }
-  .about-cta { position: relative; z-index: 1; margin-top: 28px; }
-
-  /* Faint line drawings, kept out at the edges and never behind the heading */
-  .sketches { position: absolute; inset: 0; pointer-events: none; }
-  .sk { position: absolute; height: auto; opacity: 0.12; }
-  .sk-a { width: 250px; bottom: calc(100% + 4px); right: -70px; }
-  .sk-b { width: 210px; top: calc(100% + 4px); right: -40px; }
-  .sk-c { width: 120px; top: 30%; right: -150px; }
-  @media (max-width: 1240px) { .sk-c { display: none; } .sk-a { right: -20px; } .sk-b { right: -10px; width: 170px; } }
+  .facts-row { margin: 1.4em 0 0; font-size: var(--fs-small); font-weight: 600; text-wrap: balance; color: var(--steel); }
+  .about-cta { margin-top: 28px; }
 
   @media (max-width: 860px) {
     .about { grid-template-columns: 1fr; padding-top: 56px; }
     .about-photo { max-width: 420px; margin-inline: auto; width: 100%; }
-    .sketches { display: none; }
   }
 
   .section-tight { padding-block: clamp(48px, 7vw, 88px) clamp(56px, 8vw, 96px); background: var(--white); border-block: 1px solid var(--mist); }

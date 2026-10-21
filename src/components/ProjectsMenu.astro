@@ -21,7 +21,7 @@ const groups = punahouSections.map((s) => ({ ...s, pages: punahou.filter((p) => 
       <ul>
         {categories.map((c) => <li><a href={url(`/projects/${c.slug}/`)}>{c.name}</a></li>)}
       </ul>
-      <a class="pm-all" href={url('/projects/')}>All projects <span aria-hidden="true">›</span></a>
+      <a class="pm-all" href={url('/projects/')}>All projects <span class="arrow" aria-hidden="true"></span></a>
     </div>
   </section>
 
@@ -63,23 +63,26 @@ const groups = punahouSections.map((s) => ({ ...s, pages: punahou.filter((p) => 
   .pmenu li a:hover { color: var(--ink); text-decoration: underline; }
   .pmenu a:focus-visible, .pmenu summary:focus-visible, .pm-toggle:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
-  .pm-head { margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); font-size: var(--fs-lead); font-weight: 800; letter-spacing: -0.01em; color: var(--ink); }
-  .pm-head a { color: var(--ink); text-decoration: none; }
+  /* Group titles: mono capitals over a ruled line, like the labels of a drawing's title block */
+  .pm-head { margin: 0 0 12px; padding-bottom: 8px; border-bottom: 1.5px solid var(--ink); font-family: var(--mono); font-size: var(--fs-label); font-weight: 400; text-transform: uppercase; letter-spacing: 0.04em; color: var(--steel); }
+  .pm-head a { color: var(--steel); text-decoration: none; }
   .pm-head a:hover { text-decoration: underline; }
   .pm-head-gap { margin-top: 22px; }
-  .pm-all { display: inline-block; margin-top: 14px; font-weight: 700; font-size: var(--fs-small); color: var(--ink); text-decoration: none; }
-  .pm-all:hover { text-decoration: underline; }
+  .pm-all { display: inline-flex; align-items: center; gap: 12px; margin-top: 14px; font-weight: 600; font-size: var(--fs-small); color: var(--ink); text-decoration: none; }
+  .pm-all .arrow { width: 18px; height: 1.5px; }
+  .pm-all .arrow::after { top: -3.5px; width: 8px; height: 8px; border-width: 1.5px; }
+  @media (hover: hover) and (pointer: fine) { .pm-all:hover { text-decoration: underline; } .pm-all:hover .arrow { transform: translateX(3px); } }
 
   .pm-section { border-bottom: 1px solid var(--mist); }
   .pm-section summary {
     display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; cursor: pointer; list-style: none;
-    font-size: var(--fs-small); font-weight: 700; color: var(--ink);
+    font-size: var(--fs-small); font-weight: 500; color: var(--ink);
   }
   .pm-section summary::-webkit-details-marker { display: none; }
   .pm-caret { width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.2s var(--ease); flex: none; }
   .pm-section[open] .pm-caret { transform: translateY(1px) rotate(-135deg); }
   .pm-section ul { padding: 0 0 10px 2px; }
-  .pm-overview { font-weight: 600; }
+  .pm-overview { font-weight: 500; }
 
   .pm-toggle { display: none; }
 
@@ -91,7 +94,7 @@ const groups = punahouSections.map((s) => ({ ...s, pages: punahou.filter((p) => 
     .pm-head:not(.pm-head-link) { display: none; }
     .pm-toggle {
       display: flex; width: 100%; align-items: center; justify-content: space-between; padding: 14px 0; background: none; border: 0; cursor: pointer;
-      font: 700 var(--fs-small)/1 var(--font); color: var(--ink);
+      font: 400 var(--fs-label)/1 var(--mono); text-transform: uppercase; letter-spacing: 0.04em; color: var(--steel);
     }
     .pm-toggle::after { content: ''; width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.2s var(--ease); }
     .pm-toggle[aria-expanded='true']::after { transform: translateY(1px) rotate(-135deg); }

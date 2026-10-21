@@ -48,32 +48,36 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
         </li>
         <li><a href={url('/resume/')} aria-current={active('/resume') ? 'page' : undefined}>Resume</a></li>
         <li><a href={url('/contact/')} aria-current={active('/contact') ? 'page' : undefined}>Contact</a></li>
+        <li class="nav-cta"><a class="btn btn-small" href={`mailto:${site.email}`}>Email me</a></li>
       </ul>
     </nav>
   </div>
 </header>
 
 <style>
+  /* The top bar, matching the home page: paper, a wide capital wordmark, plain links and one button */
   .site-header {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: rgba(241, 240, 236, 0.94);
-    backdrop-filter: saturate(1.4) blur(10px);
-    -webkit-backdrop-filter: saturate(1.4) blur(10px);
+    background: var(--paper);
     border-bottom: 1px solid var(--mist);
   }
   .bar { height: var(--header-h); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-  .brand { font-weight: 800; font-size: var(--fs-lead); letter-spacing: -0.02em; color: var(--ink); text-decoration: none; white-space: nowrap; }
+  .brand {
+    display: inline-flex; align-items: center; min-height: 44px;
+    font-size: var(--fs-small); font-weight: 700; font-stretch: 125%; letter-spacing: 0.02em; text-transform: uppercase;
+    color: var(--ink); text-decoration: none; white-space: nowrap;
+  }
 
-  .nav-list { display: flex; align-items: center; gap: 4px; margin: 0; padding: 0; list-style: none; }
-  .nav-list > li > a,
+  .nav-list { display: flex; align-items: center; gap: clamp(4px, 1vw, 12px); margin: 0; padding: 0; list-style: none; }
+  .nav-list > li > a:not(.btn),
   .split > a,
   .menu-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 14px;
+    padding: 8px 10px;
     font: 500 var(--fs-small)/1 var(--font);
     color: var(--ink);
     text-decoration: none;
@@ -82,13 +86,13 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
     cursor: pointer;
     position: relative;
   }
-  .nav-list > li > a::after,
+  .nav-list > li > a:not(.btn)::after,
   .split > a::after,
   .menu-btn::after {
     content: '';
     position: absolute;
-    left: 14px;
-    right: 14px;
+    left: 10px;
+    right: 10px;
     bottom: 2px;
     height: 1px;
     background: var(--ink);
@@ -96,12 +100,16 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
     transform-origin: left;
     transition: transform 0.25s var(--ease);
   }
-  .nav-list > li > a:hover::after,
   .nav-list > li > a[aria-current]::after,
-  .split > a:hover::after,
   .split > a[aria-current]::after,
-  .menu-btn:hover::after,
   .menu-btn[data-active]::after { transform: scaleX(1); }
+  @media (hover: hover) and (pointer: fine) {
+    .nav-list > li > a:not(.btn):hover::after,
+    .split > a:hover::after,
+    .menu-btn:hover::after { transform: scaleX(1); }
+  }
+  .nav-cta { margin-left: 8px; }
+  .nav-cta .btn { min-height: 40px; padding: 0 16px; }
 
   .caret { width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.2s var(--ease); }
   .menu-btn[aria-expanded='true'] .caret { transform: translateY(1px) rotate(-135deg); }
@@ -119,9 +127,8 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
     left: 0;
     right: 0;
     top: var(--header-h);
-    background: var(--white);
+    background: var(--paper);
     border-bottom: 1px solid var(--mist);
-    box-shadow: 0 24px 40px -24px rgba(37, 52, 71, 0.25);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-6px);
@@ -134,18 +141,16 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
 
   /* Small dropdown (Experience) */
   .has-drop { position: relative; }
-  .drop { left: 50%; right: auto; top: calc(var(--header-h) - 12px); width: 290px; translate: -50% 0; border: 1px solid var(--mist); border-radius: var(--radius); overflow: hidden; }
+  .drop { left: 50%; right: auto; top: calc(var(--header-h) - 12px); width: 300px; translate: -50% 0; border: 1px solid var(--mist); overflow: hidden; }
   .drop-list { list-style: none; margin: 0; padding: 8px 0; }
   .drop-list a { display: flex; flex-direction: column; gap: 2px; padding: 10px 20px; text-decoration: none; color: var(--ink); }
-  .drop-list a:hover { background: var(--paper); }
+  .drop-list a:hover { background: var(--paper-up); }
   .drop-list strong { font-size: var(--fs-small); }
-  .drop-list span { font-size: var(--fs-small); color: var(--steel); }
+  .drop-list span { font-family: var(--mono); font-size: var(--fs-label); color: var(--steel); }
 
   .menu-toggle { display: none; }
 
   @media (max-width: 900px) {
-    /* The blur effect would trap the full-screen menu inside the bar, so use a solid bar on phones */
-    .site-header { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--paper); }
     .menu-toggle {
       display: inline-flex;
       align-items: center;
@@ -176,16 +181,23 @@ const active = (prefix: string) => (prefix === '/' ? path === '/' : path.startsW
       inset: var(--header-h) 0 0 0;
       background: var(--paper);
       overflow-y: auto;
+      overscroll-behavior: contain;
       padding: 12px var(--gutter) 48px;
       display: none;
     }
     .nav.open { display: block; }
     .nav-list { flex-direction: column; align-items: stretch; gap: 0; }
     .nav-list > li { border-bottom: 1px solid var(--mist); }
-    .nav-list > li > a, .menu-btn { width: 100%; justify-content: space-between; padding: 16px 0; font-size: var(--fs-body); }
+    /* Phone menu: the same places, set large in the serif like the home page's menu */
+    .nav-list > li > a:not(.btn), .menu-btn, .split > a {
+      width: 100%; justify-content: space-between; padding: 14px 0;
+      font-family: var(--serif); font-size: clamp(1.75rem, 1rem + 3vw, 2.25rem); font-weight: 380; letter-spacing: -0.02em;
+    }
+    .split > a { flex: 1; }
     .nav-list > li > a::after, .menu-btn::after, .split > a::after { display: none; }
-    .split > a { flex: 1; padding: 16px 0; font-size: var(--fs-body); }
-    .caret-btn { width: 48px; justify-content: center; padding: 16px 0; }
+    .caret-btn { width: 48px; justify-content: center; padding: 16px 0; font-size: var(--fs-small); }
+    .nav-cta { margin: 24px 0 0; border-bottom: 0 !important; }
+    .nav-cta .btn { width: 100%; min-height: 52px; }
     .mega { position: static; box-shadow: none; border: 0; background: transparent; transform: none; max-height: none; overflow: visible; display: none; opacity: 1; visibility: visible; }
     .has-menu.open .mega { display: block; }
     .mega-inner { padding: 0 0 16px 12px; max-width: none; margin: 0; }

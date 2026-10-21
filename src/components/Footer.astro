@@ -1,45 +1,65 @@
 ---
+// The close of every page, matching the home page: graphite, the email address as the headline,
+// then browse-by-skill links and the small print.
 import { url } from '../lib/url';
 import { site } from '../lib/site';
 import { categories } from '../lib/categories';
 const year = new Date().getFullYear();
+const [emailUser, emailHost] = site.email.split('@');
 ---
 
 <footer class="site-footer section-dark">
+  <div class="wrap">
+    <p class="foot-label">Get in touch</p>
+    <a class="mail" href={`mailto:${site.email}`}><span>{emailUser}</span><span>@{emailHost}</span></a>
+  </div>
   <div class="wrap foot">
     <div>
       <p class="name">{site.name}</p>
-      <p class="muted-light">Mechanical Engineer</p>
+      <p class="muted-light">Mechanical Engineer<br />BS Loyola Marymount University, May 2027</p>
     </div>
     <nav class="skills" aria-label="Browse by skill">
-      <p class="col-head">Browse by skill</p>
+      <p class="foot-label">Browse by skill</p>
       <ul>
         {categories.map((c) => <li><a href={url(`/projects/${c.slug}/`)}>{c.name}</a></li>)}
       </ul>
     </nav>
     <ul class="links">
-      <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
       <li><a href={site.linkedin} rel="noopener">LinkedIn</a></li>
       <li><a href={url('/resume/')}>Resume</a></li>
+      <li><a href={url('/projects/')}>Projects</a></li>
     </ul>
   </div>
   <div class="wrap legal">© {year} {site.name}</div>
 </footer>
 
 <style>
-  .site-footer { padding-block: 48px 28px; margin-top: 0; }
-  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; align-items: flex-start; }
-  .name { font-weight: 800; font-size: var(--fs-lead); color: #fff; margin: 0; letter-spacing: -0.02em; }
+  .site-footer { padding-block: clamp(72px, 9vw, 128px) max(28px, env(safe-area-inset-bottom)); }
+  .foot-label { margin: 0 0 14px; font-family: var(--mono); font-size: var(--fs-label); text-transform: uppercase; letter-spacing: 0.04em; color: var(--steel); }
+  /* The email address is the headline; it breaks before the @ when it has to */
+  .mail {
+    display: inline-flex; flex-wrap: wrap;
+    font-family: var(--serif); font-optical-sizing: auto; font-weight: 380;
+    font-size: clamp(2.5rem, 1rem + 6vw, 6.5rem); line-height: 0.98; letter-spacing: -0.035em;
+    text-decoration: none; color: var(--paper);
+  }
+  @media (hover: hover) and (pointer: fine) { .mail:hover { font-style: italic; } }
+  .foot {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto; gap: 32px;
+    align-items: start; margin-top: clamp(48px, 6vw, 80px); padding-top: 24px; border-top: 1px solid var(--mist);
+  }
+  .name { margin: 0 0 6px; font-size: var(--fs-small); font-weight: 700; font-stretch: 125%; letter-spacing: 0.02em; text-transform: uppercase; color: var(--paper); }
   .muted-light { color: var(--steel); margin: 0; font-size: var(--fs-small); }
-  .links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 28px; }
-  .links a { text-decoration: none; font-size: var(--fs-small); }
-  .links a:hover { text-decoration: underline; }
-  .skills { flex: 0 1 auto; }
-  .col-head { margin: 0 0 10px; font-size: var(--fs-small); font-weight: 600; color: var(--steel); }
+  .links { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .links a { font-size: var(--fs-small); text-decoration: none; }
   .skills ul { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 32px; }
   .skills li { break-inside: avoid; }
   .skills a { display: inline-block; padding: 3px 0; font-size: var(--fs-small); text-decoration: none; }
-  .skills a:hover { text-decoration: underline; }
-  @media (max-width: 560px) { .skills { flex-basis: 100%; } .skills ul { columns: 1; } }
-  .legal { margin-top: 32px; font-size: var(--fs-small); color: var(--steel); }
+  @media (hover: hover) and (pointer: fine) { .links a:hover, .skills a:hover { text-decoration: underline; } }
+  .legal { margin-top: 40px; font-family: var(--mono); font-size: var(--fs-label); color: var(--steel); }
+  @media (max-width: 760px) {
+    .foot { grid-template-columns: 1fr; }
+    .mail { flex-direction: column; font-size: 12vw; }
+  }
+  @media (max-width: 480px) { .skills ul { columns: 1; } }
 </style>

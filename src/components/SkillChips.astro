@@ -44,17 +44,20 @@ const chipHref = (slug: string) => (filter && slug && slug === current ? href(''
 <style>
   .chips { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
   .chips ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
-  .chips-label { font-size: var(--fs-small); font-weight: 600; color: var(--steel); }
+  .chips-label { font-family: var(--mono); font-size: var(--fs-label); text-transform: uppercase; letter-spacing: 0.04em; color: var(--steel); }
   .chips a {
-    display: inline-flex; align-items: center; gap: 6px; padding: 0.5em 1em; font-size: var(--fs-small); font-weight: 600; line-height: 1.2;
-    color: var(--ink); background: var(--white); border: 1px solid var(--mist); border-radius: 999px;
-    text-decoration: none; transition: background 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease);
+    display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px;
+    font-family: var(--mono); font-size: var(--fs-label); font-weight: 400; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.2;
+    color: var(--ink); background: transparent; border: 1px solid var(--mist); border-radius: 0;
+    text-decoration: none; -webkit-user-select: none; user-select: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.16s var(--ease);
   }
-  .chips a:hover { border-color: var(--ink); }
+  .chips a:active { transform: scale(0.97); }
+  @media (hover: hover) and (pointer: fine) { .chips a:hover { border-color: var(--ink); } }
   .chips a:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
   /* The selected filter: solid navy with a check mark, so it stands out on a phone too */
-  .filter a[aria-current='page'] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .filter a[aria-current='page'] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
   .filter a[aria-current='page']::before {
     content: ''; width: 9px; height: 5px; margin-top: -3px;
     border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg);
@@ -62,13 +65,13 @@ const chipHref = (slug: string) => (filter && slug && slug === current ? href(''
 
   .small { gap: 8px 10px; }
   .small ul { gap: 6px; }
-  .small a { padding: 0.35em 0.8em; }
+  .small a { min-height: 32px; padding: 0 10px; }
 
   .on-dark .chips-label { color: rgba(255, 255, 255, 0.75); }
   .on-dark a { color: #fff; background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.45); }
   .on-dark a:hover { background: #fff; color: var(--ink); border-color: #fff; }
 
   @media (max-width: 560px) {
-    .filter a { padding: 0.6em 1em; } /* bigger tap targets */
+    .filter a { min-height: 44px; } /* bigger tap targets */
   }
 </style>

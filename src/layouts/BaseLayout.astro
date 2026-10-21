@@ -1,7 +1,10 @@
 ---
 // The frame every page sits inside: <head>, top bar, footer,
 // the click-to-enlarge photo viewer, and the scroll-in animation.
-import '@fontsource-variable/work-sans';
+import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource-variable/newsreader/opsz.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -38,7 +41,7 @@ const ogImage = new URL(url(`/og/${ogFile(pageKey)}`), Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
-    <meta name="theme-color" content="#253447" />
+    <meta name="theme-color" content="#f3efe7" />
     {noindex && <meta name="robots" content="noindex" />}
     <meta property="og:type" content={type} />
     <meta property="og:title" content={fullTitle} />
@@ -81,14 +84,14 @@ const ogImage = new URL(url(`/og/${ogFile(pageKey)}`), Astro.site);
       .lightbox {
         width: 100vw; height: 100vh; max-width: none; max-height: none;
         margin: 0; padding: 0; border: 0;
-        background: rgba(20, 28, 38, 0.94);
+        background: rgba(21, 21, 21, 0.95);
         color: #fff;
       }
       .lightbox[open] { display: flex; align-items: center; justify-content: center; }
       .lightbox::backdrop { background: transparent; }
       .lightbox figure { margin: 0; max-width: min(92vw, 1600px); display: flex; flex-direction: column; align-items: center; gap: 12px; }
       .lightbox img { max-height: 82vh; width: auto; max-width: 100%; object-fit: contain; border-radius: 2px; background: #fff; }
-      .lightbox figcaption { font-size: var(--fs-small); color: #d4d9de; text-align: center; max-width: 70ch; }
+      .lightbox figcaption { font-family: var(--mono); font-size: var(--fs-label); color: #d8d3c9; text-align: center; max-width: 70ch; }
       .lightbox button {
         position: absolute; background: none; border: 0; color: #fff; cursor: pointer;
         font-size: 2.6rem; line-height: 1; padding: 12px 18px; opacity: 0.8;
@@ -103,9 +106,8 @@ const ogImage = new URL(url(`/og/${ogFile(pageKey)}`), Astro.site);
       .float-top {
         position: fixed; right: clamp(16px, 3vw, 32px); bottom: clamp(16px, 3vw, 32px); z-index: 40;
         width: 48px; height: 48px; display: grid; place-items: center;
-        background: var(--ink); color: #fff; border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 12px 0 12px 0; cursor: pointer;
-        box-shadow: 0 10px 24px -10px rgba(23, 33, 45, 0.6);
+        background: var(--ink); color: var(--paper); border: 1px solid rgba(243, 239, 231, 0.25);
+        border-radius: 0; cursor: pointer;
         opacity: 0; visibility: hidden; transform: translateY(10px);
         transition: opacity 0.25s var(--ease), transform 0.25s var(--ease), visibility 0.25s, background 0.2s var(--ease);
       }

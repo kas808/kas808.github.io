@@ -80,13 +80,13 @@ const pages = embedded
 <style>
   .docs { margin-top: 56px; }
 
-  .viewer { position: relative; border: 1px solid var(--mist); border-radius: var(--radius); background: #e2e1dc; overflow: hidden; }
+  .viewer { position: relative; border: 1px solid var(--mist); border-radius: var(--radius); background: #e8e2d6; overflow: hidden; }
   .viewer-bar {
     display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px;
     padding: 12px 18px; background: var(--ink); color: #fff; font-size: var(--fs-small);
   }
   .viewer-title { font-weight: 700; }
-  .viewer-count { font-variant-numeric: tabular-nums; color: #c9d0d7; }
+  .viewer-count { font-variant-numeric: tabular-nums; color: #d8d3c9; }
   .viewer-links { display: flex; gap: 18px; font-size: var(--fs-small); }
   .viewer-links a { color: #fff; }
   .viewer-scroll {
@@ -99,16 +99,16 @@ const pages = embedded
     scroll-behavior: smooth;
   }
   @media (max-width: 700px) { .viewer-scroll { height: 72vh; } }
-  .page { margin: 0; width: 100%; max-width: 860px; background: #fff; box-shadow: 0 10px 28px -16px rgba(37, 52, 71, 0.5); cursor: zoom-in; }
+  .page { margin: 0; width: 100%; max-width: 860px; background: #fff; box-shadow: 0 10px 28px -16px rgba(21, 21, 21, 0.5); cursor: zoom-in; }
   .page :global(img) { width: 100%; height: auto; }
 
   .scroll-hint {
     position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
     display: inline-flex; flex-direction: column; align-items: center; gap: 2px;
-    padding: 8px 18px 10px; border: 0; border-radius: 12px 0 12px 0;
+    padding: 8px 18px 10px; border: 0; border-radius: 0;
     background: var(--ink); color: #fff; cursor: pointer;
     font: 600 var(--fs-small)/1 var(--font);
-    box-shadow: 0 8px 20px -8px rgba(37, 52, 71, 0.6);
+    box-shadow: 0 8px 20px -8px rgba(21, 21, 21, 0.6);
     transition: opacity 0.35s var(--ease), visibility 0.35s;
     animation: bob 1.8s var(--ease) infinite;
   }

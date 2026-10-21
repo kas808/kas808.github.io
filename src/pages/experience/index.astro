@@ -23,7 +23,7 @@ const jobs = (await getCollection('experience')).sort((a, b) => a.data.order - b
           <span class="eyebrow">{job.data.organization} · {job.data.location} · {job.data.dates}</span>
           <span class="job-title">{job.data.title}</span>
           <span class="job-sum">{job.data.summary}</span>
-          <span class="btn">See the {job.id === 'wsp' ? 'internship' : 'role'}</span>
+          <span class="text-link">See the {job.id === 'wsp' ? 'internship' : 'role'} <span class="arrow" aria-hidden="true"></span></span>
         </span>
       </a>
     ))}
@@ -31,16 +31,21 @@ const jobs = (await getCollection('experience')).sort((a, b) => a.data.order - b
 </BaseLayout>
 
 <style>
-  .jobs { display: grid; gap: 32px; padding-bottom: 96px; }
-  .job { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); background: var(--white); border: 1px solid var(--mist); border-radius: var(--radius); overflow: hidden; text-decoration: none; color: var(--charcoal); transition: box-shadow 0.35s var(--ease), transform 0.35s var(--ease); }
-  .job:hover { transform: translateY(-3px); box-shadow: 0 22px 44px -28px rgba(37, 52, 71, 0.5); }
+  /* Each role: photo beside its text, flat on the paper with a ruled top, like the project cards */
+  .jobs { display: grid; gap: clamp(48px, 6vw, 80px); padding-bottom: 96px; }
+  .job { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: start; text-decoration: none; color: var(--charcoal); }
   @media (max-width: 860px) { .job { grid-template-columns: 1fr; } }
-  .job-img { display: block; aspect-ratio: 16 / 10; overflow: hidden; }
-  .job-img :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos); transition: transform 0.8s var(--ease); }
-  .job:hover .job-img :global(img) { transform: scale(1.03); }
-  .job-text { display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: clamp(24px, 4vw, 48px); }
+  .job-img { display: block; aspect-ratio: 16 / 10; overflow: hidden; background: var(--paper-up); }
+  .job-img :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos); transition: transform 0.8s var(--ease), filter 0.5s ease; }
+  @media (hover: hover) and (pointer: fine) {
+    .job-img :global(img) { filter: saturate(0.55) brightness(0.94); }
+    .job:hover .job-img :global(img) { filter: none; transform: scale(1.03); }
+    .job:hover .text-link { text-decoration: underline; text-underline-offset: 6px; }
+    .job:hover .text-link .arrow { transform: translateX(4px); }
+  }
+  .job-text { display: flex; flex-direction: column; gap: 14px; padding-top: 16px; border-top: 1px solid var(--ink); }
   .job-text .eyebrow { margin: 0; }
-  .job-title { font-size: var(--fs-heading); font-weight: 800; color: var(--ink); line-height: 1.1; letter-spacing: -0.02em; }
+  .job-title { font-family: var(--serif); font-optical-sizing: auto; font-size: var(--fs-heading); font-weight: 380; color: var(--ink); line-height: 1.02; letter-spacing: -0.025em; }
   .job-sum { font-size: var(--fs-body); }
-  .job-text .btn { align-self: flex-start; margin-top: 8px; }
+  .job-text .text-link { margin-top: 4px; }
 </style>

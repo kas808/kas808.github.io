@@ -31,11 +31,10 @@ import turbineCalcs from '../content/projects/wind-turbine/11_hand_calcs_power_e
 import pantographBand from '../assets/home/pantograph-final-build.jpg';
 import saeLayout from '../content/projects/sae-aero/concept_sketch_layout.jpg';
 import saeCargo from '../content/projects/sae-aero/concept_sketch_cargo_bay.jpg';
-import filterTesting from '../assets/home/water-filter-testing.jpg';
-import filterColumn from '../assets/home/water-filter-column.jpg';
-import filterLayers from '../content/projects/water-filter/04_filter2_layers.png';
-import rubeSketch from '../content/projects/rube-goldberg/03_my_concept_sketch.jpg';
-import rubeMachine from '../content/projects/rube-goldberg/01_final_machine.jpg';
+import clampMachined from '../content/projects/toggle-clamp-dfm/dfm_01_machined_part_drawing_GDT.png';
+import clampSheetMetal from '../content/projects/toggle-clamp-dfm/dfm_02_sheet_metal_bent_drawing_GDT.png';
+import pipingSchematic from '../content/projects/hydraulic-system/01_piping_schematic.png';
+import pumpCurve from '../content/projects/hydraulic-system/04_pump_curve_selection.png';
 
 // "What I've built": six builds. Picking a tile shows that build in the one panel below it.
 //   short:   the name on the tile
@@ -74,21 +73,20 @@ const buildList: Build[] = [
     results: [{ label: 'Competition', value: 'SAE Aero 2027' }, { label: 'Status', value: 'In progress' }],
   },
   {
-    slug: 'water-filter', short: 'Water Filter', info: 'The redesign cut turbidity by about 60%',
+    slug: 'toggle-clamp-dfm', short: 'Toggle Clamp DFM', info: 'Machined and sheet metal redesigns, full GD&T',
     media: [
-      { image: filterTesting, alt: 'The filter column being tested outdoors' },
-      { image: filterColumn, alt: 'The filter column on its wooden stand' },
-      { image: filterLayers, alt: "Diagram of the second filter's anthracite, sand and gravel layers", fit: 'contain' },
+      { image: clampMachined, alt: 'GD&T drawing of the left support redesigned as a machined part', fit: 'contain' },
+      { image: clampSheetMetal, alt: 'GD&T drawing of the left support redesigned as bent sheet metal', fit: 'contain' },
     ],
-    results: [{ label: 'Filter media', value: 'Anthracite, sand, gravel' }, { label: 'Turbidity, redesign', value: 'About 60% lower' }],
+    results: [{ label: 'Modeled in', value: 'SolidWorks' }, { label: 'Left support', value: 'Machined and sheet metal' }],
   },
   {
-    slug: 'rube-goldberg', short: 'Rube Goldberg Machine', info: 'My concept became the team design',
+    slug: 'hydraulic-system', short: 'Hydraulic System', info: 'Pump sized for 23.4 m of head',
     media: [
-      { image: rubeSketch, alt: 'My concept sketch for the chain reaction' },
-      { image: rubeMachine, alt: 'The finished Rube Goldberg machine on its board' },
+      { image: pipingSchematic, alt: 'Piping schematic of the school water system with its three branches', fit: 'contain' },
+      { image: pumpCurve, alt: 'Pump curve used to select the pump', fit: 'contain' },
     ],
-    results: [{ label: 'Board', value: '48 x 48 in' }, { label: 'Reveals', value: 'L, M and U' }],
+    results: [{ label: 'Solver', value: 'MATLAB pipe network' }, { label: 'Required pump head', value: '23.4 m' }],
   },
 ];
 const builds = await Promise.all(
@@ -268,7 +266,6 @@ const nav = [
       <section class="work" id="work" data-chapter="graphite" aria-labelledby="work-title">
         <div class="work-head">
           <h2 id="work-title" class="serif section-title" data-rise>What I've built</h2>
-          <p class="work-sub" data-rise>The first three were predicted on paper before they were built and tested.</p>
         </div>
         <ol class="index" data-tabs>
           {builds.map((b, i) => (
@@ -507,7 +504,9 @@ const nav = [
       .arrow { position: relative; display: inline-block; width: 18px; height: 1.5px; background: currentColor; transition: transform 200ms var(--ease-out); }
       .arrow::after { content: ''; position: absolute; right: 0; top: -4px; width: 8px; height: 8px; border-top: 1.5px solid currentColor; border-right: 1.5px solid currentColor; transform: rotate(45deg); }
       .arrow-down { transform: rotate(90deg); }
-      .text-link { display: inline-flex; align-items: center; gap: 12px; font-size: var(--step-small); font-weight: 600; text-decoration: none; min-height: 44px; }
+      .text-link { display: inline-flex; align-items: center; gap: 16px; font-size: clamp(1.125rem, 1rem + 0.45vw, 1.375rem); font-weight: 600; text-decoration: none; min-height: 48px; }
+      .text-link .arrow { width: 26px; height: 2px; }
+      .text-link .arrow::after { top: -5px; width: 11px; height: 11px; border-width: 2px; }
       @media (hover: hover) and (pointer: fine) {
         .btn:hover { background: #ffffff; }
         .btn:hover .arrow:not(.arrow-down), .text-link:hover .arrow { transform: translateX(4px); }
@@ -633,7 +632,7 @@ const nav = [
       .panel-media figure { margin: 0; overflow: hidden; background: var(--up); }
       .panel-media img { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); }
       .panel-media .is-contain { background: #fff; }
-      .panel-media .is-contain img { object-fit: contain; padding: 6%; }
+      .panel-media .is-contain img { object-fit: contain; padding: 3%; }
       .panel-foot { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 12px; align-items: start; padding-top: 18px; }
       .readout { grid-column: 1 / span 6; grid-row: 1 / span 3; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
       .readout div { padding: 14px 16px 16px; background: var(--up); }
@@ -671,7 +670,7 @@ const nav = [
       .fields { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
       .fields a {
         display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--rule);
-        font-size: var(--step-small); font-weight: 600; text-decoration: none;
+        font-family: var(--mono); font-size: var(--step-label); font-weight: 400; text-transform: uppercase; letter-spacing: 0.04em; text-decoration: none;
         transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, transform 160ms var(--ease-out);
       }
       .fields a:active { transform: scale(0.97); }

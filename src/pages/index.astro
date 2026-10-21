@@ -1,40 +1,25 @@
 ---
+// The home page. It has its own look, separate from the rest of the site for now:
+// an aerospace and defense company. Graphite, flight-deck olive and paper,
+// with the work itself (photos of real hardware) carrying the colour.
+// Type: Archivo, its expanded capitals for headlines and normal width for text.
+// As you scroll, the whole page changes colour chapter by chapter, the first photo
+// pulls back into a frame, and the three test results pin and swap in place.
+import '@fontsource-variable/archivo/wdth.css';
 import { Image } from 'astro:assets';
-import { getEntry } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import SkillChips from '../components/SkillChips.astro';
+import { getCollection, getEntry } from 'astro:content';
 import { url } from '../lib/url';
 import { site } from '../lib/site';
-import { featured, punahou } from '../lib/featured';
+import { categories } from '../lib/categories';
+import { featured } from '../lib/featured';
+import { ogFile } from '../lib/og';
+import { shortDescription } from '../lib/og-image';
 import headshot from '../assets/headshot.jpg';
-// Hero photos, shown in this order with a quick wipe between them
-import heroLanakila from '../assets/hero/lanakila-express.jpg';
-import heroWsp from '../assets/hero/wsp-site-visit.jpg';
-import heroPantograph from '../assets/hero/pantograph.jpg';
-import heroShop from '../assets/hero/shop.jpg';
-import heroRope from '../content/projects/rope-climbing-robot/02_robot_on_rope.jpg';
-import heroRube from '../assets/hero/rube-goldberg.jpg';
-import heroKart from '../assets/hero/go-kart.jpg';
-import wspTeam from '../content/experience/wsp/00_wsp_team.jpg';
-import wspSite from '../content/experience/wsp/ulana_03.jpg';
-import wspPlan from '../content/experience/wsp/spa_plan_04.jpg';
-import wspExcel from '../content/experience/wsp/building-pressurization-excel-sheet-walk-through.jpg';
+import heroPhoto from '../content/projects/rope-climbing-robot/01_river_crossing_wide.jpg';
+import gearTrain from '../content/projects/rope-climbing-robot/09_gear_train_top_view.jpg';
+import wspRoom from '../content/experience/wsp/halekulani_12.jpg';
 
-// LMU and WSP work first; Punahou photos come last.
-// `position` picks which part of the photo stays in view ('50% 0%' = top, '50% 50%' = middle).
-const heroSlides = [
-  { src: heroWsp, caption: 'WSP site visit', position: '50% 45%' },
-  { src: heroPantograph, caption: '2x Magnifying Pantograph', position: '50% 55%' },
-  { src: heroRope, caption: 'Rope Climbing Robot', position: '50% 40%' },
-  { src: heroShop, caption: 'In the shop', position: '50% 45%' },
-  { src: heroRube, caption: 'Rube Goldberg Machine', position: '50% 45%' },
-  { src: heroLanakila, caption: 'Lanakila Express, Punahou School', position: '50% 62%' },
-  { src: heroKart, caption: 'Go-Kart, Punahou School', position: '50% 50%' },
-];
-const pad = (n: number) => String(n).padStart(2, '0');
-
-// Featured projects: title, summary, course, date and photo from each project's index.md,
-// plus the measured result from src/lib/featured.ts
+// The three featured projects, with their measured results from src/lib/featured.ts
 const featuredCards = await Promise.all(
   featured.map(async (f) => {
     const entry = await getEntry('projects', f.slug);
@@ -42,87 +27,188 @@ const featuredCards = await Promise.all(
     return { ...f, ...entry.data, href: `/projects/${f.slug}/` };
   }),
 );
+
+// More work: one tile each, with the number that project is known for where it has one
+// (the rest are in the full list further down)
+const moreSlugs = [
+  { slug: 'sae-aero', figure: 'In progress' },
+  { slug: 'hydraulic-system', figure: '23.4 m pump head' },
+];
+const moreTiles = await Promise.all(
+  moreSlugs.map(async (m) => {
+    const entry = await getEntry('projects', m.slug);
+    if (!entry) throw new Error(`Project "${m.slug}" not found in src/content/projects/`);
+    return { ...m, ...entry.data, href: `/projects/${m.slug}/` };
+  }),
+);
+
+// Every project and role, for the filterable list (placeholders stay off the home page)
+type Row = { title: string; course: string; date: string; href: string; cover?: ImageMetadata; coverPosition?: string; fields: string[] };
+const experienceRows: Row[] = (await getCollection('experience'))
+  .filter((e) => e.data.categories.length > 0)
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({
+    title: `${e.data.organization.replace(/ in the US$/, '')} internship`,
+    course: e.data.title,
+    date: e.data.dates.replace(/^\w+ (\d{4}) to \w+ (\d{4})$/, '$1 to $2'),
+    href: `/experience/${e.id}/`,
+    cover: e.data.cover,
+    coverPosition: e.data.coverPosition,
+    fields: e.data.categories.map((c) => c.category),
+  }));
+const projectRows: Row[] = (await getCollection('projects'))
+  .filter((p) => !p.data.placeholder)
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((p) => ({
+    title: p.data.title,
+    course: p.data.course ?? p.data.role,
+    date: p.data.date,
+    href: `/projects/${p.id}/`,
+    cover: p.data.cover ?? p.data.gallery?.[0]?.images?.[0]?.src,
+    coverPosition: p.data.coverPosition,
+    fields: p.data.categories.map((c) => c.category),
+  }));
+const rows = [...experienceRows, ...projectRows];
+const fields = categories.filter((c) => rows.some((r) => r.fields.includes(c.slug)));
+const firstWithPhoto = rows.find((r) => r.cover)!;
+
+const punahou = [
+  { name: 'Go-Kart', detail: 'Engineering III', href: '/punahou/engineering-iii/go-kart/' },
+  { name: 'Lanakila Express', detail: 'Solar charger, tracks, couplings', href: '/punahou/#lanakila-express' },
+  { name: 'Waikiki Zootopia', detail: 'Zoo enrichment toys', href: '/punahou/ke-kilohana/waikiki-zootopia/' },
+  { name: 'Machine shop tests', detail: 'Mill and lathe', href: '/punahou/#competency-tests' },
+  { name: 'Robotics TA', detail: 'Grades 4 to 6', href: '/experience/robotics-ta/' },
+];
+const wspSoftware = ['Revit', 'AutoCAD', 'TRACE 700', 'IES-VE', 'Bluebeam', 'Excel'];
+const wspStandards = ['ASHRAE 62.1', 'ASHRAE 90.1', 'IECC', 'UPC'];
+const [emailUser, emailHost] = site.email.split('@');
+
+// Search results and link previews, the same as every other page (see BaseLayout.astro)
+const description = shortDescription(site.description);
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(url(`/og/${ogFile('')}`), Astro.site);
+
+// The main menu: the same places as the menu on every other page
+const nav = [
+  { label: 'Work', href: '#work' },
+  { label: 'Projects', href: url('/projects/') },
+  { label: 'Experience', href: url('/experience/') },
+  { label: 'Resume', href: url('/resume/') },
+  { label: 'Contact', href: url('/contact/') },
+];
 ---
 
-<BaseLayout>
-  <section class="hero" aria-label="Introduction" data-hero>
-    <div class="slides" aria-hidden="true">
-      {heroSlides.map((h, i) => (
-        <div class:list={['slide-frame', i === 0 && 'is-active']} style={`--pos: ${h.position}`} data-caption={h.caption}>
-          <Image src={h.src} alt="" widths={[900, 1400, 2000, 2400]} sizes="100vw" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} />
+<!doctype html>
+<html lang="en" class="no-js" data-ground="graphite">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{site.title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <meta name="theme-color" content="#0d0e10" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={site.title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name}, mechanical engineer`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={site.title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <script is:inline>document.documentElement.classList.remove('no-js');</script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <!-- One fixed colour layer behind the page; it changes colour as each chapter arrives -->
+    <div class="ground" aria-hidden="true"></div>
+
+    <header class="bar">
+      <a class="wordmark" href={url('/')}>{site.name}</a>
+      <nav aria-label="Main">
+        <ul class="nav-links">
+          {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+          <li><a class="btn btn-small" href={`mailto:${site.email}`}>Email me</a></li>
+        </ul>
+        <!-- Phones: the same links in a full-screen menu -->
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="phone-menu">Menu</button>
+      </nav>
+      <div class="phone-menu" id="phone-menu" hidden>
+        <ul>
+          {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+          <li><a href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a></li>
+        </ul>
+        <a class="btn" href={`mailto:${site.email}`}>Email me <span class="arrow" aria-hidden="true"></span></a>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- Chapter 1, graphite: the work in the field, full screen, then pulled back into a frame -->
+      <section class="hero" data-chapter="graphite" aria-labelledby="hero-title">
+        <div class="hero-stage">
+          <div class="hero-photo">
+            <Image src={heroPhoto} alt="The Rope Climbing Robot crossing the test course along a rope above water" widths={[900, 1400, 2000, 2600]} sizes="100vw" loading="eager" fetchpriority="high" />
+          </div>
+          <div class="hero-shade" aria-hidden="true"></div>
+          <div class="hero-copy">
+            <h1 id="hero-title">
+              <span class="line"><span>Kasin</span></span>
+              <span class="line"><span>Ito-Sato</span></span>
+            </h1>
+            <!-- Role, then degree and graduation date on their own line: the first things a recruiter checks -->
+            <p class="hero-role">Mechanical Engineer</p>
+            <p class="hero-degree">BS Mechanical Engineering, <span class="nowrap">Loyola Marymount University</span><span class="sep"> · </span><span class="nowrap">May 2027</span></p>
+            <p class="hero-line">Build it, measure it. I design and build hardware, then test it against my own predictions.</p>
+            <div class="hero-actions">
+              <a class="btn" href="#work">See the work <span class="arrow" aria-hidden="true"></span></a>
+              <a class="text-link" href={url('/resume/')}>Resume</a>
+              <a class="text-link" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+            </div>
+          </div>
+          <p class="hero-caption">Rope Climbing Robot on the test course, Spring 2026</p>
         </div>
-      ))}
-    </div>
-    <div class="shade" aria-hidden="true"></div>
-    <!-- Slideshow bar: pause button, which photo this is, and a line that fills until the next one -->
-    <div class="slide-bar">
-      <button class="slide-pause" type="button" aria-label="Pause slideshow" hidden>
-        <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="0.5" /><rect x="9.5" y="2.5" width="3" height="11" rx="0.5" /></svg>
-        <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.6v10.8a.5.5 0 0 0 .76.43l8.6-5.4a.5.5 0 0 0 0-.86l-8.6-5.4a.5.5 0 0 0-.76.43Z" /></svg>
-      </button>
-      <p class="slide-caption">
-        <span class="slide-count" aria-hidden="true"><span data-count>01</span> / {pad(heroSlides.length)}</span>
-        <span data-caption-text>{heroSlides[0].caption}</span>
-      </p>
-      <span class="slide-progress" aria-hidden="true"></span>
-    </div>
-    <div class="wrap hero-content">
-      <h1>Kasin Ito-Sato</h1>
-      <p class="role">Mechanical Engineer</p>
-      <p class="school">BS Mechanical Engineering, <span class="nowrap">Loyola Marymount University</span><span class="sep"> · </span><span class="nowrap">May 2027</span></p>
-      <p class="focus">Mechanical design · Thermal & flow analysis · Assembly & test · GD&T</p>
-      <!-- One main action; the resume and LinkedIn are plain links beside it -->
-      <div class="hero-btns">
-        <a class="btn" href={url('/projects/')}>See my projects</a>
-        <a class="text-link" href={url('/resume/')}>Resume <span class="arrow" aria-hidden="true"></span></a>
-        <a class="text-link" href={site.linkedin} target="_blank" rel="noopener">LinkedIn <span class="arrow" aria-hidden="true"></span></a>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <section class="about wrap" aria-labelledby="about-title">
-    <div class="about-photo reveal">
-      <!-- Larger sizes and higher quality than other photos, so the headshot stays sharp on high-resolution screens -->
-      <Image src={headshot} alt="Portrait of Kasin Ito-Sato" widths={[480, 720, 1000, 1337]} sizes="(max-width: 860px) 80vw, 40vw" quality={92} />
-    </div>
-    <div class="about-text reveal">
-      <h2 id="about-title">About</h2>
-      <div class="about-copy">
-        <p>
-          I'm a fourth-year mechanical engineering student at Loyola Marymount University, graduating in May 2027, and I'm on
-          our team for the 2027 SAE Aero Design Regular Class competition. I grew up on Oahu, where I spent most of my free
-          time in the Punahou School engineering shop learning to machine, weld, and wire.
-        </p>
-        <p>
-          What I enjoy most is figuring out why a system behaves the way it does, then building it, testing it, and adjusting
-          until it works. After I graduate, I'm looking for a full-time role where I can keep doing that.
-        </p>
-      </div>
-      <p class="facts-row">Los Angeles, CA · FE Mechanical Exam, Nov 2026 · English & Japanese</p>
-      <div class="btn-row about-cta">
-        <a class="btn" href={url('/resume/')}>Resume</a>
-        <a class="btn btn-ghost" href={`mailto:${site.email}`}>Email me</a>
-      </div>
-    </div>
-  </section>
+      <section class="intro" data-chapter="graphite" aria-labelledby="intro-title">
+        <h2 id="intro-title" class="visually-hidden">About</h2>
+        <div class="intro-grid">
+          <p class="lead" data-rise>
+            I'm a fourth-year mechanical engineering student at Loyola Marymount University and on our team for the 2027
+            SAE Aero Design Regular Class competition. I grew up on Oahu, learning to machine, weld and wire in the
+            Punahou School shop.
+          </p>
+          <div class="portrait" data-rise>
+            <Image src={headshot} alt="Portrait of Kasin Ito-Sato" widths={[360, 540, 720]} sizes="(max-width: 760px) 40vw, 20vw" quality={90} />
+          </div>
+          <dl class="facts">
+            <div data-rise><dt>Studying</dt><dd>BS Mechanical Engineering, Loyola Marymount University, May 2027. FE Mechanical exam in November 2026.</dd></div>
+            <div data-rise><dt>Working on</dt><dd>Mechanical design and CAD, thermal and flow analysis, assembly and test, GD&T.</dd></div>
+            <div data-rise><dt>Based in</dt><dd>Los Angeles, CA. Grew up in Honolulu. English and Japanese.</dd></div>
+            <div data-rise><dt>Looking for</dt><dd>A full-time role after I graduate where I can keep designing, building and testing.</dd></div>
+          </dl>
+        </div>
+      </section>
 
-  <section class="featured section-tight" aria-labelledby="featured-title">
-    <div class="wrap">
-      <div class="featured-head">
-        <h2 id="featured-title">Featured Projects</h2>
-        <a class="all-link" href={url('/projects/')}>All projects <span class="arrow" aria-hidden="true"></span></a>
-      </div>
-      <ul class="featured-grid">
-        {featuredCards.map((f) => (
-          <li class="fcard reveal">
-            <a class="fcard-media" href={url(f.href)} tabindex="-1" aria-hidden="true" style={f.coverPosition && `--pos: ${f.coverPosition}`}>
-              {f.cover && <Image src={f.cover} alt={f.coverAlt ?? ''} widths={[400, 700, 1000]} sizes="(max-width: 600px) 100vw, (max-width: 960px) 40vw, 33vw" />}
-            </a>
-            <div class="fcard-body">
+      <!-- Chapter 1 continues: three results side by side, so they can be compared in one look -->
+      <section class="tests" id="work" data-chapter="graphite" aria-labelledby="tests-title">
+        <div class="tests-head">
+          <h2 id="tests-title" class="title" data-rise>Built, then measured</h2>
+          <p class="tests-sub" data-rise>Three builds where I predicted the result first, then tested it.</p>
+        </div>
+        <ol class="tests-grid">
+          {featuredCards.map((f) => (
+            <li class="test" data-rise>
+              <a class="test-photo" href={url(f.href)} tabindex="-1" aria-hidden="true" style={f.coverPosition && `--pos: ${f.coverPosition}`} data-reveal>
+                {f.cover && <Image src={f.cover} alt="" widths={[500, 800, 1100]} sizes="(max-width: 640px) 100vw, (max-width: 960px) 45vw, 32vw" />}
+              </a>
               <h3><a href={url(f.href)}>{f.title}</a></h3>
-              <p class="fcard-meta">{[f.course, f.date].filter(Boolean).join(' · ')}</p>
-              <p class="fcard-summary">{f.summary}</p>
-              <dl class="results">
+              <p class="test-meta">{[f.course, f.date].filter(Boolean).join(' · ')}</p>
+              <dl class="readout">
                 {f.results.map((r) => (
                   <div>
                     <dt>{r.label}</dt>
@@ -130,374 +216,640 @@ const featuredCards = await Promise.all(
                   </div>
                 ))}
               </dl>
-              <p class="results-note">{f.note}</p>
-            </div>
+              <p class="test-note">{f.note}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <!-- More work, as a mosaic of tiles -->
+      <section class="mosaic" data-chapter="graphite" aria-labelledby="more-title">
+        <h2 id="more-title" class="title" data-rise>More work</h2>
+        <ul class="tiles">
+          <li class="tile tile-wide" data-reveal>
+            <a href={url('/projects/rope-climbing-robot/')}>
+              <span class="tile-photo"><Image src={gearTrain} alt="" widths={[700, 1100, 1500]} sizes="(max-width: 760px) 100vw, 66vw" /></span>
+              <span class="tile-text">
+                <span class="tile-name">Inside the rope climber</span>
+                <span class="tile-line">Gear train and screw-slider drive, laser-cut and 3D printed</span>
+              </span>
+              <span class="tile-arrow" aria-hidden="true"></span>
+            </a>
           </li>
-        ))}
-      </ul>
-      <div class="browse"><SkillChips label="Browse by skill" /></div>
-    </div>
-  </section>
-
-  <section class="section wrap wsp" aria-labelledby="wsp-title">
-    <div class="wsp-grid">
-      <a class="wsp-photo reveal" href={url('/experience/wsp/')} tabindex="-1">
-        <Image src={wspTeam} alt="Kasin with the WSP Honolulu intern class and a mentor in the office" widths={[600, 900, 1300]} sizes="(max-width: 900px) 100vw, 55vw" />
-      </a>
-      <div class="wsp-text reveal">
-        <h2 id="wsp-title">Mechanical Engineering Intern at WSP</h2>
-        <p class="wsp-meta">Internship · Honolulu, HI · May 2025 to January 2026</p>
-        <p>
-          During my internship at WSP, I worked with licensed mechanical engineers to design HVAC, plumbing, and fire
-          protection systems for commercial and residential projects. I performed load calculations and drafting, and
-          researched ASHRAE 62.1 and 90.1 standards, IECC codes, and industry practices to apply them to real project
-          conditions.
-        </p>
-        <p>
-          I gained experience using Revit, AutoCAD, TRACE 700, IES-VE, and Bluebeam to develop, revise, and
-          coordinate mechanical system drawings, BIM documentation, and project submittals. I also created custom Excel
-          sheets that looked at demand-controlled ventilation, building pressurization, and exhaust airflow requirements.
-        </p>
-        <!-- The same software as the paragraph above, as tags a reviewer can scan -->
-        <ul class="tags wsp-tools" aria-label="Software used at WSP">
-          {['Revit', 'AutoCAD', 'TRACE 700', 'IES-VE', 'Bluebeam', 'Excel'].map((t) => <li>{t}</li>)}
+          {moreTiles.map((t) => (
+            <li class="tile" data-reveal>
+              <a href={url(t.href)}>
+                <span class="tile-photo" style={t.coverPosition && `--pos: ${t.coverPosition}`}>
+                  {t.cover && <Image src={t.cover} alt="" widths={[500, 800]} sizes="(max-width: 760px) 100vw, 33vw" />}
+                </span>
+                <span class="tile-text">
+                  <span class="tile-name">{t.title}</span>
+                  <span class="tile-line">{t.figure}</span>
+                </span>
+                <span class="tile-arrow" aria-hidden="true"></span>
+              </a>
+            </li>
+          ))}
         </ul>
-        <a class="btn" href={url('/experience/wsp/')}>See the internship</a>
-      </div>
-    </div>
-    <div class="tiles">
-      <a class="reveal" href={url('/experience/wsp/#site-visits')}>
-        <Image src={wspSite} alt="" widths={[400, 700]} sizes="(max-width: 700px) 100vw, 33vw" />
-        <span>Site visits</span>
-      </a>
-      <a class="reveal" href={url('/experience/wsp/#hawaii-prince-waikiki-spa-renovation')}>
-        <Image src={wspPlan} alt="" widths={[400, 700]} sizes="(max-width: 700px) 100vw, 33vw" />
-        <span>Hawaii Prince Waikiki Spa Renovation</span>
-      </a>
-      <a class="reveal" href={url('/experience/wsp/#excel-calculation-tools')}>
-        <Image src={wspExcel} alt="" widths={[400, 700]} sizes="(max-width: 700px) 100vw, 33vw" />
-        <span>Excel calculation tools</span>
-      </a>
-    </div>
-  </section>
+      </section>
 
-  <section class="section section-dark punahou-band" aria-labelledby="punahou-title">
-    <div class="wrap">
-      <div class="band-grid">
-        <div class="reveal">
-          <h2 id="punahou-title">Punahou School</h2>
-          <p class="lead">
-            Where I started engineering: a go-kart, a solar charger for a ride-on train, enrichment toys for the Honolulu Zoo,
-            and machine shop competency tests.
-          </p>
-          <a class="btn" href={url('/punahou/')}>See Punahou projects</a>
+      <!-- Chapter 2, flight-deck olive: the internship -->
+      <section class="wsp" id="wsp" data-chapter="olive" aria-labelledby="wsp-title">
+        <div class="wsp-head">
+          <h2 id="wsp-title" class="title" data-rise>Intern at WSP</h2>
+          <dl class="side-facts" data-rise>
+            <div><dt>Role</dt><dd>Mechanical Engineering Intern</dd></div>
+            <div><dt>Where</dt><dd>WSP in the US, Honolulu, HI</dd></div>
+            <div><dt>When</dt><dd>May 2025 to January 2026</dd></div>
+          </dl>
         </div>
-        <div class="band-ta reveal">
-          <h3>Robotics Teaching Assistant</h3>
-          <p>
-            At Punahou School I supported fourth through sixth graders in their robotics journey, helping them both build
-            robots and code them.
-          </p>
-          <a class="text-link" href={url('/experience/robotics-ta/')}>See the role <span class="arrow" aria-hidden="true"></span></a>
+        <figure class="wsp-photo" data-reveal>
+          <Image src={wspRoom} alt="A building mechanical room with red and blue piping and pumps, seen on a WSP site visit" widths={[900, 1400, 2000, 2600]} sizes="100vw" />
+        </figure>
+        <div class="wsp-figure">
+          <p class="big" data-rise>0.0026 <span class="unit">in. w.c.</span></p>
+          <div class="wsp-figure-text">
+            <h3 data-rise>The rule of thumb, checked</h3>
+            <p data-rise>
+              With the team's 10% rule of thumb, my Excel pressurization tool showed a 40,000 sq ft office reaching
+              0.0026 in. w.c., under the 0.02 in. w.c. minimum. It was one of three calculation tools I built that the
+              team adopted.
+            </p>
+          </div>
         </div>
+        <div class="wsp-body">
+          <p class="lead" data-rise>
+            I worked with licensed mechanical engineers to design HVAC, plumbing and fire protection systems for
+            commercial and residential projects. I sized equipment from loads cross-checked in IES-VE and TRACE 700 and
+            drafted layouts for the Hawaii Prince Waikiki Spa Renovation.
+          </p>
+          <div class="records" data-rise>
+            <div>
+              <h3>Software</h3>
+              <ul>{wspSoftware.map((t) => <li>{t}</li>)}</ul>
+            </div>
+            <div>
+              <h3>Standards and codes</h3>
+              <ul>{wspStandards.map((t) => <li>{t}</li>)}</ul>
+            </div>
+          </div>
+          <a class="text-link" href={url('/experience/wsp/')} data-rise>See the internship <span class="arrow" aria-hidden="true"></span></a>
+        </div>
+      </section>
+
+      <!-- Chapter 3, paper: the full record -->
+      <section class="ledger" id="all" data-chapter="paper" aria-labelledby="ledger-title">
+        <div class="ledger-col">
+          <h2 id="ledger-title" class="title" data-rise>Everything I've worked on</h2>
+          <nav class="fields" aria-label="Show work in one field" data-rise>
+            <a href={url('/projects/')} data-field="" aria-current="true">All</a>
+            {fields.map((c) => <a href={url(`/projects/${c.slug}/`)} data-field={c.slug}>{c.name}</a>)}
+          </nav>
+          <p class="ledger-count" aria-live="polite" data-count>{rows.length} projects and roles</p>
+          <ol class="rows">
+            {rows.map((r) => (
+              <li data-fields={r.fields.join(' ')}>
+                <a href={url(r.href)}>
+                  {r.cover && (
+                    <span class="row-photo" style={r.coverPosition && `--pos: ${r.coverPosition}`}>
+                      <Image src={r.cover} alt="" widths={[400, 640]} sizes="(max-width: 760px) 100vw, 320px" />
+                    </span>
+                  )}
+                  <span class="row-name">{r.title}</span>
+                  <span class="row-kind">{r.course}</span>
+                  <span class="row-date">{r.date}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+          <a class="text-link" href={url('/projects/')} data-field-link>See all projects with photos <span class="arrow" aria-hidden="true"></span></a>
+        </div>
+        <figure class="preview" aria-hidden="true">
+          <div class="preview-frame">
+            {firstWithPhoto.cover && <Image src={firstWithPhoto.cover} alt="" widths={[500, 800]} sizes="30vw" data-preview-img />}
+          </div>
+          <figcaption data-preview-cap>{firstWithPhoto.title}</figcaption>
+        </figure>
+      </section>
+
+      <section class="punahou" data-chapter="paper" aria-labelledby="punahou-title">
+        <h2 id="punahou-title" class="title" data-rise>Where I started: Punahou School</h2>
+        <ul>
+          {punahou.map((p) => (
+            <li data-rise>
+              <a href={url(p.href)}>
+                <h3>{p.name}</h3>
+                <span>{p.detail}</span>
+                <span class="arrow" aria-hidden="true"></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a class="text-link" href={url('/punahou/')} data-rise>See every Punahou project <span class="arrow" aria-hidden="true"></span></a>
+      </section>
+    </main>
+
+    <!-- Chapter 4, graphite again: the way to reach me is the headline -->
+    <footer class="close" data-chapter="graphite" aria-labelledby="close-title">
+      <h2 id="close-title" class="close-title">Get in touch</h2>
+      <a class="mail" href={`mailto:${site.email}`}><span>{emailUser}</span><span>@{emailHost}</span></a>
+      <div class="close-meta">
+        <p>Mechanical Engineer<br />BS Loyola Marymount University, May 2027</p>
+        <p>Los Angeles, CA<br />English and Japanese</p>
+        <p><a href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a><br /><a href={url('/resume/')}>Resume</a></p>
+        <p><a href="#main">Back to top</a><br />© 2026 {site.name}</p>
       </div>
-      <div class="tiles">
-        {punahou.map((p) => (
-          <a class="reveal" href={url(p.href)} style={[p.position && `--pos: ${p.position}`, p.fit && `--fit: ${p.fit}`].filter(Boolean).join('; ') || undefined}>
-            <Image src={p.image} alt={p.alt} widths={[400, 700]} sizes="(max-width: 700px) 100vw, 33vw" />
-            <span>{p.title}</span>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-</BaseLayout>
+    </footer>
 
-<style>
-  /* Full-width hero: photos wipe in one after another under a dark scrim, with white text on top */
-  .hero {
-    position: relative;
-    min-height: clamp(500px, 80vh, 820px); /* short enough that the projects below start to show */
-    min-height: clamp(500px, 80svh, 820px); /* phones: measured without the browser's address bar */
-    display: flex;
-    align-items: flex-end;
-    overflow: hidden;
-    background: var(--ink);
-    color: #fff;
-    --focus-ring: var(--accent);
-  }
-  .slides { position: absolute; inset: 0; z-index: 0; }
-  /* Each new photo wipes in from left to right over the last one, with a thin tan edge */
-  .slide-frame {
-    position: absolute; inset: 0;
-    clip-path: inset(0 100% 0 0);
-    z-index: 0;
-  }
-  .slide-frame.is-active { clip-path: inset(0 0 0 0); z-index: 2; }
-  .slide-frame.is-entering { z-index: 3; animation: heroWipe 0.8s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
-  .slide-frame.is-leaving { clip-path: inset(0 0 0 0); z-index: 1; }
-  .slide-frame::after {
-    content: ''; position: absolute; top: 0; bottom: 0; right: 0; width: 3px; background: var(--accent);
-    opacity: 0; z-index: 2;
-  }
-  .slide-frame.is-entering::after { opacity: 1; animation: heroEdge 1s linear forwards; }
-  @keyframes heroWipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-  @keyframes heroEdge { 0%, 85% { opacity: 1; } 100% { opacity: 0; } }
-  .slide-frame :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos); }
+    <style is:global>
+      :root {
+        /* Grounds, one per chapter, each with its own text colours */
+        --graphite: #0d0e10;
+        --graphite-up: #17191c;   /* a step up, for tiles and panels */
+        --olive: #45473e;
+        --olive-up: #51544a;
+        --paper: #e8e7e2;
+        --paper-up: #dddcd6;
+        --on-dark: #f2f2ef;
+        --on-dark-soft: #a9abad;
+        --on-olive-soft: #c9cabd;
+        --on-paper: #0d0e10;
+        --on-paper-soft: #55575b;
 
-  /* One scrim for every photo: darkest behind the text (left and bottom), so the photo still shows on the right */
-  .shade {
-    position: absolute; inset: 0; z-index: 4; pointer-events: none;
-    background:
-      linear-gradient(90deg, rgba(20, 29, 40, 0.88) 0%, rgba(20, 29, 40, 0.66) 42%, rgba(20, 29, 40, 0.18) 100%),
-      linear-gradient(0deg, rgba(20, 29, 40, 0.8) 0%, rgba(20, 29, 40, 0) 58%);
-  }
+        --font: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif;
 
-  /* Slideshow bar (bottom right): pause button, "03 / 07" and the caption, with a tan line
-     underneath that fills while each photo is up. The line's animation sets the pace. */
-  .slide-bar {
-    position: absolute; right: clamp(16px, 4vw, 48px); bottom: clamp(16px, 3vw, 32px); z-index: 6;
-    display: flex; align-items: center; gap: 12px;
-    padding: 6px 14px 8px 6px; border-radius: 2px;
-    background: rgba(20, 29, 40, 0.72);
-    color: #fff;
-  }
-  .slide-caption { position: relative; margin: 0; display: flex; gap: 10px; font-size: var(--fs-small); font-weight: 600; line-height: 1.3; }
-  .slide-count { color: var(--steel-on-dark); font-variant-numeric: tabular-nums; }
-  .slide-pause {
-    display: grid; place-items: center; width: 32px; height: 32px; padding: 0;
-    color: #fff; background: rgba(255, 255, 255, 0.1); border: 0; border-radius: 2px; cursor: pointer;
-    transition: background 0.2s var(--ease), transform 0.15s var(--ease);
-  }
-  .slide-pause[hidden] { display: none; }
-  .slide-pause:hover { background: rgba(255, 255, 255, 0.22); }
-  .slide-pause:active { transform: scale(0.94); }
-  .slide-pause svg { width: 14px; height: 14px; fill: currentColor; }
-  .slide-pause .i-play, .hero.is-paused .slide-pause .i-pause { display: none; }
-  .hero.is-paused .slide-pause .i-play { display: block; }
-  .slide-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; }
-  .hero.is-playing .slide-progress { animation: slideTimer var(--slide-ms, 6000ms) linear forwards; }
-  .hero.is-paused .slide-progress { animation-play-state: paused; }
-  @keyframes slideTimer { to { transform: scaleX(1); } }
+        /* The five type sizes */
+        --step-small: 0.875rem;
+        --step-body: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem);
+        --step-lead: clamp(1.25rem, 0.95rem + 1vw, 1.875rem);
+        --step-head: clamp(2rem, 1rem + 3.2vw, 4.25rem);
+        --step-display: clamp(3.25rem, 0.75rem + 7.6vw, 9rem);
 
-  .hero-content { position: relative; z-index: 5; padding-block: clamp(80px, 12vw, 140px) clamp(72px, 9vw, 104px); }
-  .hero h1 {
-    color: #fff;
-    font-size: var(--fs-display);
-    font-weight: 800;
-    letter-spacing: -0.025em;
-    margin-bottom: 0.18em;
-  }
-  .role { margin: 0 0 0.15em; font-size: var(--fs-lead); font-weight: 700; line-height: 1.4; color: #fff; }
-  /* Degree and graduation date: the first thing a recruiter checks */
-  .school .nowrap { white-space: nowrap; }
-  .school { margin: 0 0 1.1em; max-width: 46ch; font-size: var(--fs-lead); font-weight: 500; line-height: 1.4; text-wrap: balance; color: #fff; }
-  .focus { font-size: var(--fs-small); font-weight: 600; text-wrap: balance; color: #c9d0d7; margin-bottom: 2em; }
-  .hero-btns { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; }
-  .hero-btns .text-link { color: #fff; }
-  .hero-btns .text-link:hover { color: var(--accent); }
-  .hero-btns .btn { min-width: 180px; background: #fff; color: var(--ink); border-color: #fff; }
-  .hero-btns .btn:hover { background: var(--accent); border-color: var(--accent); color: var(--ink); }
+        --margin: max(clamp(16px, 3vw, 48px), env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+        --gap: clamp(88px, 10vw, 160px);
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+        --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+        --chapter-ms: 700ms;
+      }
+      *, *::before, *::after { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; scroll-padding-top: 72px; }
+      /* Taps register at once (no double-tap-zoom wait); controls don't select their label on a long press */
+      a, button { touch-action: manipulation; }
+      .btn, .fields a, .bar a, .phone-menu a { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+      @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+      body {
+        margin: 0; font: 400 var(--step-body)/1.55 var(--font); font-stretch: 100%;
+        color: var(--ink); --ink: var(--on-dark); --soft: var(--on-dark-soft); --up: var(--graphite-up);
+        transition: color var(--chapter-ms) var(--ease-in-out);
+        overflow-x: clip;
+      }
+      /* Chapter colours: the fixed ground and the text change together */
+      html[data-ground='olive'] body { --ink: var(--on-dark); --soft: var(--on-olive-soft); --up: var(--olive-up); }
+      html[data-ground='paper'] body { --ink: var(--on-paper); --soft: var(--on-paper-soft); --up: var(--paper-up); }
+      .ground { position: fixed; inset: 0; z-index: -1; background-color: var(--graphite); transition: background-color var(--chapter-ms) var(--ease-in-out); }
+      html[data-ground='olive'] .ground { background-color: var(--olive); }
+      html[data-ground='paper'] .ground { background-color: var(--paper); }
+      /* Without JavaScript each chapter simply carries its own colour */
+      .no-js [data-chapter='graphite'] { background: var(--graphite); color: var(--on-dark); }
+      .no-js [data-chapter='olive'] { background: var(--olive); color: var(--on-dark); }
+      .no-js [data-chapter='paper'] { background: var(--paper); color: var(--on-paper); }
 
-  /* On load, the text rises in line by line, once */
-  @media (prefers-reduced-motion: no-preference) {
-    .hero-content > * { animation: heroRise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .hero-content > :nth-child(2) { animation-delay: 70ms; }
-    .hero-content > :nth-child(3) { animation-delay: 120ms; }
-    .hero-content > :nth-child(4) { animation-delay: 170ms; }
-    .hero-content > :nth-child(5) { animation-delay: 220ms; }
-  }
-  @keyframes heroRise { from { opacity: 0; transform: translateY(14px); } }
+      ::selection { background: var(--ink); color: var(--graphite); }
+      html[data-ground='paper'] ::selection { color: var(--paper); }
+      img { display: block; max-width: 100%; height: auto; }
+      a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+      :focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+      h1, h2, h3, p, figure, dl, dd { margin: 0; }
+      p { text-wrap: pretty; }
+      .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+      .skip { position: absolute; left: -999px; top: 8px; z-index: 60; padding: 10px 16px; background: var(--on-dark); color: var(--graphite); }
+      .skip:focus { left: 8px; }
 
-  /* Phone: the button runs full width, the two links sit side by side under it */
-  @media (max-width: 560px) {
-    .hero-content { padding-bottom: 84px; }
-    .hero-btns { gap: 16px 28px; }
-    .hero-btns .btn { flex: 1 0 100%; padding-block: 0.9em; }
-    /* the date drops to its own line instead of leaving the dot at the end of a line */
-    .school .sep { display: block; height: 0; overflow: hidden; }
-    .slide-bar { left: calc(var(--gutter) - 6px); right: auto; } /* the button lines up with the text above */
-  }
+      /* Headlines: Archivo stretched wide, in capitals */
+      .title {
+        font-size: var(--step-head); font-weight: 650; font-stretch: 118%; line-height: 0.98; letter-spacing: -0.02em;
+        text-transform: uppercase; text-wrap: balance;
+      }
 
-  /* Reduced motion: the script leaves the first photo up and never switches */
-  @media (prefers-reduced-motion: reduce) {
-    .slide-frame.is-entering, .slide-frame.is-entering::after { animation: none !important; }
-  }
+      /* Buttons: flat, square, with a drawn arrow */
+      .btn {
+        display: inline-flex; align-items: center; gap: 14px; min-height: 52px; padding: 0 22px;
+        background: var(--on-dark); color: var(--graphite); font-size: var(--step-small); font-weight: 600; text-decoration: none;
+        transition: transform 160ms var(--ease-out), background-color 200ms ease;
+      }
+      .btn:active { transform: scale(0.97); }
+      .btn-small { min-height: 40px; padding: 0 16px; }
+      .arrow { position: relative; display: inline-block; width: 18px; height: 1.5px; background: currentColor; transition: transform 200ms var(--ease-out); }
+      .arrow::after { content: ''; position: absolute; right: 0; top: -4px; width: 8px; height: 8px; border-top: 1.5px solid currentColor; border-right: 1.5px solid currentColor; transform: rotate(45deg); }
+      .text-link { display: inline-flex; align-items: center; gap: 12px; font-size: var(--step-small); font-weight: 600; text-decoration: none; min-height: 44px; }
+      @media (hover: hover) and (pointer: fine) {
+        .btn:hover { background: #ffffff; }
+        .btn:hover .arrow, .text-link:hover .arrow { transform: translateX(4px); }
+        .text-link:hover { text-decoration: underline; }
+      }
 
-  /* About section: headshot on one side, text on the other */
-  .about {
-    display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-    gap: clamp(32px, 5vw, 64px);
-    align-items: center;
-    padding-block: clamp(64px, 9vw, 112px);
-    overflow-x: clip;
-  }
-  /* Portrait frame anchored at the top of the photo, so the head keeps its headroom
-     and the eyes sit about a third of the way down */
-  .about-photo { position: relative; aspect-ratio: 4 / 5; }
-  .about-photo :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; border-radius: 4px; }
-  .about-text { display: flex; flex-direction: column; }
-  .about-text h2 { margin: -0.12em 0 0.45em; line-height: 1; }
-  .about-copy { max-width: 62ch; }
-  .about-copy p { font-size: var(--fs-body); margin: 0 0 1em; }
-  .about-copy p:last-child { margin-bottom: 0; }
-  .facts-row { margin: 1.4em 0 0; font-size: var(--fs-small); font-weight: 600; text-wrap: balance; color: var(--steel); }
-  .about-cta { margin-top: 28px; }
+      /* ---------- Top bar: it takes the colour of the chapter you're in ---------- */
+      .bar {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+        display: flex; align-items: center; justify-content: space-between; gap: 24px;
+        padding: 12px var(--margin); padding-top: max(12px, env(safe-area-inset-top));
+        color: var(--on-dark); mix-blend-mode: normal;
+      }
+      .bar::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--graphite); opacity: 0; transition: opacity 300ms ease, background-color var(--chapter-ms) var(--ease-in-out); }
+      .bar.is-solid { color: var(--ink); }
+      .bar.is-solid::before { opacity: 1; }
+      html[data-ground='olive'] .bar::before { background: var(--olive); }
+      html[data-ground='paper'] .bar::before { background: var(--paper); }
+      html[data-ground='paper'] .bar.is-solid .btn { background: var(--on-paper); color: var(--paper); }
+      .wordmark { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--step-small); font-weight: 700; font-stretch: 125%; letter-spacing: 0.02em; text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+      .nav-links { display: flex; align-items: center; gap: clamp(16px, 2.2vw, 32px); margin: 0; padding: 0; list-style: none; font-size: var(--step-small); font-weight: 500; }
+      .nav-links a:not(.btn) { text-decoration: none; }
+      @media (hover: hover) and (pointer: fine) { .nav-links a:not(.btn):hover { text-decoration: underline; } }
+      .menu-btn {
+        display: none; min-height: 44px; padding: 0 16px; border: 1px solid currentColor; background: none; color: inherit;
+        font: 600 var(--step-small)/1 var(--font); cursor: pointer; -webkit-user-select: none; user-select: none;
+        transition: transform 160ms var(--ease-out);
+      }
+      .menu-btn:active { transform: scale(0.97); }
+      /* The phone menu: a full screen of large links, in the colour of the chapter you're in */
+      .phone-menu {
+        position: fixed; inset: 0; z-index: -1; display: flex; flex-direction: column; justify-content: space-between;
+        padding: calc(88px + env(safe-area-inset-top, 0px)) var(--margin) max(32px, env(safe-area-inset-bottom, 0px));
+        background: var(--graphite); color: var(--on-dark); overscroll-behavior: contain;
+      }
+      .phone-menu[hidden] { display: none; }
+      .phone-menu ul { margin: 0; padding: 0; list-style: none; }
+      .phone-menu li a { display: block; padding: 10px 0; font-size: var(--step-head); font-weight: 650; font-stretch: 118%; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; text-decoration: none; }
+      .phone-menu .btn { justify-content: space-between; }
+      .bar.menu-open { color: var(--on-dark); }
+      .bar.menu-open::before { opacity: 0; }
+      @media (prefers-reduced-motion: no-preference) {
+        .phone-menu:not([hidden]) { animation: menuIn 260ms var(--ease-out) both; }
+        @keyframes menuIn { from { opacity: 0; transform: translateY(-8px); } }
+      }
 
-  @media (max-width: 860px) {
-    .about { grid-template-columns: 1fr; padding-top: 56px; }
-    .about-photo { max-width: 420px; margin-inline: auto; width: 100%; }
-  }
+      /* ---------- Hero: full screen, then pulled back into a frame as you scroll ---------- */
+      /* --hero-run: how far you scroll while the photo pulls back (the hero is one screen plus this) */
+      .hero { --hero-run: 32svh; height: calc(100vh + 32vh); height: calc(100svh + var(--hero-run)); }
+      .hero-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; color: var(--on-dark); }
+      .hero-photo { position: absolute; inset: 0; }
+      .hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 55%; }
+      .hero-shade {
+        position: absolute; inset: 0; pointer-events: none;
+        background: linear-gradient(0deg, rgba(13, 14, 16, 0.86) 0%, rgba(13, 14, 16, 0.35) 42%, rgba(13, 14, 16, 0.12) 70%, rgba(13, 14, 16, 0.4) 100%);
+      }
+      .hero-copy { position: absolute; left: var(--margin); right: var(--margin); bottom: clamp(32px, 6vh, 72px); }
+      .hero h1 {
+        font-size: var(--step-display); font-weight: 650; font-stretch: 122%; line-height: 0.9; letter-spacing: -0.025em; text-transform: uppercase;
+      }
+      .hero h1 .line { display: block; overflow: hidden; padding-bottom: 0.04em; }
+      .hero h1 .line > span { display: inline-block; }
+      .hero-role { margin-top: 24px; font-size: var(--step-lead); font-weight: 650; line-height: 1.25; }
+      .hero-degree { margin-top: 4px; font-size: var(--step-lead); line-height: 1.25; text-wrap: balance; }
+      .hero-degree .nowrap { white-space: nowrap; }
+      .hero-line { margin-top: 18px; max-width: 52ch; color: var(--on-dark-soft); }
+      .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 28px; margin-top: 32px; }
+      .hero-caption { position: absolute; right: var(--margin); bottom: clamp(32px, 6vh, 72px); max-width: 22ch; text-align: right; font-size: var(--step-small); color: var(--on-dark-soft); }
 
-  .section-tight { padding-block: clamp(48px, 7vw, 88px) clamp(56px, 8vw, 96px); background: var(--white); border-block: 1px solid var(--mist); }
+      /* ---------- Intro ---------- */
+      .intro { padding: var(--gap) var(--margin) 0; }
+      .intro-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 40px; align-items: start; }
+      .lead { font-size: var(--step-lead); line-height: 1.3; }
+      .intro .lead { grid-column: 1 / span 8; max-width: 34ch; font-size: clamp(1.5rem, 1rem + 1.6vw, 2.5rem); line-height: 1.2; letter-spacing: -0.01em; }
+      .portrait { grid-column: 10 / span 3; aspect-ratio: 4 / 5; overflow: hidden; }
+      .portrait img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; }
+      .facts { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding-top: 28px; }
+      .facts dt { font-size: var(--step-small); color: var(--soft); margin-bottom: 8px; }
 
-  /* Featured projects: three columns, each ending in a Predicted / Measured table.
-     The tables sit at the bottom of each column so they line up across the row. */
-  .featured-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; margin-bottom: clamp(24px, 3vw, 40px); }
-  .featured-head h2 { margin: 0; }
-  .all-link, .text-link { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: var(--fs-body); }
-  .arrow { position: relative; width: 16px; height: 1.5px; background: currentColor; transition: transform 0.2s var(--ease); }
-  .arrow::after { content: ''; position: absolute; right: 0; top: -3.5px; width: 7px; height: 7px; border-top: 1.5px solid currentColor; border-right: 1.5px solid currentColor; transform: rotate(45deg); }
-  .all-link:hover .arrow, .text-link:hover .arrow { transform: translateX(3px); }
+      /* ---------- Built, then measured: three columns that line up row by row ---------- */
+      .tests { padding: var(--gap) var(--margin) 0; }
+      .tests-head { display: flex; justify-content: space-between; align-items: end; gap: 24px 48px; flex-wrap: wrap; margin-bottom: clamp(32px, 4vw, 56px); }
+      .tests-sub { max-width: 34ch; color: var(--soft); }
+      .tests-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: clamp(20px, 2.4vw, 36px); margin: 0; padding: 0; list-style: none; }
+      /* The columns share rows, so titles, numbers and notes line up across all three */
+      .test { display: grid; grid-row: span 5; grid-template-rows: subgrid; row-gap: 0; position: relative; }
+      .test-photo { display: block; aspect-ratio: 4 / 3; overflow: hidden; background: var(--up); margin-bottom: 22px; }
+      .test-photo img { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); transition: transform 900ms var(--ease-out); }
+      .test h3 { font-size: calc(var(--step-head) * 0.6); font-weight: 650; font-stretch: 118%; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; text-wrap: balance; }
+      .test h3 a { text-decoration: none; }
+      /* The title link covers the whole column, so the photo and numbers open the project too */
+      .test h3 a::after { content: ''; position: absolute; inset: 0; }
+      .test h3 a:focus-visible { outline: none; }
+      .test h3 a:focus-visible::after { outline: 2px solid currentColor; outline-offset: 6px; }
+      .test-meta { margin-top: 10px; font-size: var(--step-small); color: var(--soft); }
+      .readout { margin: 24px 0 14px; display: grid; gap: 2px; align-self: start; }
+      .readout div { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 14px 16px; background: var(--up); }
+      .readout div:last-child { background: var(--on-dark); color: var(--graphite); }
+      .readout dt { font-size: var(--step-small); }
+      .readout dd { font-size: var(--step-lead); font-weight: 650; font-stretch: 112%; font-variant-numeric: tabular-nums; text-align: right; }
+      .test-note { font-size: var(--step-small); color: var(--soft); }
+      /* Three across, the numbers step down a size so the longest result stays on one line */
+      .test .readout dt { white-space: nowrap; }
+      .test .readout dd { font-size: clamp(1.0625rem, 0.85rem + 0.55vw, 1.4375rem); }
+      @media (hover: hover) and (pointer: fine) { .test:hover .test-photo img { transform: scale(1.04); } .test:hover h3 a { text-decoration: underline; text-decoration-thickness: 2px; } }
+      /* The test answers the prediction: the measured row wipes in just after the column arrives */
+      @media (prefers-reduced-motion: no-preference) {
+        html:not(.no-js) .test .readout div:last-child { clip-path: inset(0 100% 0 0); transition: clip-path 600ms var(--ease-out); transition-delay: calc(var(--d, 0ms) + 650ms); }
+        html:not(.no-js) .test.in .readout div:last-child { clip-path: inset(0 0 0 0); }
+      }
 
-  .featured-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(28px, 3.5vw, 48px); margin: 0; padding: 0; list-style: none; }
-  .fcard { position: relative; display: flex; flex-direction: column; }
-  .fcard-media { display: block; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--radius); background: #e7e6e1; margin-bottom: 18px; }
-  .fcard-media :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); transition: transform 0.6s var(--ease); }
-  @media (hover: hover) { .fcard:hover .fcard-media :global(img) { transform: scale(1.03); } }
-  .fcard-body { display: flex; flex-direction: column; flex: 1; }
-  .fcard h3 { margin: 0 0 4px; font-size: var(--fs-lead); font-weight: 800; text-wrap: balance; }
-  .fcard h3 a { color: var(--ink); text-decoration: none; }
-  /* The title link covers the whole column, so the photo and table are clickable too */
-  .fcard h3 a::after { content: ''; position: absolute; inset: -8px; border-radius: 6px; }
-  .fcard:hover h3 a { text-decoration: underline; }
-  .fcard h3 a:focus-visible { outline: none; }
-  .fcard h3 a:focus-visible::after { outline: 2px solid var(--ink); outline-offset: 2px; }
-  .fcard-meta { margin: 0 0 12px; font-size: var(--fs-small); color: var(--charcoal); }
-  .fcard-summary { margin: 0 0 22px; font-size: var(--fs-body); }
-  .results { margin: auto 0 0; border-top: 1.5px solid var(--ink); }
-  .results div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px solid var(--mist); }
-  .results dt { font-size: var(--fs-small); font-weight: 600; color: var(--charcoal); }
-  .results dd { margin: 0; text-align: right; font-size: var(--fs-body); font-weight: 500; font-variant-numeric: tabular-nums; color: var(--charcoal); }
-  .results div:last-child dd { font-size: var(--fs-lead); font-weight: 800; color: var(--ink); }
-  .results-note { margin: 10px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--charcoal); }
+      /* ---------- More work: the mosaic ---------- */
+      .mosaic { padding: var(--gap) var(--margin) 0; }
+      .mosaic .title { margin-bottom: clamp(32px, 4vw, 56px); }
+      .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: clamp(220px, 27vh, 300px); gap: 12px; margin: 0; padding: 0; list-style: none; }
+      .tile-wide { grid-column: span 2; grid-row: span 2; }
+      .tile a { position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden; background: var(--up); text-decoration: none; }
+      .tile-photo { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+      .tile-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); transition: transform 900ms var(--ease-out); }
+      .tile-text { display: grid; gap: 4px; padding: 18px 56px 20px 20px; }
+      .tile-name { font-weight: 650; font-size: var(--step-body); }
+      .tile-line { font-size: var(--step-small); color: var(--soft); }
+      .tile-arrow { position: absolute; right: 20px; bottom: 26px; width: 12px; height: 12px; border-top: 1.5px solid currentColor; border-right: 1.5px solid currentColor; transition: transform 200ms var(--ease-out); }
+      .tile-arrow::after { content: ''; position: absolute; right: -1px; top: -1px; width: 16px; height: 1.5px; background: currentColor; transform-origin: right; transform: rotate(-45deg); }
+      .tile a:active { transform: scale(0.99); }
+      @media (hover: hover) and (pointer: fine) {
+        .tile a:hover .tile-photo img { transform: scale(1.04); }
+        .tile a:hover .tile-arrow { transform: translate(3px, -3px); }
+      }
 
-  /* Desktop: the columns share rows, so titles, tables and notes line up across all three
-     even when one summary or note is longer than the others */
-  @media (min-width: 961px) {
-    .featured-grid { row-gap: 0; }
-    .fcard { display: grid; grid-row: span 6; grid-template-rows: subgrid; }
-    .fcard-body { display: contents; }
-    .results { margin-top: 0; }
-  }
+      /* ---------- WSP, on olive ---------- */
+      .wsp { padding-top: var(--gap); }
+      .wsp-head { display: flex; justify-content: space-between; align-items: end; gap: 32px 64px; flex-wrap: wrap; padding: 0 var(--margin); margin-bottom: clamp(40px, 5vw, 72px); }
+      .side-facts { display: grid; grid-template-columns: repeat(3, auto); gap: 8px 48px; font-size: var(--step-small); }
+      .side-facts dt { color: var(--soft); }
+      .side-facts dd { font-weight: 600; }
+      .wsp-photo { height: clamp(240px, 46vh, 540px); overflow: hidden; }
+      .wsp-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+      .wsp-figure { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: end; padding: clamp(48px, 6vw, 96px) var(--margin) 0; }
+      .big { grid-column: 1 / span 7; font-size: var(--step-display); font-weight: 650; font-stretch: 112%; line-height: 0.85; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+      .big .unit { font-size: var(--step-lead); letter-spacing: 0; font-weight: 600; vertical-align: top; }
+      .wsp-figure-text { grid-column: 9 / span 4; display: grid; gap: 14px; }
+      .wsp-figure-text h3 { font-size: var(--step-lead); font-weight: 650; line-height: 1.2; }
+      .wsp-figure-text p { color: var(--soft); }
+      .wsp-body { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 40px; padding: clamp(48px, 6vw, 96px) var(--margin) var(--gap); }
+      .wsp-body .lead { grid-column: 1 / span 7; }
+      .records { grid-column: 9 / span 4; display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px; align-items: start; }
+      .records h3 { font-size: var(--step-small); font-weight: 500; color: var(--soft); margin-bottom: 12px; }
+      .records ul { margin: 0; padding: 0; list-style: none; font-weight: 600; line-height: 1.8; }
+      .wsp-body .text-link { grid-column: 1 / -1; }
 
-  /* Tablet: one project per row, photo beside the text */
-  @media (max-width: 960px) {
-    .featured-grid { grid-template-columns: 1fr; gap: 44px; }
-    .fcard { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 28px; align-items: start; }
-    .fcard-media { margin: 0; }
-  }
-  /* Phone: photo on top, a little shorter */
-  @media (max-width: 600px) {
-    .fcard { display: flex; }
-    .fcard-media { aspect-ratio: 16 / 10; margin-bottom: 16px; }
-  }
+      /* ---------- Everything, on paper ---------- */
+      .ledger { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: start; padding: var(--gap) var(--margin); }
+      .ledger-col { grid-column: 1 / span 8; }
+      .ledger .title { margin-bottom: 32px; }
+      .fields { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+      .fields a {
+        display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; background: var(--up);
+        font-size: var(--step-small); font-weight: 600; text-decoration: none;
+        transition: background-color 200ms ease, color 200ms ease, transform 160ms var(--ease-out);
+      }
+      .fields a:active { transform: scale(0.97); }
+      .fields a[aria-current='true'] { background: var(--on-paper); color: var(--paper); }
+      @media (hover: hover) and (pointer: fine) { .fields a:not([aria-current='true']):hover { background: #cfcec8; } }
+      .ledger-count { font-size: var(--step-small); color: var(--soft); margin-bottom: 8px; }
+      .rows { margin: 0 0 32px; padding: 0; list-style: none; }
+      .rows li[hidden] { display: none; }
+      /* After picking a field, the rows that stay rise in quickly, one after another */
+      @media (prefers-reduced-motion: no-preference) { .rows li.is-fresh { animation: rowIn 220ms var(--ease-out) both; animation-delay: var(--rd, 0ms); } }
+      @media (prefers-reduced-motion: reduce) { .rows li.is-fresh { animation: rowFade 200ms ease both; } }
+      @keyframes rowIn { from { opacity: 0; transform: translateY(6px); } }
+      @keyframes rowFade { from { opacity: 0; } }
+      .rows a {
+        display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) 7.5em; gap: 20px; align-items: baseline;
+        padding: 14px 0; text-decoration: none; transition: color 150ms ease;
+      }
+      .rows li + li a { box-shadow: 0 -1px 0 rgba(13, 14, 16, 0.12); }
+      .row-name { font-weight: 600; }
+      .row-kind, .row-date { font-size: var(--step-small); color: var(--soft); }
+      .row-date { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+      @media (hover: hover) and (pointer: fine) {
+        .rows:has(a:hover) a:not(:hover) { color: #8d8f92; }
+        .rows:has(a:hover) a:not(:hover) span { color: inherit; }
+      }
+      .row-photo { display: none; overflow: hidden; background: var(--up); }
+      .row-photo img { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); }
+      .preview { grid-column: 9 / span 4; position: sticky; top: 96px; margin-top: calc(var(--step-head) * 2 + 120px); }
+      .preview-frame { aspect-ratio: 4 / 3; overflow: hidden; background: var(--up); }
+      .preview-frame img { width: 100%; height: 100%; object-fit: cover; }
+      .preview figcaption { margin-top: 12px; font-size: var(--step-small); font-weight: 600; }
 
-  .browse { margin-top: clamp(36px, 4vw, 52px); padding-top: 24px; border-top: 1px solid var(--mist); }
+      /* ---------- Punahou ---------- */
+      .punahou { padding: 0 var(--margin) var(--gap); }
+      .punahou .title { margin-bottom: 32px; }
+      .punahou ul { margin: 0 0 32px; padding: 0; list-style: none; }
+      .punahou li a { display: grid; grid-template-columns: minmax(0, 1fr) auto 24px; align-items: baseline; gap: 24px; padding: 18px 0; text-decoration: none; box-shadow: 0 -1px 0 rgba(13, 14, 16, 0.18); }
+      .punahou h3 { font-size: calc(var(--step-head) * 0.72); font-weight: 650; font-stretch: 118%; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; }
+      .punahou li span:not(.arrow) { font-size: var(--step-body); color: var(--soft); text-align: right; }
+      .punahou li .arrow { align-self: center; }
+      @media (hover: hover) and (pointer: fine) { .punahou li a:hover .arrow { transform: translateX(4px); } }
 
+      /* ---------- Close ---------- */
+      .close { padding: var(--gap) var(--margin) max(32px, env(safe-area-inset-bottom)); display: grid; gap: 48px; }
+      .close-title { font-size: var(--step-small); font-weight: 500; color: var(--soft); }
+      .mail { display: flex; flex-wrap: wrap; font-size: var(--step-display); font-weight: 650; font-stretch: 118%; line-height: 0.92; letter-spacing: -0.03em; text-transform: uppercase; text-decoration: none; }
+      @media (hover: hover) and (pointer: fine) { .mail:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 10px; } }
+      .close-meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding-top: 24px; font-size: var(--step-small); color: var(--soft); }
+      .close-meta a { color: var(--ink); }
 
-  /* Photo and text start on the same line; on desktop the photo stays in view while the text is read */
-  .wsp-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 64px); align-items: start; }
-  .wsp-photo { position: sticky; top: calc(var(--header-h) + 24px); display: block; overflow: hidden; border-radius: var(--radius); }
-  @media (max-width: 900px) { .wsp-grid { grid-template-columns: 1fr; } .wsp-photo { position: static; } }
-  .wsp-photo :global(img) { width: 100%; height: auto; transition: transform 0.8s var(--ease); }
-  .wsp-text h2 { margin-top: -0.1em; }
-  .wsp-text p { font-size: var(--fs-body); }
-  .wsp-text .wsp-meta { margin: -0.2em 0 1em; font-size: var(--fs-small); font-weight: 600; color: var(--charcoal); }
-  .wsp-tools { margin: 0.4em 0 28px; }
+      /* ---------- Tablet and phone ---------- */
+      @media (max-width: 960px) {
+        .nav-links { display: none; }
+        .menu-btn { display: inline-flex; align-items: center; }
+        .intro .lead { grid-column: 1 / -1; }
+        .portrait { grid-column: 1 / span 5; }
+        .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 32px; }
+        /* Tablet: one result per row, photo beside the text */
+        .tests-grid { grid-template-columns: 1fr; row-gap: 64px; }
+        .test { grid-row: auto; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); grid-template-rows: none; column-gap: 28px; align-content: start; }
+        .test-photo { grid-row: 1 / span 5; margin: 0; }
+        .test > :not(.test-photo) { grid-column: 2; }
+        .readout { align-self: start; }
+        .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: auto; }
+        .tile-photo { flex: none; aspect-ratio: 4 / 3; }
+        .wsp-figure, .wsp-body { display: block; }
+        .wsp-figure-text { margin-top: 32px; max-width: 60ch; }
+        .wsp-body .lead { margin-bottom: 48px; }
+        .records { grid-template-columns: 1fr 1fr; gap: 32px; }
+        .wsp-body .text-link { margin-top: 32px; }
+        .ledger-col { grid-column: 1 / -1; }
+        .preview { display: none; }
+        .close-meta { grid-template-columns: 1fr 1fr; }
+      }
+      @media (max-width: 640px) {
+        .hero { --hero-run: 25svh; } /* a shorter pull-back on a phone, so the thumb isn't scrolling a still photo */
+        .hero h1 { font-size: 14vw; font-stretch: 110%; }
+        .hero-degree .sep { display: block; height: 0; overflow: hidden; } /* the date drops to its own line */
+        .hero-actions .text-link { min-height: 44px; }
+        .hero-actions .btn { flex: 1 1 100%; justify-content: space-between; }
+        .hero-caption { display: none; }
+        .portrait { grid-column: 1 / span 6; }
+        .facts { grid-template-columns: 1fr; }
+        .test { display: block; }
+        .test-photo { margin-bottom: 20px; }
+        .tiles { grid-template-columns: 1fr; }
+        .tile-wide { grid-column: auto; grid-row: auto; }
+        .tile a { min-height: 0; }
+        .tile-photo { aspect-ratio: 16 / 10; flex: none; }
+        .side-facts { grid-template-columns: 1fr; }
+        .rows a { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'photo photo' 'name date' 'kind kind'; row-gap: 4px; }
+        .row-name { grid-area: name; }
+        .row-date { grid-area: date; }
+        .row-kind { grid-area: kind; }
+        .punahou li a { grid-template-columns: minmax(0, 1fr) 24px; row-gap: 6px; }
+        .punahou h3 { grid-column: 1; }
+        .punahou li span:not(.arrow) { grid-column: 1; grid-row: 2; text-align: left; }
+        .punahou li .arrow { grid-column: 2; grid-row: 1 / span 2; }
+        .mail { font-size: 10.5vw; font-stretch: 108%; flex-direction: column; } /* each half fits the width */
+        .close-meta { grid-template-columns: 1fr; }
+      }
 
-  /* Rows of three photo links with a label along the bottom (WSP and Punahou) */
-  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
-  .tiles a { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 3px; background: #fff; }
-  @media (max-width: 700px) { .tiles { grid-template-columns: 1fr; gap: 12px; } .tiles a { aspect-ratio: 16 / 9; } }
-  .tiles :global(img) { width: 100%; height: 100%; object-fit: var(--fit, cover); object-position: var(--pos, 50% 50%); transition: transform 0.7s var(--ease); }
-  @media (hover: hover) {
-    .tiles a:hover :global(img) { transform: scale(1.04); }
-    .wsp-photo:hover :global(img) { transform: scale(1.02); }
-  }
-  .tiles span {
-    position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 16px 12px;
-    background: linear-gradient(rgba(23, 33, 45, 0), rgba(23, 33, 45, 0.88) 65%); color: #fff;
-    font-size: var(--fs-small); font-weight: 600;
-  }
+      /* ---------- Motion (none of it for people who asked for reduced motion) ---------- */
+      @media (prefers-reduced-motion: no-preference) {
+        /* On load: each headline line rises from behind its own baseline, then the rest follows */
+        .hero h1 .line > span { animation: lineUp 1s var(--ease-out) both; }
+        .hero h1 .line:nth-child(3) > span { animation-delay: 90ms; }
+        .hero-role, .hero-degree, .hero-line, .hero-actions { animation: fadeUp 800ms var(--ease-out) 350ms both; }
+        .hero-degree { animation-delay: 390ms; }
+        .hero-line { animation-delay: 430ms; }
+        .hero-actions { animation-delay: 470ms; }
+        @keyframes lineUp { from { transform: translateY(105%); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } }
 
-  /* Punahou School band: intro and the teaching role side by side, then three projects */
-  .band-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: end; }
-  @media (max-width: 760px) { .band-grid { grid-template-columns: 1fr; } }
-  .punahou-band .lead { color: #c9d0d7; }
-  .band-ta { padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.22); }
-  .band-ta h3 { margin-bottom: 0.4em; }
-  .band-ta p { color: #c9d0d7; font-size: var(--fs-body); }
-  .punahou-band .tiles { margin-top: clamp(36px, 5vw, 56px); }
-</style>
+        /* Scrolling: the hero photo pulls back into a frame and the copy lifts away.
+           Driven by the scroll itself, so it runs off the main thread; older browsers keep the still version. */
+        @supports (animation-timeline: scroll()) {
+          /* The hero is at the very top, so the page's own scroll position drives it, over exactly --hero-run */
+          .hero-photo { animation: pullBack linear both; animation-timeline: scroll(root); animation-range: 0px var(--hero-run); }
+          .hero-photo img { animation: settle linear both; animation-timeline: scroll(root); animation-range: 0px var(--hero-run); }
+          .hero-copy, .hero-caption { animation: lift linear both; animation-timeline: scroll(root); animation-range: 0px calc(var(--hero-run) * 0.55); }
+          @keyframes pullBack { to { clip-path: inset(9vh 5vw 9vh 5vw round 4px); } }
+          @keyframes settle { from { transform: scale(1.12); } to { transform: scale(1); } }
+          @keyframes lift { to { opacity: 0; transform: translateY(-8vh); } }
 
-<script>
-  // Hero: show each photo for 6 seconds, then wipe to the next one. The tan line in the
-  // slideshow bar fills over those 6 seconds; when it is full, the next photo comes in.
-  // The pause button stops the line (and the slideshow) where it is.
-  // With "reduce motion" turned on, the first photo stays up, nothing moves and there is no button.
-  const SLIDE_MS = 6000;
-  const hero = document.querySelector<HTMLElement>('[data-hero]');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (hero && !reduceMotion) {
-    const frames = Array.from(hero.querySelectorAll<HTMLElement>('.slide-frame'));
-    const progress = hero.querySelector<HTMLElement>('.slide-progress')!;
-    const pauseBtn = hero.querySelector<HTMLButtonElement>('.slide-pause')!;
-    const countEl = hero.querySelector<HTMLElement>('[data-count]')!;
-    const captionEl = hero.querySelector<HTMLElement>('[data-caption-text]')!;
-    let current = 0;
+          /* The big WSP photo drifts slowly behind its frame */
+          .wsp-photo img { animation: drift linear both; animation-timeline: view(); scale: 1.14; }
+          @keyframes drift { from { translate: 0 -5%; } to { translate: 0 5%; } }
+        }
 
-    hero.style.setProperty('--slide-ms', `${SLIDE_MS}ms`);
-    // Restart the tan line from empty
-    const startTimer = () => {
-      hero.classList.remove('is-playing');
-      void progress.offsetWidth;
-      hero.classList.add('is-playing');
-    };
+        /* Section parts rise in as they arrive; photos open from the bottom edge */
+        html:not(.no-js) [data-rise]:not(.in) { opacity: 0; transform: translateY(24px); }
+        [data-rise] { transition: opacity 700ms var(--ease-out), transform 800ms var(--ease-out); transition-delay: var(--d, 0ms); }
+        html:not(.no-js) [data-reveal]:not(.in) { clip-path: inset(100% 0 0 0); }
+        [data-reveal] { transition: clip-path 1000ms var(--ease-in-out); transition-delay: var(--d, 0ms); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        /* Colour still changes between chapters, gently; nothing moves */
+      }
+    </style>
 
-    const next = () => {
-      const prev = frames[current];
-      current = (current + 1) % frames.length;
-      const incoming = frames[current];
-      prev.classList.remove('is-active');
-      prev.classList.add('is-leaving');
-      incoming.classList.add('is-entering');
-      countEl.textContent = String(current + 1).padStart(2, '0');
-      captionEl.textContent = incoming.dataset.caption ?? '';
-      // Finish the swap when the wipe ends (with a timer backup in case the browser skips the event)
-      let finished = false;
-      const finish = () => {
-        if (finished) return;
-        finished = true;
-        incoming.classList.remove('is-entering');
-        incoming.classList.add('is-active');
-        prev.classList.remove('is-leaving');
+    <script>
+      const root = document.documentElement;
+
+      // Chapters: when a chapter covers the middle of the screen, the ground and text take its colour,
+      // and so does the phone's status bar
+      const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+      const groundColors: Record<string, string> = { graphite: '#0d0e10', olive: '#45473e', paper: '#e8e7e2' };
+      const chapters = document.querySelectorAll<HTMLElement>('[data-chapter]');
+      const chapterIO = new IntersectionObserver(
+        (entries) => entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          const ground = (e.target as HTMLElement).dataset.chapter!;
+          root.dataset.ground = ground;
+          themeColor?.setAttribute('content', groundColors[ground] ?? groundColors.graphite);
+        }),
+        { rootMargin: '-50% 0px -50% 0px' },
+      );
+      chapters.forEach((c) => chapterIO.observe(c));
+
+      // Top bar: see-through over the first photo, solid once the photo has gone
+      const bar = document.querySelector<HTMLElement>('.bar')!;
+      const intro = document.querySelector<HTMLElement>('.intro')!;
+      new IntersectionObserver(([e]) => bar.classList.toggle('is-solid', e.boundingClientRect.top <= 72), {
+        rootMargin: '-72px 0px 0px 0px', threshold: [0, 1],
+      }).observe(intro);
+
+      // Phone menu: opens over the page; Esc, the button again, or choosing a link closes it
+      const menuBtn = document.querySelector<HTMLButtonElement>('.menu-btn')!;
+      const menu = document.querySelector<HTMLElement>('#phone-menu')!;
+      const setMenu = (open: boolean) => {
+        menu.hidden = !open;
+        menuBtn.setAttribute('aria-expanded', String(open));
+        menuBtn.textContent = open ? 'Close' : 'Menu';
+        bar.classList.toggle('menu-open', open);
+        document.body.style.overflow = open ? 'hidden' : '';
+        if (open) menu.querySelector('a')?.focus();
       };
-      incoming.addEventListener('animationend', (e) => { if (e.target === incoming) finish(); }, { once: true });
-      setTimeout(finish, 900);
-    };
+      menuBtn.addEventListener('click', () => setMenu(menu.hidden));
+      menu.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) setMenu(false); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { setMenu(false); menuBtn.focus(); } });
+      matchMedia('(min-width: 961px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
 
-    progress.addEventListener('animationend', () => {
-      if (!document.hidden) next(); // in a background tab, wait another round instead
-      startTimer();
-    });
+      // Section parts: rise in as they arrive, a little after one another;
+      // anything the visitor jumped past (a link or a fast fling) shows at once
+      document.querySelectorAll<HTMLElement>('section, .tiles').forEach((group) => {
+        group.querySelectorAll<HTMLElement>(':scope [data-rise], :scope [data-reveal]').forEach((el, i) => {
+          if (!el.style.getPropertyValue('--d')) el.style.setProperty('--d', `${Math.min(i, 5) * 70}ms`);
+        });
+      });
+      const riseIO = new IntersectionObserver(
+        (entries) => entries.forEach((e) => {
+          if (!e.isIntersecting && e.boundingClientRect.top > 0) return;
+          e.target.classList.add('in');
+          riseIO.unobserve(e.target);
+        }),
+        { threshold: 0 },
+      );
+      document.querySelectorAll('[data-rise], [data-reveal]').forEach((el) => riseIO.observe(el));
 
-    pauseBtn.hidden = false;
-    pauseBtn.addEventListener('click', () => {
-      const paused = hero.classList.toggle('is-paused');
-      pauseBtn.setAttribute('aria-label', paused ? 'Play slideshow' : 'Pause slideshow');
-    });
-    startTimer();
-  }
-</script>
+      // Everything: the preview photo follows the row under the pointer or keyboard focus
+      const previewImg = document.querySelector<HTMLImageElement>('[data-preview-img]');
+      const previewCap = document.querySelector<HTMLElement>('[data-preview-cap]');
+      document.querySelectorAll<HTMLAnchorElement>('.rows a').forEach((row) => {
+        const swap = () => {
+          const img = row.querySelector<HTMLImageElement>('.row-photo img');
+          if (!previewImg || !previewCap || !img) return;
+          previewImg.srcset = img.srcset;
+          previewImg.src = img.currentSrc || img.src;
+          previewImg.style.objectPosition = getComputedStyle(img).objectPosition;
+          previewCap.textContent = row.querySelector('.row-name')!.textContent;
+        };
+        row.addEventListener('mouseenter', swap);
+        row.addEventListener('focus', swap);
+      });
+
+      // Everything: pick a field to show only its work, in place. Without JavaScript these are links to each field's page.
+      const ledger = document.querySelector<HTMLElement>('.ledger');
+      if (ledger) {
+        const chips = Array.from(ledger.querySelectorAll<HTMLAnchorElement>('[data-field]'));
+        const rows = Array.from(ledger.querySelectorAll<HTMLLIElement>('.rows li'));
+        const count = ledger.querySelector<HTMLElement>('[data-count]')!;
+        const more = ledger.querySelector<HTMLAnchorElement>('[data-field-link]')!;
+        const moreLabel = more.firstChild!;
+        const allHref = more.getAttribute('href')!;
+        chips.forEach((chip) =>
+          chip.addEventListener('click', (e) => {
+            e.preventDefault();
+            const field = chip.dataset.field!;
+            chips.forEach((c) => c.setAttribute('aria-current', String(c === chip)));
+            let shown = 0;
+            rows.forEach((r) => {
+              const match = !field || r.dataset.fields!.split(' ').includes(field);
+              r.hidden = !match;
+              r.classList.remove('is-fresh');
+              if (match) {
+                r.style.setProperty('--rd', `${Math.min(shown, 8) * 25}ms`);
+                void r.offsetWidth; // restart the rise for rows that were already showing
+                r.classList.add('is-fresh');
+                shown++;
+              }
+            });
+            const name = chip.textContent!.trim();
+            count.textContent = field ? `${shown} in ${name}` : `${shown} projects and roles`;
+            moreLabel.textContent = field ? `See the ${name} page ` : 'See all projects with photos ';
+            more.setAttribute('href', field ? chip.getAttribute('href')! : allHref);
+          }),
+        );
+      }
+    </script>
+  </body>
+</html>

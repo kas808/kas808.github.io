@@ -27,7 +27,9 @@ for (const page of pages) {
   const html = fs.readFileSync(page, 'utf8');
   for (const key of required) if (!meta(html, key)) fail(page, `missing ${key}`);
   if (meta(html, 'twitter:card') !== 'summary_large_image') fail(page, 'twitter:card is not summary_large_image');
-  if (meta(html, 'theme-color') !== '#253447') fail(page, 'theme-color is not the site navy');
+  // The home page has its own look (graphite), every other page uses the site navy
+  const isHome = path.relative(dist, page) === 'index.html';
+  if (meta(html, 'theme-color') !== (isHome ? '#0d0e10' : '#253447')) fail(page, `theme-color is not ${isHome ? 'the home graphite' : 'the site navy'}`);
   for (const key of ['og:image', 'og:url', 'twitter:image']) {
     const v = meta(html, key);
     if (v && !v.startsWith(`${site}/`)) fail(page, `${key} is not a full ${site} link: ${v}`);

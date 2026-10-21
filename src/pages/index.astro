@@ -73,6 +73,18 @@ const buildList: Build[] = [
     media: [{ image: pantographBand, position: '50% 55%', alt: 'The aluminum 2x pantograph on the drawing table with its two pens' }],
   },
   {
+    slug: 'lanakila-express', punahou: 'lanakila-express/the-train', short: 'Lanakila Express', info: 'Ride-on train, built by 8 teams over 2 years',
+    summary: 'A ride-on electric train for kids, built from scratch by our Engineering IV class: welded aluminum cars, waterjet-cut steel bogies, CNC-machined wheels and track curved on a roller bender we built. I helped bend the track and worked on the solar charger, the couplings and the track joints.',
+    meta: 'Punahou School · Engineering IV',
+    cover: trainRide, coverPosition: '58% 50%',
+    media: [
+      { image: trainFrame, position: '50% 45%', alt: 'A welded aluminum car frame on the bench, with the steel bogies and a chain-driven motor bogie behind it' },
+      { image: trainBender, position: '40% 50%', alt: 'Steel flat bar being fed through the class-built roller bender to curve it' },
+      { image: trainTrack, position: '50% 40%', alt: 'Finished curved track sections stacked in rows, ready to lay' },
+    ],
+    results: [{ label: 'Power', value: 'Solar-charged batteries' }, { label: 'Riders', value: 'Hundreds at the 2022 carnival' }],
+  },
+  {
     slug: 'sae-aero', short: 'SAE Aero Design', info: 'Capstone cargo plane, in progress',
     media: [
       { image: saeLayout, alt: 'Concept sketch of the twin-motor cargo plane layout, top and side views' },
@@ -87,18 +99,6 @@ const buildList: Build[] = [
       { image: pumpCurve, alt: 'Pump curve used to select the pump', fit: 'contain' },
     ],
     results: [{ label: 'Solver', value: 'MATLAB pipe network' }, { label: 'Required pump head', value: '23.4 m' }],
-  },
-  {
-    slug: 'lanakila-express', punahou: 'lanakila-express/the-train', short: 'Lanakila Express', info: 'Ride-on train, built by 8 teams over 2 years',
-    summary: 'A ride-on electric train for kids, built from scratch by our Engineering IV class: welded aluminum cars, waterjet-cut steel bogies, CNC-machined wheels and track curved on a roller bender we built. I helped bend the track and worked on the solar charger, the couplings and the track joints.',
-    meta: 'Punahou School · Engineering IV',
-    cover: trainRide, coverPosition: '58% 50%',
-    media: [
-      { image: trainFrame, position: '50% 45%', alt: 'A welded aluminum car frame on the bench, with the steel bogies and a chain-driven motor bogie behind it' },
-      { image: trainBender, position: '40% 50%', alt: 'Steel flat bar being fed through the class-built roller bender to curve it' },
-      { image: trainTrack, position: '50% 40%', alt: 'Finished curved track sections stacked in rows, ready to lay' },
-    ],
-    results: [{ label: 'Power', value: 'Solar-charged batteries' }, { label: 'Riders', value: 'Hundreds at the 2022 carnival' }],
   },
 ];
 const builds = await Promise.all(

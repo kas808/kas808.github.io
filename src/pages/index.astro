@@ -35,6 +35,7 @@ import saeCargo from '../content/projects/sae-aero/concept_sketch_cargo_bay.jpg'
 import trainFrame from '../content/punahou/lanakila-express/the-train/images/frame-and-bogies.jpg';
 import trainBender from '../content/punahou/lanakila-express/the-train/images/roller-bender.jpg';
 import trainTrack from '../content/punahou/lanakila-express/the-train/images/track-sections.jpg';
+import trainRide from '../content/punahou/lanakila-express/the-train/images/carnival-ride.jpg';
 import pipingSchematic from '../content/projects/hydraulic-system/01_piping_schematic.png';
 import pumpCurve from '../content/projects/hydraulic-system/04_pump_curve_selection.png';
 
@@ -91,7 +92,7 @@ const buildList: Build[] = [
     slug: 'lanakila-express', punahou: 'lanakila-express/the-train', short: 'Lanakila Express', info: 'Ride-on train, built by 8 teams over 2 years',
     summary: 'A ride-on electric train for kids, built from scratch by our Engineering IV class: welded aluminum cars, waterjet-cut steel bogies, CNC-machined wheels and track curved on a roller bender we built. I helped bend the track and worked on the solar charger, the couplings and the track joints.',
     meta: 'Punahou School · Engineering IV',
-    cover: trainFrame, coverPosition: '50% 40%',
+    cover: trainRide, coverPosition: '58% 50%',
     media: [
       { image: trainFrame, position: '50% 45%', alt: 'A welded aluminum car frame on the bench, with the steel bogies and a chain-driven motor bogie behind it' },
       { image: trainBender, position: '40% 50%', alt: 'Steel flat bar being fed through the class-built roller bender to curve it' },
@@ -237,7 +238,7 @@ const nav = [
     </header>
 
     <main id="main">
-      <!-- Graphite: the Lanakila Express, then pulled back into a frame as you scroll -->
+      <!-- Graphite: the Lanakila Express, full bleed; it scrolls away with a slight parallax -->
       <section class="hero" data-chapter="graphite" aria-labelledby="hero-title">
         <div class="hero-stage">
           <div class="hero-photo">
@@ -571,8 +572,8 @@ const nav = [
       .bar.menu-open::before { opacity: 0; }
 
       /* ---------- Hero ---------- */
-      .hero { --hero-run: 32svh; height: calc(100vh + 32vh); height: calc(100svh + var(--hero-run)); }
-      .hero-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; color: var(--on-dark); background: var(--graphite); }
+      .hero { height: 100vh; height: 100svh; }
+      .hero-stage { position: relative; height: 100%; overflow: hidden; color: var(--on-dark); background: var(--graphite); }
       .hero-photo { position: absolute; inset: 0; }
       .hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; }
       .hero-shade {
@@ -765,7 +766,6 @@ const nav = [
       }
       /* ---------- Phone ---------- */
       @media (max-width: 640px) {
-        .hero { --hero-run: 25svh; }
         .hero h1 { font-size: 15vw; }
         .hero-degree .sep { display: block; height: 0; overflow: hidden; }
         .hero-actions .btn { flex: 1 1 100%; justify-content: space-between; }
@@ -812,12 +812,14 @@ const nav = [
 
         /* Scroll-driven, off the main thread; browsers without support keep the still page */
         @supports (animation-timeline: scroll()) {
-          .hero-photo { animation: pullBack linear both; animation-timeline: scroll(root); animation-range: 0px var(--hero-run); }
-          .hero-photo img { animation: settle linear both; animation-timeline: scroll(root); animation-range: 0px var(--hero-run); }
-          .hero-copy, .hero-caption { animation: lift linear both; animation-timeline: scroll(root); animation-range: 0px calc(var(--hero-run) * 0.55); }
-          @keyframes pullBack { to { clip-path: inset(9vh 5vw 9vh 5vw round 6px); } }
-          @keyframes settle { from { transform: scale(1.12); } to { transform: scale(1); } }
-          @keyframes lift { to { opacity: 0; transform: translateY(-8vh); } }
+          /* The photo stays full bleed and drifts a little slower than the page; the copy fades as it leaves */
+          /* The timeline is a variable on purpose: written plainly, the CSS minifier folds it into the
+             animation shorthand, which browsers reject, and nothing runs */
+          .hero { --page-scroll: scroll(root); --drift-run: 100svh; --fade-run: 35svh; }
+          .hero-photo { animation: drift linear both; animation-timeline: var(--page-scroll); animation-range: 0px var(--drift-run); }
+          .hero-copy, .hero-caption { animation: lift linear both; animation-timeline: var(--page-scroll); animation-range: 0px var(--fade-run); }
+          @keyframes drift { to { transform: translateY(22%); } }
+          @keyframes lift { to { opacity: 0; } }
         }
 
         html:not(.no-js) [data-rise]:not(.in) { opacity: 0; transform: translateY(24px); }

@@ -1,11 +1,17 @@
 ---
-// The home page. It has its own look, separate from the rest of the site for now:
-// an aerospace and defense company. Graphite, flight-deck olive and paper,
-// with the work itself (photos of real hardware) carrying the colour.
-// Type: Archivo, its expanded capitals for headlines and normal width for text.
-// As you scroll, the whole page changes colour chapter by chapter, the first photo
-// pulls back into a frame, and the three test results pin and swap in place.
+// The home page. It has its own look, separate from the rest of the site for now.
+//
+// Three influences, one page:
+//   - the chapters, full-bleed photos and project tiles of a defense hardware company,
+//   - a row of square project tiles; picking one shows that build in a single panel below,
+//   - warm grained paper, an editorial serif and thin line drawings, with monospace kept for
+//     measurements and drawing labels only.
+// What makes it Kasin's own: the engineering drawing title block for his facts, his real
+// mechanical plan shown as printed, and every build ending in its measured result.
 import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource-variable/newsreader/opsz.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
 import { Image } from 'astro:assets';
 import { getCollection, getEntry } from 'astro:content';
 import { url } from '../lib/url';
@@ -15,35 +21,98 @@ import { featured } from '../lib/featured';
 import { ogFile } from '../lib/og';
 import { shortDescription } from '../lib/og-image';
 import headshot from '../assets/headshot.jpg';
-import heroPhoto from '../content/projects/rope-climbing-robot/01_river_crossing_wide.jpg';
-import gearTrain from '../content/projects/rope-climbing-robot/09_gear_train_top_view.jpg';
-import wspRoom from '../content/experience/wsp/halekulani_12.jpg';
+import heroPhoto from '../assets/hero/lanakila-express.jpg';
+import wspPlan from '../content/experience/wsp/spa_plan_03.jpg';
+import ropeGears from '../content/projects/rope-climbing-robot/09_gear_train_top_view.jpg';
+import ropeCalcs from '../content/projects/rope-climbing-robot/15_speed_hand_calcs.jpg';
+import turbinePhoto from '../content/projects/wind-turbine/01_final_turbine_photo.jpg';
+import turbineSketch from '../content/projects/wind-turbine/07_sketch_concept.jpg';
+import turbineCalcs from '../content/projects/wind-turbine/11_hand_calcs_power_efficiency.png';
+import pantographBand from '../assets/home/pantograph-final-build.jpg';
+import saeLayout from '../content/projects/sae-aero/concept_sketch_layout.jpg';
+import saeCargo from '../content/projects/sae-aero/concept_sketch_cargo_bay.jpg';
+import filterTesting from '../assets/home/water-filter-testing.jpg';
+import filterColumn from '../assets/home/water-filter-column.jpg';
+import filterLayers from '../content/projects/water-filter/04_filter2_layers.png';
+import rubeSketch from '../content/projects/rube-goldberg/03_my_concept_sketch.jpg';
+import rubeMachine from '../content/projects/rube-goldberg/01_final_machine.jpg';
 
-// The three featured projects, with their measured results from src/lib/featured.ts
-const featuredCards = await Promise.all(
-  featured.map(async (f) => {
-    const entry = await getEntry('projects', f.slug);
-    if (!entry) throw new Error(`Featured project "${f.slug}" not found in src/content/projects/`);
-    return { ...f, ...entry.data, href: `/projects/${f.slug}/` };
-  }),
-);
-
-// More work: one tile each, with the number that project is known for where it has one
-// (the rest are in the full list further down)
-const moreSlugs = [
-  { slug: 'sae-aero', figure: 'In progress' },
-  { slug: 'hydraulic-system', figure: '23.4 m pump head' },
+// "What I've built": six builds. Picking a tile shows that build in the one panel below it.
+//   short:   the name on the tile
+//   info:    the line that appears when the tile is hovered (always shown on a touch screen)
+//   media:   the panel's pictures, side by side in one wide band (the sharpest versions on hand)
+//   results: the readout under the pictures; the last one is highlighted. The three featured builds
+//            take theirs from src/lib/featured.ts, the others use facts from their project summaries.
+type Media = { image: ImageMetadata; alt: string; position?: string; fit?: 'contain' };
+type Build = { slug: string; short: string; info: string; media: Media[]; results?: { label: string; value: string }[] };
+const buildList: Build[] = [
+  {
+    slug: 'rope-climbing-robot', short: 'Rope Climbing Robot', info: 'Measured 0.115 ft/s against 0.134 predicted',
+    media: [
+      { image: ropeGears, position: '50% 50%', alt: 'Top view of the robot: gear train, motor and screw-slider drive inside the laser-cut box' },
+      { image: ropeCalcs, alt: 'Hand calculation of climbing speed, ending in the predicted 0.134 ft/s', fit: 'contain' },
+    ],
+  },
+  {
+    slug: 'wind-turbine', short: 'Small Wind Turbine', info: 'Wind tunnel at 3 speeds, up to 6.2 mW',
+    media: [
+      { image: turbineSketch, alt: 'Concept sketch of the turbine rotor and hub' },
+      { image: turbineCalcs, alt: 'Hand calculations of torque, power and efficiency at three wind speeds' },
+      { image: turbinePhoto, alt: 'The 3D printed four-blade wind turbine held up in the lab' },
+    ],
+  },
+  {
+    slug: 'pantograph', short: '2x Pantograph', info: '1.98x to 2.0x against a 2.0x target',
+    media: [{ image: pantographBand, position: '50% 55%', alt: 'The aluminum 2x pantograph on the drawing table with its two pens' }],
+  },
+  {
+    slug: 'sae-aero', short: 'SAE Aero Design', info: 'Capstone cargo plane, in progress',
+    media: [
+      { image: saeLayout, alt: 'Concept sketch of the twin-motor cargo plane layout, top and side views' },
+      { image: saeCargo, alt: 'Concept sketch of the cargo bay with stacked bottles' },
+    ],
+    results: [{ label: 'Competition', value: 'SAE Aero 2027' }, { label: 'Status', value: 'In progress' }],
+  },
+  {
+    slug: 'water-filter', short: 'Water Filter', info: 'The redesign cut turbidity by about 60%',
+    media: [
+      { image: filterTesting, alt: 'The filter column being tested outdoors' },
+      { image: filterColumn, alt: 'The filter column on its wooden stand' },
+      { image: filterLayers, alt: "Diagram of the second filter's anthracite, sand and gravel layers", fit: 'contain' },
+    ],
+    results: [{ label: 'Filter media', value: 'Anthracite, sand, gravel' }, { label: 'Turbidity, redesign', value: 'About 60% lower' }],
+  },
+  {
+    slug: 'rube-goldberg', short: 'Rube Goldberg Machine', info: 'My concept became the team design',
+    media: [
+      { image: rubeSketch, alt: 'My concept sketch for the chain reaction' },
+      { image: rubeMachine, alt: 'The finished Rube Goldberg machine on its board' },
+    ],
+    results: [{ label: 'Board', value: '48 x 48 in' }, { label: 'Reveals', value: 'L, M and U' }],
+  },
 ];
-const moreTiles = await Promise.all(
-  moreSlugs.map(async (m) => {
-    const entry = await getEntry('projects', m.slug);
-    if (!entry) throw new Error(`Project "${m.slug}" not found in src/content/projects/`);
-    return { ...m, ...entry.data, href: `/projects/${m.slug}/` };
+const builds = await Promise.all(
+  buildList.map(async (b) => {
+    const entry = await getEntry('projects', b.slug);
+    if (!entry) throw new Error(`Project "${b.slug}" not found in src/content/projects/`);
+    const f = featured.find((x) => x.slug === b.slug);
+    return {
+      ...b,
+      title: entry.data.title,
+      summary: entry.data.summary,
+      meta: [entry.data.course, entry.data.date].filter(Boolean).join(' · '),
+      cover: entry.data.cover,
+      coverPosition: entry.data.coverPosition,
+      href: url(`/projects/${b.slug}/`),
+      results: f?.results ?? b.results ?? [],
+      note: f?.note,
+    };
   }),
 );
+const pad = (n: number) => String(n).padStart(2, '0');
 
 // Every project and role, for the filterable list (placeholders stay off the home page)
-type Row = { title: string; course: string; date: string; href: string; cover?: ImageMetadata; coverPosition?: string; fields: string[] };
+type Row = { title: string; course: string; date: string; href: string; cover?: ImageMetadata; fields: string[] };
 const experienceRows: Row[] = (await getCollection('experience'))
   .filter((e) => e.data.categories.length > 0)
   .sort((a, b) => a.data.order - b.data.order)
@@ -53,7 +122,6 @@ const experienceRows: Row[] = (await getCollection('experience'))
     date: e.data.dates.replace(/^\w+ (\d{4}) to \w+ (\d{4})$/, '$1 to $2'),
     href: `/experience/${e.id}/`,
     cover: e.data.cover,
-    coverPosition: e.data.coverPosition,
     fields: e.data.categories.map((c) => c.category),
   }));
 const projectRows: Row[] = (await getCollection('projects'))
@@ -65,7 +133,6 @@ const projectRows: Row[] = (await getCollection('projects'))
     date: p.data.date,
     href: `/projects/${p.id}/`,
     cover: p.data.cover ?? p.data.gallery?.[0]?.images?.[0]?.src,
-    coverPosition: p.data.coverPosition,
     fields: p.data.categories.map((c) => c.category),
   }));
 const rows = [...experienceRows, ...projectRows];
@@ -82,7 +149,6 @@ const punahou = [
 const wspSoftware = ['Revit', 'AutoCAD', 'TRACE 700', 'IES-VE', 'Bluebeam', 'Excel'];
 const wspStandards = ['ASHRAE 62.1', 'ASHRAE 90.1', 'IECC', 'UPC'];
 const [emailUser, emailHost] = site.email.split('@');
-
 // Search results and link previews, the same as every other page (see BaseLayout.astro)
 const description = shortDescription(site.description);
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -107,7 +173,7 @@ const nav = [
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
-    <meta name="theme-color" content="#0d0e10" />
+    <meta name="theme-color" content="#151515" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={site.title} />
     <meta property="og:description" content={description} />
@@ -125,7 +191,7 @@ const nav = [
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    <!-- One fixed colour layer behind the page; it changes colour as each chapter arrives -->
+    <!-- One fixed layer behind the page: it changes colour chapter by chapter, and carries the paper grain -->
     <div class="ground" aria-hidden="true"></div>
 
     <header class="bar">
@@ -135,7 +201,6 @@ const nav = [
           {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
           <li><a class="btn btn-small" href={`mailto:${site.email}`}>Email me</a></li>
         </ul>
-        <!-- Phones: the same links in a full-screen menu -->
         <button class="menu-btn" type="button" aria-expanded="false" aria-controls="phone-menu">Menu</button>
       </nav>
       <div class="phone-menu" id="phone-menu" hidden>
@@ -148,36 +213,35 @@ const nav = [
     </header>
 
     <main id="main">
-      <!-- Chapter 1, graphite: the work in the field, full screen, then pulled back into a frame -->
+      <!-- Graphite: the Lanakila Express, then pulled back into a frame as you scroll -->
       <section class="hero" data-chapter="graphite" aria-labelledby="hero-title">
         <div class="hero-stage">
           <div class="hero-photo">
-            <Image src={heroPhoto} alt="The Rope Climbing Robot crossing the test course along a rope above water" widths={[900, 1400, 2000, 2600]} sizes="100vw" loading="eager" fetchpriority="high" />
+            <Image src={heroPhoto} alt="The Lanakila Express ride-on train carrying riders around its track at the Punahou School carnival" widths={[900, 1400, 2000]} sizes="100vw" loading="eager" fetchpriority="high" />
           </div>
           <div class="hero-shade" aria-hidden="true"></div>
           <div class="hero-copy">
             <h1 id="hero-title">
-              <span class="line"><span>Kasin</span></span>
-              <span class="line"><span>Ito-Sato</span></span>
+              <span class="line"><span>Kasin Ito-Sato</span></span>
             </h1>
-            <!-- Role, then degree and graduation date on their own line: the first things a recruiter checks -->
             <p class="hero-role">Mechanical Engineer</p>
             <p class="hero-degree">BS Mechanical Engineering, <span class="nowrap">Loyola Marymount University</span><span class="sep"> · </span><span class="nowrap">May 2027</span></p>
-            <p class="hero-line">Build it, measure it. I design and build hardware, then test it against my own predictions.</p>
+            <p class="hero-line">I design and build hardware, then test it against my own predictions.</p>
             <div class="hero-actions">
-              <a class="btn" href="#work">See the work <span class="arrow" aria-hidden="true"></span></a>
+              <a class="btn" href="#work">See the work <span class="arrow arrow-down" aria-hidden="true"></span></a>
               <a class="text-link" href={url('/resume/')}>Resume</a>
               <a class="text-link" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
             </div>
           </div>
-          <p class="hero-caption">Rope Climbing Robot on the test course, Spring 2026</p>
+          <p class="hero-caption mono">Lanakila Express · Punahou School</p>
         </div>
       </section>
 
-      <section class="intro" data-chapter="graphite" aria-labelledby="intro-title">
+      <!-- Paper: who I am, set as the title block of an engineering drawing -->
+      <section class="intro" data-chapter="paper" aria-labelledby="intro-title">
         <h2 id="intro-title" class="visually-hidden">About</h2>
         <div class="intro-grid">
-          <p class="lead" data-rise>
+          <p class="intro-lead serif" data-rise>
             I'm a fourth-year mechanical engineering student at Loyola Marymount University and on our team for the 2027
             SAE Aero Design Regular Class competition. I grew up on Oahu, learning to machine, weld and wire in the
             Punahou School shop.
@@ -185,111 +249,114 @@ const nav = [
           <div class="portrait" data-rise>
             <Image src={headshot} alt="Portrait of Kasin Ito-Sato" widths={[360, 540, 720]} sizes="(max-width: 760px) 40vw, 20vw" quality={90} />
           </div>
-          <dl class="facts">
-            <div data-rise><dt>Studying</dt><dd>BS Mechanical Engineering, Loyola Marymount University, May 2027. FE Mechanical exam in November 2026.</dd></div>
-            <div data-rise><dt>Working on</dt><dd>Mechanical design and CAD, thermal and flow analysis, assembly and test, GD&T.</dd></div>
-            <div data-rise><dt>Based in</dt><dd>Los Angeles, CA. Grew up in Honolulu. English and Japanese.</dd></div>
-            <div data-rise><dt>Looking for</dt><dd>A full-time role after I graduate where I can keep designing, building and testing.</dd></div>
-          </dl>
         </div>
+        <dl class="title-block" data-rise>
+          <div class="tb-name"><dt>Drawn by</dt><dd>Kasin Ito-Sato</dd></div>
+          <div><dt>Title</dt><dd>Mechanical Engineer</dd></div>
+          <div><dt>School</dt><dd>Loyola Marymount University</dd></div>
+          <div><dt>Degree</dt><dd>BS Mechanical Engineering</dd></div>
+          <div><dt>Graduates</dt><dd>May 2027</dd></div>
+          <div><dt>FE exam</dt><dd>Mechanical, November 2026</dd></div>
+          <div><dt>Based in</dt><dd>Los Angeles, CA</dd></div>
+          <div class="tb-odd"><dt>Languages</dt><dd>English, Japanese</dd></div>
+          <div class="tb-wide"><dt>Working on</dt><dd>Mechanical design and CAD, thermal and flow analysis, assembly and test, GD&T</dd></div>
+          <div class="tb-wide"><dt>Looking for</dt><dd>A full-time role after I graduate where I can keep designing, building and testing</dd></div>
+        </dl>
       </section>
 
-      <!-- Chapter 1 continues: three results side by side, so they can be compared in one look -->
-      <section class="tests" id="work" data-chapter="graphite" aria-labelledby="tests-title">
-        <div class="tests-head">
-          <h2 id="tests-title" class="title" data-rise>Built, then measured</h2>
-          <p class="tests-sub" data-rise>Three builds where I predicted the result first, then tested it.</p>
+      <!-- Graphite: the work. A row of tiles; picking one shows that build in the panel below -->
+      <section class="work" id="work" data-chapter="graphite" aria-labelledby="work-title">
+        <div class="work-head">
+          <h2 id="work-title" class="serif section-title" data-rise>What I've built</h2>
+          <p class="work-sub" data-rise>The first three were predicted on paper before they were built and tested.</p>
         </div>
-        <ol class="tests-grid">
-          {featuredCards.map((f) => (
-            <li class="test" data-rise>
-              <a class="test-photo" href={url(f.href)} tabindex="-1" aria-hidden="true" style={f.coverPosition && `--pos: ${f.coverPosition}`} data-reveal>
-                {f.cover && <Image src={f.cover} alt="" widths={[500, 800, 1100]} sizes="(max-width: 640px) 100vw, (max-width: 960px) 45vw, 32vw" />}
+        <ol class="index" data-tabs>
+          {builds.map((b, i) => (
+            <li class="tile" data-rise>
+              <a href={`#panel-${b.slug}`} id={`tab-${b.slug}`} data-tab={b.slug}>
+                <span class="tile-photo" style={b.coverPosition && `--pos: ${b.coverPosition}`}>
+                  {b.cover && <Image src={b.cover} alt="" widths={[360, 560, 800]} sizes="(max-width: 640px) 50vw, (max-width: 1100px) 33vw, 17vw" />}
+                  <span class="tile-info">{b.info}</span>
+                  <span class="tile-arrow" aria-hidden="true"></span>
+                </span>
+                <span class="tile-num mono" aria-hidden="true">{pad(i + 1)}</span>
+                <span class="tile-name">{b.short}</span>
               </a>
-              <h3><a href={url(f.href)}>{f.title}</a></h3>
-              <p class="test-meta">{[f.course, f.date].filter(Boolean).join(' · ')}</p>
-              <dl class="readout">
-                {f.results.map((r) => (
-                  <div>
-                    <dt>{r.label}</dt>
-                    <dd>{r.value}</dd>
-                  </div>
-                ))}
-              </dl>
-              <p class="test-note">{f.note}</p>
             </li>
           ))}
         </ol>
-      </section>
 
-      <!-- More work, as a mosaic of tiles -->
-      <section class="mosaic" data-chapter="graphite" aria-labelledby="more-title">
-        <h2 id="more-title" class="title" data-rise>More work</h2>
-        <ul class="tiles">
-          <li class="tile tile-wide" data-reveal>
-            <a href={url('/projects/rope-climbing-robot/')}>
-              <span class="tile-photo"><Image src={gearTrain} alt="" widths={[700, 1100, 1500]} sizes="(max-width: 760px) 100vw, 66vw" /></span>
-              <span class="tile-text">
-                <span class="tile-name">Inside the rope climber</span>
-                <span class="tile-line">Gear train and screw-slider drive, laser-cut and 3D printed</span>
-              </span>
-              <span class="tile-arrow" aria-hidden="true"></span>
-            </a>
-          </li>
-          {moreTiles.map((t) => (
-            <li class="tile" data-reveal>
-              <a href={url(t.href)}>
-                <span class="tile-photo" style={t.coverPosition && `--pos: ${t.coverPosition}`}>
-                  {t.cover && <Image src={t.cover} alt="" widths={[500, 800]} sizes="(max-width: 760px) 100vw, 33vw" />}
-                </span>
-                <span class="tile-text">
-                  <span class="tile-name">{t.title}</span>
-                  <span class="tile-line">{t.figure}</span>
-                </span>
-                <span class="tile-arrow" aria-hidden="true"></span>
-              </a>
-            </li>
+        <!-- One stage: every panel sits in the same place, and only the chosen one shows.
+             Without JavaScript they simply stack, so every build is still there to read. -->
+        <div class="stage">
+          {builds.map((b, i) => (
+            <article class:list={['panel', i === 0 && 'is-on']} id={`panel-${b.slug}`} data-panel={b.slug} aria-labelledby={`panel-${b.slug}-title`}>
+              <div class="panel-head">
+                <p class="panel-num mono" aria-hidden="true">{pad(i + 1)}</p>
+                <h3 id={`panel-${b.slug}-title`} class="serif">{b.title}</h3>
+                <p class="panel-sum">{b.summary}</p>
+              </div>
+              <div class="panel-media" style={`--n: ${b.media.length}`}>
+                {b.media.map((m) => (
+                  <figure class:list={[m.fit === 'contain' && 'is-contain']} style={m.position && `--pos: ${m.position}`}>
+                    <Image
+                      src={m.image}
+                      alt={m.alt}
+                      widths={b.media.length === 1 ? [800, 1300, 1900, 2600] : [400, 700, 1000, 1400]}
+                      sizes={b.media.length === 1 ? '(max-width: 760px) 100vw, 94vw' : `(max-width: 760px) ${Math.round(100 / b.media.length)}vw, ${Math.round(94 / b.media.length)}vw`}
+                    />
+                  </figure>
+                ))}
+              </div>
+              <div class="panel-foot">
+                <dl class="readout">
+                  {b.results.map((r) => (
+                    <div>
+                      <dt class="mono">{r.label}</dt>
+                      <dd class="mono">{r.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+                {b.note && <p class="panel-note">{b.note}</p>}
+                <p class="panel-meta mono">{b.meta}</p>
+                <a class="text-link" href={b.href}>Read the project <span class="arrow" aria-hidden="true"></span></a>
+              </div>
+            </article>
           ))}
-        </ul>
+        </div>
       </section>
 
-      <!-- Chapter 2, flight-deck olive: the internship -->
-      <section class="wsp" id="wsp" data-chapter="olive" aria-labelledby="wsp-title">
-        <div class="wsp-head">
-          <h2 id="wsp-title" class="title" data-rise>Intern at WSP</h2>
+      <!-- Paper: the internship, with the mechanical plan as printed, in a white panel -->
+      <section class="wsp" id="wsp" data-chapter="paper" aria-labelledby="wsp-title">
+        <div class="wsp-panel" data-reveal>
+          <p class="panel-note-top mono">Mechanical plan, Hawaii Prince Waikiki Spa Renovation</p>
+          <Image src={wspPlan} alt="Mechanical plan drawing for the Hawaii Prince Waikiki Spa Renovation" widths={[700, 1100, 1600, 2000]} sizes="(max-width: 900px) 100vw, 50vw" class="plan" />
+        </div>
+        <div class="wsp-text">
+          <h2 id="wsp-title" class="serif section-title" data-rise>Intern at WSP</h2>
           <dl class="side-facts" data-rise>
-            <div><dt>Role</dt><dd>Mechanical Engineering Intern</dd></div>
-            <div><dt>Where</dt><dd>WSP in the US, Honolulu, HI</dd></div>
-            <div><dt>When</dt><dd>May 2025 to January 2026</dd></div>
+            <div><dt class="mono">Role</dt><dd>Mechanical Engineering Intern</dd></div>
+            <div><dt class="mono">Where</dt><dd>WSP in the US, Honolulu, HI</dd></div>
+            <div><dt class="mono">When</dt><dd>May 2025 to January 2026</dd></div>
           </dl>
-        </div>
-        <figure class="wsp-photo" data-reveal>
-          <Image src={wspRoom} alt="A building mechanical room with red and blue piping and pumps, seen on a WSP site visit" widths={[900, 1400, 2000, 2600]} sizes="100vw" />
-        </figure>
-        <div class="wsp-figure">
-          <p class="big" data-rise>0.0026 <span class="unit">in. w.c.</span></p>
-          <div class="wsp-figure-text">
-            <h3 data-rise>The rule of thumb, checked</h3>
-            <p data-rise>
-              With the team's 10% rule of thumb, my Excel pressurization tool showed a 40,000 sq ft office reaching
-              0.0026 in. w.c., under the 0.02 in. w.c. minimum. It was one of three calculation tools I built that the
-              team adopted.
-            </p>
-          </div>
-        </div>
-        <div class="wsp-body">
-          <p class="lead" data-rise>
+          <p class="big serif" data-rise>0.0026<span class="unit mono">in. w.c.</span></p>
+          <p class="wsp-figure-text" data-rise>
+            With the team's 10% rule of thumb, my Excel pressurization tool showed a 40,000 sq ft office reaching
+            0.0026 in. w.c., under the 0.02 in. w.c. minimum. It was one of three calculation tools I built that the team
+            adopted.
+          </p>
+          <p data-rise>
             I worked with licensed mechanical engineers to design HVAC, plumbing and fire protection systems for
             commercial and residential projects. I sized equipment from loads cross-checked in IES-VE and TRACE 700 and
             drafted layouts for the Hawaii Prince Waikiki Spa Renovation.
           </p>
           <div class="records" data-rise>
             <div>
-              <h3>Software</h3>
+              <h3 class="mono">Software</h3>
               <ul>{wspSoftware.map((t) => <li>{t}</li>)}</ul>
             </div>
             <div>
-              <h3>Standards and codes</h3>
+              <h3 class="mono">Standards and codes</h3>
               <ul>{wspStandards.map((t) => <li>{t}</li>)}</ul>
             </div>
           </div>
@@ -297,27 +364,27 @@ const nav = [
         </div>
       </section>
 
-      <!-- Chapter 3, paper: the full record -->
+      <!-- Paper: the full record -->
       <section class="ledger" id="all" data-chapter="paper" aria-labelledby="ledger-title">
         <div class="ledger-col">
-          <h2 id="ledger-title" class="title" data-rise>Everything I've worked on</h2>
+          <h2 id="ledger-title" class="serif section-title" data-rise>Everything I've worked on</h2>
           <nav class="fields" aria-label="Show work in one field" data-rise>
             <a href={url('/projects/')} data-field="" aria-current="true">All</a>
             {fields.map((c) => <a href={url(`/projects/${c.slug}/`)} data-field={c.slug}>{c.name}</a>)}
           </nav>
-          <p class="ledger-count" aria-live="polite" data-count>{rows.length} projects and roles</p>
+          <p class="ledger-count mono" aria-live="polite" data-count>{rows.length} projects and roles</p>
           <ol class="rows">
             {rows.map((r) => (
               <li data-fields={r.fields.join(' ')}>
                 <a href={url(r.href)}>
                   {r.cover && (
-                    <span class="row-photo" style={r.coverPosition && `--pos: ${r.coverPosition}`}>
-                      <Image src={r.cover} alt="" widths={[400, 640]} sizes="(max-width: 760px) 100vw, 320px" />
+                    <span class="row-photo">
+                      <Image src={r.cover} alt="" widths={[400, 640]} sizes="320px" />
                     </span>
                   )}
                   <span class="row-name">{r.title}</span>
                   <span class="row-kind">{r.course}</span>
-                  <span class="row-date">{r.date}</span>
+                  <span class="row-date mono">{r.date}</span>
                 </a>
               </li>
             ))}
@@ -328,17 +395,17 @@ const nav = [
           <div class="preview-frame">
             {firstWithPhoto.cover && <Image src={firstWithPhoto.cover} alt="" widths={[500, 800]} sizes="30vw" data-preview-img />}
           </div>
-          <figcaption data-preview-cap>{firstWithPhoto.title}</figcaption>
+          <figcaption class="mono" data-preview-cap>{firstWithPhoto.title}</figcaption>
         </figure>
       </section>
 
       <section class="punahou" data-chapter="paper" aria-labelledby="punahou-title">
-        <h2 id="punahou-title" class="title" data-rise>Where I started: Punahou School</h2>
+        <h2 id="punahou-title" class="serif section-title" data-rise>Where I started: Punahou School</h2>
         <ul>
           {punahou.map((p) => (
             <li data-rise>
               <a href={url(p.href)}>
-                <h3>{p.name}</h3>
+                <h3 class="serif">{p.name}</h3>
                 <span>{p.detail}</span>
                 <span class="arrow" aria-hidden="true"></span>
               </a>
@@ -349,10 +416,9 @@ const nav = [
       </section>
     </main>
 
-    <!-- Chapter 4, graphite again: the way to reach me is the headline -->
     <footer class="close" data-chapter="graphite" aria-labelledby="close-title">
-      <h2 id="close-title" class="close-title">Get in touch</h2>
-      <a class="mail" href={`mailto:${site.email}`}><span>{emailUser}</span><span>@{emailHost}</span></a>
+      <h2 id="close-title" class="close-title mono">Get in touch</h2>
+      <a class="mail serif" href={`mailto:${site.email}`}><span>{emailUser}</span><span>@{emailHost}</span></a>
       <div class="close-meta">
         <p>Mechanical Engineer<br />BS Loyola Marymount University, May 2027</p>
         <p>Los Angeles, CA<br />English and Japanese</p>
@@ -363,27 +429,28 @@ const nav = [
 
     <style is:global>
       :root {
-        /* Grounds, one per chapter, each with its own text colours */
-        --graphite: #0d0e10;
-        --graphite-up: #17191c;   /* a step up, for tiles and panels */
-        --olive: #45473e;
-        --olive-up: #51544a;
-        --paper: #e8e7e2;
-        --paper-up: #dddcd6;
-        --on-dark: #f2f2ef;
-        --on-dark-soft: #a9abad;
-        --on-olive-soft: #c9cabd;
-        --on-paper: #0d0e10;
-        --on-paper-soft: #55575b;
+        --graphite: #151515;
+        --graphite-up: #222222;
+        --paper: #f3efe7;
+        --paper-up: #e8e2d6;
+        --on-dark: #f3efe7;
+        --on-dark-soft: #a8a59e;
+        --on-paper: #1a1918;
+        --on-paper-soft: #5e5a53;
+        --rule-paper: rgba(26, 25, 24, 0.22);
+        --rule-dark: rgba(243, 239, 231, 0.2);
 
-        --font: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif;
+        --serif: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
+        --sans: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif;
+        --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
 
-        /* The five type sizes */
+        /* The type sizes */
+        --step-label: 0.75rem;   /* drawing labels, in mono */
         --step-small: 0.875rem;
         --step-body: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem);
         --step-lead: clamp(1.25rem, 0.95rem + 1vw, 1.875rem);
-        --step-head: clamp(2rem, 1rem + 3.2vw, 4.25rem);
-        --step-display: clamp(3.25rem, 0.75rem + 7.6vw, 9rem);
+        --step-head: clamp(2.5rem, 1.2rem + 4vw, 5.25rem);
+        --step-display: clamp(3.5rem, 1rem + 8vw, 10rem);
 
         --margin: max(clamp(16px, 3vw, 48px), env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
         --gap: clamp(88px, 10vw, 160px);
@@ -393,25 +460,26 @@ const nav = [
       }
       *, *::before, *::after { box-sizing: border-box; }
       html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; scroll-padding-top: 72px; }
-      /* Taps register at once (no double-tap-zoom wait); controls don't select their label on a long press */
-      a, button { touch-action: manipulation; }
-      .btn, .fields a, .bar a, .phone-menu a { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
       @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+      a, button { touch-action: manipulation; }
+      .btn, .fields a, .bar a, .phone-menu a, .menu-btn { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
       body {
-        margin: 0; font: 400 var(--step-body)/1.55 var(--font); font-stretch: 100%;
-        color: var(--ink); --ink: var(--on-dark); --soft: var(--on-dark-soft); --up: var(--graphite-up);
+        margin: 0; font: 400 var(--step-body)/1.55 var(--sans); font-stretch: 100%;
+        color: var(--ink); --ink: var(--on-dark); --soft: var(--on-dark-soft); --up: var(--graphite-up); --rule: var(--rule-dark);
         transition: color var(--chapter-ms) var(--ease-in-out);
         overflow-x: clip;
       }
-      /* Chapter colours: the fixed ground and the text change together */
-      html[data-ground='olive'] body { --ink: var(--on-dark); --soft: var(--on-olive-soft); --up: var(--olive-up); }
-      html[data-ground='paper'] body { --ink: var(--on-paper); --soft: var(--on-paper-soft); --up: var(--paper-up); }
+      html[data-ground='paper'] body { --ink: var(--on-paper); --soft: var(--on-paper-soft); --up: var(--paper-up); --rule: var(--rule-paper); }
       .ground { position: fixed; inset: 0; z-index: -1; background-color: var(--graphite); transition: background-color var(--chapter-ms) var(--ease-in-out); }
-      html[data-ground='olive'] .ground { background-color: var(--olive); }
+      /* Paper grain: a fine noise drawn once, shown only on the paper chapters */
+      .ground::after {
+        content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity var(--chapter-ms) var(--ease-in-out);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.3 0 0 0 0 0.24 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        mix-blend-mode: multiply;
+      }
       html[data-ground='paper'] .ground { background-color: var(--paper); }
-      /* Without JavaScript each chapter simply carries its own colour */
+      html[data-ground='paper'] .ground::after { opacity: 0.32; }
       .no-js [data-chapter='graphite'] { background: var(--graphite); color: var(--on-dark); }
-      .no-js [data-chapter='olive'] { background: var(--olive); color: var(--on-dark); }
       .no-js [data-chapter='paper'] { background: var(--paper); color: var(--on-paper); }
 
       ::selection { background: var(--ink); color: var(--graphite); }
@@ -425,13 +493,10 @@ const nav = [
       .skip { position: absolute; left: -999px; top: 8px; z-index: 60; padding: 10px 16px; background: var(--on-dark); color: var(--graphite); }
       .skip:focus { left: 8px; }
 
-      /* Headlines: Archivo stretched wide, in capitals */
-      .title {
-        font-size: var(--step-head); font-weight: 650; font-stretch: 118%; line-height: 0.98; letter-spacing: -0.02em;
-        text-transform: uppercase; text-wrap: balance;
-      }
+      .serif { font-family: var(--serif); font-optical-sizing: auto; font-weight: 380; }
+      .mono { font-family: var(--mono); font-weight: 400; letter-spacing: 0; }
+      .section-title { font-size: var(--step-head); line-height: 0.98; letter-spacing: -0.025em; text-wrap: balance; }
 
-      /* Buttons: flat, square, with a drawn arrow */
       .btn {
         display: inline-flex; align-items: center; gap: 14px; min-height: 52px; padding: 0 22px;
         background: var(--on-dark); color: var(--graphite); font-size: var(--step-small); font-weight: 600; text-decoration: none;
@@ -441,37 +506,33 @@ const nav = [
       .btn-small { min-height: 40px; padding: 0 16px; }
       .arrow { position: relative; display: inline-block; width: 18px; height: 1.5px; background: currentColor; transition: transform 200ms var(--ease-out); }
       .arrow::after { content: ''; position: absolute; right: 0; top: -4px; width: 8px; height: 8px; border-top: 1.5px solid currentColor; border-right: 1.5px solid currentColor; transform: rotate(45deg); }
+      .arrow-down { transform: rotate(90deg); }
       .text-link { display: inline-flex; align-items: center; gap: 12px; font-size: var(--step-small); font-weight: 600; text-decoration: none; min-height: 44px; }
       @media (hover: hover) and (pointer: fine) {
         .btn:hover { background: #ffffff; }
-        .btn:hover .arrow, .text-link:hover .arrow { transform: translateX(4px); }
+        .btn:hover .arrow:not(.arrow-down), .text-link:hover .arrow { transform: translateX(4px); }
+        .btn:hover .arrow-down { transform: rotate(90deg) translateX(3px); }
         .text-link:hover { text-decoration: underline; }
       }
 
-      /* ---------- Top bar: it takes the colour of the chapter you're in ---------- */
+      /* ---------- Top bar ---------- */
       .bar {
         position: fixed; top: 0; left: 0; right: 0; z-index: 50;
         display: flex; align-items: center; justify-content: space-between; gap: 24px;
         padding: 12px var(--margin); padding-top: max(12px, env(safe-area-inset-top));
-        color: var(--on-dark); mix-blend-mode: normal;
+        color: var(--on-dark);
       }
       .bar::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--graphite); opacity: 0; transition: opacity 300ms ease, background-color var(--chapter-ms) var(--ease-in-out); }
       .bar.is-solid { color: var(--ink); }
       .bar.is-solid::before { opacity: 1; }
-      html[data-ground='olive'] .bar::before { background: var(--olive); }
-      html[data-ground='paper'] .bar::before { background: var(--paper); }
+      html[data-ground='paper'] .bar::before { background: var(--paper); box-shadow: 0 1px 0 var(--rule-paper); }
       html[data-ground='paper'] .bar.is-solid .btn { background: var(--on-paper); color: var(--paper); }
       .wordmark { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--step-small); font-weight: 700; font-stretch: 125%; letter-spacing: 0.02em; text-transform: uppercase; text-decoration: none; white-space: nowrap; }
       .nav-links { display: flex; align-items: center; gap: clamp(16px, 2.2vw, 32px); margin: 0; padding: 0; list-style: none; font-size: var(--step-small); font-weight: 500; }
       .nav-links a:not(.btn) { text-decoration: none; }
       @media (hover: hover) and (pointer: fine) { .nav-links a:not(.btn):hover { text-decoration: underline; } }
-      .menu-btn {
-        display: none; min-height: 44px; padding: 0 16px; border: 1px solid currentColor; background: none; color: inherit;
-        font: 600 var(--step-small)/1 var(--font); cursor: pointer; -webkit-user-select: none; user-select: none;
-        transition: transform 160ms var(--ease-out);
-      }
+      .menu-btn { display: none; min-height: 44px; padding: 0 16px; border: 1px solid currentColor; background: none; color: inherit; font: 600 var(--step-small)/1 var(--sans); cursor: pointer; transition: transform 160ms var(--ease-out); }
       .menu-btn:active { transform: scale(0.97); }
-      /* The phone menu: a full screen of large links, in the colour of the chapter you're in */
       .phone-menu {
         position: fixed; inset: 0; z-index: -1; display: flex; flex-direction: column; justify-content: space-between;
         padding: calc(88px + env(safe-area-inset-top, 0px)) var(--margin) max(32px, env(safe-area-inset-bottom, 0px));
@@ -479,277 +540,290 @@ const nav = [
       }
       .phone-menu[hidden] { display: none; }
       .phone-menu ul { margin: 0; padding: 0; list-style: none; }
-      .phone-menu li a { display: block; padding: 10px 0; font-size: var(--step-head); font-weight: 650; font-stretch: 118%; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; text-decoration: none; }
+      .phone-menu li a { display: block; padding: 8px 0; font-family: var(--serif); font-size: var(--step-head); font-weight: 380; line-height: 1.05; letter-spacing: -0.02em; text-decoration: none; }
       .phone-menu .btn { justify-content: space-between; }
       .bar.menu-open { color: var(--on-dark); }
       .bar.menu-open::before { opacity: 0; }
-      @media (prefers-reduced-motion: no-preference) {
-        .phone-menu:not([hidden]) { animation: menuIn 260ms var(--ease-out) both; }
-        @keyframes menuIn { from { opacity: 0; transform: translateY(-8px); } }
-      }
 
-      /* ---------- Hero: full screen, then pulled back into a frame as you scroll ---------- */
-      /* --hero-run: how far you scroll while the photo pulls back (the hero is one screen plus this) */
+      /* ---------- Hero ---------- */
       .hero { --hero-run: 32svh; height: calc(100vh + 32vh); height: calc(100svh + var(--hero-run)); }
-      .hero-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; color: var(--on-dark); }
+      .hero-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; color: var(--on-dark); background: var(--graphite); }
       .hero-photo { position: absolute; inset: 0; }
-      .hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 55%; }
+      .hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; }
       .hero-shade {
         position: absolute; inset: 0; pointer-events: none;
-        background: linear-gradient(0deg, rgba(13, 14, 16, 0.86) 0%, rgba(13, 14, 16, 0.35) 42%, rgba(13, 14, 16, 0.12) 70%, rgba(13, 14, 16, 0.4) 100%);
+        background: linear-gradient(0deg, rgba(21, 21, 21, 0.9) 0%, rgba(21, 21, 21, 0.5) 40%, rgba(21, 21, 21, 0.15) 70%, rgba(21, 21, 21, 0.45) 100%),
+                    linear-gradient(90deg, rgba(21, 21, 21, 0.55) 0%, rgba(21, 21, 21, 0) 60%);
       }
       .hero-copy { position: absolute; left: var(--margin); right: var(--margin); bottom: clamp(32px, 6vh, 72px); }
-      .hero h1 {
-        font-size: var(--step-display); font-weight: 650; font-stretch: 122%; line-height: 0.9; letter-spacing: -0.025em; text-transform: uppercase;
-      }
-      .hero h1 .line { display: block; overflow: hidden; padding-bottom: 0.04em; }
+      .hero h1 { font-family: var(--serif); font-optical-sizing: auto; font-size: var(--step-display); font-weight: 360; line-height: 0.92; letter-spacing: -0.035em; }
+      /* The mask for the rise-in: padded past the serif's ascenders and descenders so no letter is clipped,
+         with the same amount taken back in margin so the spacing doesn't change */
+      .hero h1 .line { display: block; overflow: hidden; padding: 0.16em 0 0.14em; margin: -0.16em 0 -0.06em; }
       .hero h1 .line > span { display: inline-block; }
-      .hero-role { margin-top: 24px; font-size: var(--step-lead); font-weight: 650; line-height: 1.25; }
+      .hero-role { margin-top: 18px; font-size: var(--step-lead); font-weight: 650; line-height: 1.25; }
       .hero-degree { margin-top: 4px; font-size: var(--step-lead); line-height: 1.25; text-wrap: balance; }
       .hero-degree .nowrap { white-space: nowrap; }
       .hero-line { margin-top: 18px; max-width: 52ch; color: var(--on-dark-soft); }
-      .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 28px; margin-top: 32px; }
-      .hero-caption { position: absolute; right: var(--margin); bottom: clamp(32px, 6vh, 72px); max-width: 22ch; text-align: right; font-size: var(--step-small); color: var(--on-dark-soft); }
+      .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 28px; margin-top: 30px; }
+      .hero-caption { position: absolute; right: var(--margin); bottom: clamp(32px, 6vh, 72px); font-size: var(--step-label); color: var(--on-dark-soft); }
 
-      /* ---------- Intro ---------- */
+      /* ---------- Intro and the title block ---------- */
       .intro { padding: var(--gap) var(--margin) 0; }
-      .intro-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 40px; align-items: start; }
-      .lead { font-size: var(--step-lead); line-height: 1.3; }
-      .intro .lead { grid-column: 1 / span 8; max-width: 34ch; font-size: clamp(1.5rem, 1rem + 1.6vw, 2.5rem); line-height: 1.2; letter-spacing: -0.01em; }
+      .intro-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: end; margin-bottom: clamp(40px, 5vw, 64px); }
+      .intro-lead { grid-column: 1 / span 8; font-size: clamp(1.75rem, 1rem + 2.2vw, 3.25rem); line-height: 1.12; letter-spacing: -0.015em; }
       .portrait { grid-column: 10 / span 3; aspect-ratio: 4 / 5; overflow: hidden; }
       .portrait img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; }
-      .facts { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding-top: 28px; }
-      .facts dt { font-size: var(--step-small); color: var(--soft); margin-bottom: 8px; }
+      /* A drawing title block: real ruled cells, labels in small mono capitals the way drawings print them */
+      .title-block { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1.5px solid var(--ink); border-left: 1px solid var(--rule); }
+      .title-block > div { padding: 12px 14px 14px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+      .title-block dt { font-family: var(--mono); font-size: var(--step-label); text-transform: uppercase; letter-spacing: 0.04em; color: var(--soft); margin-bottom: 6px; }
+      .title-block dd { font-weight: 500; }
+      .title-block .tb-name dd { font-family: var(--serif); font-size: var(--step-lead); font-weight: 420; line-height: 1.1; }
+      .title-block .tb-wide { grid-column: span 2; }
 
-      /* ---------- Built, then measured: three columns that line up row by row ---------- */
-      .tests { padding: var(--gap) var(--margin) 0; }
-      .tests-head { display: flex; justify-content: space-between; align-items: end; gap: 24px 48px; flex-wrap: wrap; margin-bottom: clamp(32px, 4vw, 56px); }
-      .tests-sub { max-width: 34ch; color: var(--soft); }
-      .tests-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: clamp(20px, 2.4vw, 36px); margin: 0; padding: 0; list-style: none; }
-      /* The columns share rows, so titles, numbers and notes line up across all three */
-      .test { display: grid; grid-row: span 5; grid-template-rows: subgrid; row-gap: 0; position: relative; }
-      .test-photo { display: block; aspect-ratio: 4 / 3; overflow: hidden; background: var(--up); margin-bottom: 22px; }
-      .test-photo img { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); transition: transform 900ms var(--ease-out); }
-      .test h3 { font-size: calc(var(--step-head) * 0.6); font-weight: 650; font-stretch: 118%; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; text-wrap: balance; }
-      .test h3 a { text-decoration: none; }
-      /* The title link covers the whole column, so the photo and numbers open the project too */
-      .test h3 a::after { content: ''; position: absolute; inset: 0; }
-      .test h3 a:focus-visible { outline: none; }
-      .test h3 a:focus-visible::after { outline: 2px solid currentColor; outline-offset: 6px; }
-      .test-meta { margin-top: 10px; font-size: var(--step-small); color: var(--soft); }
-      .readout { margin: 24px 0 14px; display: grid; gap: 2px; align-self: start; }
-      .readout div { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 14px 16px; background: var(--up); }
-      .readout div:last-child { background: var(--on-dark); color: var(--graphite); }
-      .readout dt { font-size: var(--step-small); }
-      .readout dd { font-size: var(--step-lead); font-weight: 650; font-stretch: 112%; font-variant-numeric: tabular-nums; text-align: right; }
-      .test-note { font-size: var(--step-small); color: var(--soft); }
-      /* Three across, the numbers step down a size so the longest result stays on one line */
-      .test .readout dt { white-space: nowrap; }
-      .test .readout dd { font-size: clamp(1.0625rem, 0.85rem + 0.55vw, 1.4375rem); }
-      @media (hover: hover) and (pointer: fine) { .test:hover .test-photo img { transform: scale(1.04); } .test:hover h3 a { text-decoration: underline; text-decoration-thickness: 2px; } }
-      /* The test answers the prediction: the measured row wipes in just after the column arrives */
-      @media (prefers-reduced-motion: no-preference) {
-        html:not(.no-js) .test .readout div:last-child { clip-path: inset(0 100% 0 0); transition: clip-path 600ms var(--ease-out); transition-delay: calc(var(--d, 0ms) + 650ms); }
-        html:not(.no-js) .test.in .readout div:last-child { clip-path: inset(0 0 0 0); }
+      /* ---------- Work: the row of tiles ---------- */
+      .work { padding: var(--gap) var(--margin) 0; }
+      .work-head { display: flex; justify-content: space-between; align-items: end; gap: 16px 48px; flex-wrap: wrap; margin-bottom: clamp(32px, 4vw, 56px); }
+      .work-sub { max-width: 36ch; color: var(--soft); }
+      .index { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 20px 14px; margin: 0; padding: 0 0 clamp(40px, 5vw, 64px); list-style: none; border-bottom: 1px solid var(--rule); }
+      .tile a { display: block; text-decoration: none; }
+      .tile-photo { position: relative; display: block; aspect-ratio: 1; overflow: hidden; background: var(--up); }
+      .tile-photo img { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); transition: transform 900ms var(--ease-out), filter 500ms ease; }
+      .tile-num { display: block; margin-top: 12px; font-size: var(--step-label); color: var(--soft); }
+      .tile-name { display: block; margin-top: 2px; font-size: var(--step-small); font-weight: 650; text-transform: uppercase; letter-spacing: 0.02em; font-stretch: 110%; }
+      /* The chosen build's name is underlined in the row */
+      .tile a[aria-selected='true'] .tile-name { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; }
+      /* The line of info, over the bottom of the photo */
+      .tile-info {
+        position: absolute; left: 0; right: 0; bottom: 0; padding: 36px 40px 12px 12px;
+        font-family: var(--mono); font-size: var(--step-label); line-height: 1.4; color: #fff;
+        background: linear-gradient(0deg, rgba(10, 10, 10, 0.85), rgba(10, 10, 10, 0));
       }
-
-      /* ---------- More work: the mosaic ---------- */
-      .mosaic { padding: var(--gap) var(--margin) 0; }
-      .mosaic .title { margin-bottom: clamp(32px, 4vw, 56px); }
-      .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: clamp(220px, 27vh, 300px); gap: 12px; margin: 0; padding: 0; list-style: none; }
-      .tile-wide { grid-column: span 2; grid-row: span 2; }
-      .tile a { position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden; background: var(--up); text-decoration: none; }
-      .tile-photo { position: relative; flex: 1; min-height: 0; overflow: hidden; }
-      .tile-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); transition: transform 900ms var(--ease-out); }
-      .tile-text { display: grid; gap: 4px; padding: 18px 56px 20px 20px; }
-      .tile-name { font-weight: 650; font-size: var(--step-body); }
-      .tile-line { font-size: var(--step-small); color: var(--soft); }
-      .tile-arrow { position: absolute; right: 20px; bottom: 26px; width: 12px; height: 12px; border-top: 1.5px solid currentColor; border-right: 1.5px solid currentColor; transition: transform 200ms var(--ease-out); }
-      .tile-arrow::after { content: ''; position: absolute; right: -1px; top: -1px; width: 16px; height: 1.5px; background: currentColor; transform-origin: right; transform: rotate(-45deg); }
-      .tile a:active { transform: scale(0.99); }
+      /* The arrow points down: every tile opens its build in the panel below */
+      .tile-arrow { position: absolute; right: 14px; bottom: 14px; width: 11px; height: 11px; border-top: 1.5px solid #fff; border-right: 1.5px solid #fff; transform: rotate(135deg); }
+      .tile-arrow::after { content: ''; position: absolute; right: -1px; top: -1px; width: 15px; height: 1.5px; background: #fff; transform-origin: right; transform: rotate(-45deg); }
+      /* Mouse: the photos rest muted; hovering one brings up its colour, its info and its arrow */
       @media (hover: hover) and (pointer: fine) {
-        .tile a:hover .tile-photo img { transform: scale(1.04); }
-        .tile a:hover .tile-arrow { transform: translate(3px, -3px); }
+        .tile-photo img { filter: grayscale(0.85) brightness(0.72) contrast(1.05); }
+        .tile-info { opacity: 0; transform: translateY(8px); transition: opacity 250ms ease, transform 350ms var(--ease-out); }
+        .tile-arrow { opacity: 0; transform: rotate(135deg) translateX(-6px); transition: opacity 250ms ease, transform 350ms var(--ease-out); }
+        .tile a:hover .tile-photo img, .tile a:focus-visible .tile-photo img { filter: none; transform: scale(1.04); }
+        .tile a:hover .tile-info, .tile a:focus-visible .tile-info { opacity: 1; transform: none; }
+        .tile a:hover .tile-arrow, .tile a:focus-visible .tile-arrow { opacity: 1; transform: rotate(135deg); }
+        .tile a[aria-selected='true'] .tile-photo img { filter: none; }
       }
+      .tile a:active .tile-photo { transform: scale(0.985); transition: transform 120ms var(--ease-out); }
 
-      /* ---------- WSP, on olive ---------- */
-      .wsp { padding-top: var(--gap); }
-      .wsp-head { display: flex; justify-content: space-between; align-items: end; gap: 32px 64px; flex-wrap: wrap; padding: 0 var(--margin); margin-bottom: clamp(40px, 5vw, 72px); }
-      .side-facts { display: grid; grid-template-columns: repeat(3, auto); gap: 8px 48px; font-size: var(--step-small); }
-      .side-facts dt { color: var(--soft); }
+      /* ---------- Work: the panel below the tiles ---------- */
+      .stage { padding: clamp(48px, 6vw, 88px) 0 var(--gap); }
+      /* With JavaScript, every panel shares one spot and only the chosen one shows,
+         so the stage keeps the height of the tallest and nothing below it jumps */
+      html:not(.no-js) .stage { display: grid; }
+      html:not(.no-js) .panel { grid-area: 1 / 1; visibility: hidden; opacity: 0; }
+      html:not(.no-js) .panel.is-on { visibility: visible; opacity: 1; }
+      .no-js .panel + .panel { margin-top: clamp(64px, 8vw, 120px); }
+      .panel:focus-visible { outline-offset: 8px; }
+      .panel-head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: end; margin-bottom: clamp(20px, 2.4vw, 32px); }
+      .panel-num { grid-column: 1 / -1; font-size: var(--step-label); color: var(--soft); margin-bottom: 10px; }
+      .panel h3 { grid-column: 1 / span 7; font-size: var(--step-head); line-height: 0.98; letter-spacing: -0.025em; text-wrap: balance; }
+      .panel-sum { grid-column: 9 / span 4; color: var(--soft); }
+      /* One wide band of pictures; two or three sit side by side in it */
+      .panel-media { display: grid; grid-template-columns: repeat(var(--n, 1), minmax(0, 1fr)); gap: 6px; aspect-ratio: 21 / 9; }
+      .panel-media figure { margin: 0; overflow: hidden; background: var(--up); }
+      .panel-media img { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); }
+      .panel-media .is-contain { background: #fff; }
+      .panel-media .is-contain img { object-fit: contain; padding: 6%; }
+      .panel-foot { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 12px; align-items: start; padding-top: 18px; }
+      .readout { grid-column: 1 / span 6; grid-row: 1 / span 3; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+      .readout div { padding: 14px 16px 16px; background: var(--up); }
+      .readout div:last-child { background: var(--on-dark); color: var(--graphite); }
+      .readout dt { font-size: var(--step-label); text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.75; margin-bottom: 6px; }
+      .readout dd { font-size: clamp(1.25rem, 0.9rem + 1vw, 1.875rem); font-weight: 500; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+      .panel-note { grid-column: 8 / span 5; color: var(--soft); font-size: var(--step-small); }
+      .panel-meta { grid-column: 8 / span 5; font-size: var(--step-label); color: var(--soft); }
+      .panel-foot .text-link { grid-column: 8 / span 5; }
+
+      /* ---------- WSP: the mechanical plan as printed, in a white panel on the paper ---------- */
+      .wsp { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(24px, 3vw, 48px); align-items: start; padding: var(--gap) var(--margin); }
+      .wsp-panel {
+        grid-column: 1 / span 6; position: sticky; top: 88px; overflow: hidden; border-radius: 6px;
+        background: #fff; color: var(--on-paper); border: 1px solid var(--rule-paper);
+        padding: 14px clamp(14px, 1.6vw, 22px) clamp(14px, 1.6vw, 22px);
+      }
+      .panel-note-top { margin: 0 0 12px; font-size: var(--step-label); color: var(--on-paper-soft); }
+      .plan { width: 100%; height: auto; }
+      .wsp-text { grid-column: 7 / span 6; display: grid; gap: 24px; padding-top: 8px; }
+      .side-facts { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 8px 40px; font-size: var(--step-small); padding-bottom: 8px; }
+      .side-facts dt { font-size: var(--step-label); text-transform: uppercase; letter-spacing: 0.04em; color: var(--soft); margin-bottom: 4px; }
       .side-facts dd { font-weight: 600; }
-      .wsp-photo { height: clamp(240px, 46vh, 540px); overflow: hidden; }
-      .wsp-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
-      .wsp-figure { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: end; padding: clamp(48px, 6vw, 96px) var(--margin) 0; }
-      .big { grid-column: 1 / span 7; font-size: var(--step-display); font-weight: 650; font-stretch: 112%; line-height: 0.85; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-      .big .unit { font-size: var(--step-lead); letter-spacing: 0; font-weight: 600; vertical-align: top; }
-      .wsp-figure-text { grid-column: 9 / span 4; display: grid; gap: 14px; }
-      .wsp-figure-text h3 { font-size: var(--step-lead); font-weight: 650; line-height: 1.2; }
-      .wsp-figure-text p { color: var(--soft); }
-      .wsp-body { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 40px; padding: clamp(48px, 6vw, 96px) var(--margin) var(--gap); }
-      .wsp-body .lead { grid-column: 1 / span 7; }
-      .records { grid-column: 9 / span 4; display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px; align-items: start; }
-      .records h3 { font-size: var(--step-small); font-weight: 500; color: var(--soft); margin-bottom: 12px; }
+      .big { font-size: clamp(4rem, 1.5rem + 7vw, 8.5rem); line-height: 0.85; letter-spacing: -0.04em; font-variant-numeric: lining-nums; margin-top: 16px; }
+      .big .unit { margin-left: 0.3em; font-size: var(--step-small); letter-spacing: 0; vertical-align: top; }
+      .wsp-figure-text { color: var(--soft); max-width: 52ch; }
+      .records { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding-top: 8px; border-top: 1px solid var(--rule); }
+      .records h3 { font-size: var(--step-label); text-transform: uppercase; letter-spacing: 0.04em; color: var(--soft); font-weight: 400; margin: 12px 0 10px; }
       .records ul { margin: 0; padding: 0; list-style: none; font-weight: 600; line-height: 1.8; }
-      .wsp-body .text-link { grid-column: 1 / -1; }
 
-      /* ---------- Everything, on paper ---------- */
-      .ledger { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: start; padding: var(--gap) var(--margin); }
+      /* ---------- Everything ---------- */
+      .ledger { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: start; padding: 0 var(--margin) var(--gap); }
       .ledger-col { grid-column: 1 / span 8; }
-      .ledger .title { margin-bottom: 32px; }
+      .ledger .section-title { margin-bottom: 32px; }
       .fields { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
       .fields a {
-        display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; background: var(--up);
+        display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--rule);
         font-size: var(--step-small); font-weight: 600; text-decoration: none;
-        transition: background-color 200ms ease, color 200ms ease, transform 160ms var(--ease-out);
+        transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, transform 160ms var(--ease-out);
       }
       .fields a:active { transform: scale(0.97); }
-      .fields a[aria-current='true'] { background: var(--on-paper); color: var(--paper); }
-      @media (hover: hover) and (pointer: fine) { .fields a:not([aria-current='true']):hover { background: #cfcec8; } }
-      .ledger-count { font-size: var(--step-small); color: var(--soft); margin-bottom: 8px; }
-      .rows { margin: 0 0 32px; padding: 0; list-style: none; }
+      .fields a[aria-current='true'] { background: var(--on-paper); border-color: var(--on-paper); color: var(--paper); }
+      @media (hover: hover) and (pointer: fine) { .fields a:not([aria-current='true']):hover { border-color: var(--on-paper); } }
+      .ledger-count { font-size: var(--step-label); color: var(--soft); margin-bottom: 8px; }
+      .rows { margin: 0 0 32px; padding: 0; list-style: none; border-top: 1px solid var(--rule); }
       .rows li[hidden] { display: none; }
-      /* After picking a field, the rows that stay rise in quickly, one after another */
       @media (prefers-reduced-motion: no-preference) { .rows li.is-fresh { animation: rowIn 220ms var(--ease-out) both; animation-delay: var(--rd, 0ms); } }
       @media (prefers-reduced-motion: reduce) { .rows li.is-fresh { animation: rowFade 200ms ease both; } }
       @keyframes rowIn { from { opacity: 0; transform: translateY(6px); } }
       @keyframes rowFade { from { opacity: 0; } }
       .rows a {
-        display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) 7.5em; gap: 20px; align-items: baseline;
-        padding: 14px 0; text-decoration: none; transition: color 150ms ease;
+        display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) 8em; gap: 20px; align-items: baseline;
+        padding: 14px 0; border-bottom: 1px solid var(--rule); text-decoration: none; transition: color 150ms ease;
       }
-      .rows li + li a { box-shadow: 0 -1px 0 rgba(13, 14, 16, 0.12); }
       .row-name { font-weight: 600; }
-      .row-kind, .row-date { font-size: var(--step-small); color: var(--soft); }
-      .row-date { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+      .row-kind { font-size: var(--step-small); color: var(--soft); }
+      .row-date { font-size: var(--step-label); color: var(--soft); text-align: right; white-space: nowrap; }
       @media (hover: hover) and (pointer: fine) {
-        .rows:has(a:hover) a:not(:hover) { color: #8d8f92; }
+        .rows:has(a:hover) a:not(:hover) { color: #9b968d; }
         .rows:has(a:hover) a:not(:hover) span { color: inherit; }
       }
-      .row-photo { display: none; overflow: hidden; background: var(--up); }
-      .row-photo img { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); }
-      .preview { grid-column: 9 / span 4; position: sticky; top: 96px; margin-top: calc(var(--step-head) * 2 + 120px); }
+      .row-photo { display: none; }
+      .preview { grid-column: 9 / span 4; position: sticky; top: 96px; margin-top: calc(var(--step-head) + 120px); }
       .preview-frame { aspect-ratio: 4 / 3; overflow: hidden; background: var(--up); }
       .preview-frame img { width: 100%; height: 100%; object-fit: cover; }
-      .preview figcaption { margin-top: 12px; font-size: var(--step-small); font-weight: 600; }
+      .preview figcaption { margin-top: 10px; font-size: var(--step-label); }
 
       /* ---------- Punahou ---------- */
       .punahou { padding: 0 var(--margin) var(--gap); }
-      .punahou .title { margin-bottom: 32px; }
-      .punahou ul { margin: 0 0 32px; padding: 0; list-style: none; }
-      .punahou li a { display: grid; grid-template-columns: minmax(0, 1fr) auto 24px; align-items: baseline; gap: 24px; padding: 18px 0; text-decoration: none; box-shadow: 0 -1px 0 rgba(13, 14, 16, 0.18); }
-      .punahou h3 { font-size: calc(var(--step-head) * 0.72); font-weight: 650; font-stretch: 118%; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; }
-      .punahou li span:not(.arrow) { font-size: var(--step-body); color: var(--soft); text-align: right; }
+      .punahou .section-title { margin-bottom: 28px; }
+      .punahou ul { margin: 0 0 28px; padding: 0; list-style: none; border-top: 1px solid var(--rule); }
+      .punahou li a { display: grid; grid-template-columns: minmax(0, 1fr) auto 24px; align-items: baseline; gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--rule); text-decoration: none; }
+      .punahou h3 { font-size: clamp(1.75rem, 1rem + 2vw, 3rem); line-height: 1.05; letter-spacing: -0.02em; }
+      .punahou li span:not(.arrow) { color: var(--soft); text-align: right; }
       .punahou li .arrow { align-self: center; }
-      @media (hover: hover) and (pointer: fine) { .punahou li a:hover .arrow { transform: translateX(4px); } }
+      @media (hover: hover) and (pointer: fine) { .punahou li a:hover .arrow { transform: translateX(4px); } .punahou li a:hover h3 { font-style: italic; } }
 
       /* ---------- Close ---------- */
-      .close { padding: var(--gap) var(--margin) max(32px, env(safe-area-inset-bottom)); display: grid; gap: 48px; }
-      .close-title { font-size: var(--step-small); font-weight: 500; color: var(--soft); }
-      .mail { display: flex; flex-wrap: wrap; font-size: var(--step-display); font-weight: 650; font-stretch: 118%; line-height: 0.92; letter-spacing: -0.03em; text-transform: uppercase; text-decoration: none; }
-      @media (hover: hover) and (pointer: fine) { .mail:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 10px; } }
-      .close-meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding-top: 24px; font-size: var(--step-small); color: var(--soft); }
+      .close { padding: var(--gap) var(--margin) max(32px, env(safe-area-inset-bottom)); display: grid; gap: 40px; }
+      .close-title { font-size: var(--step-label); font-weight: 400; text-transform: uppercase; letter-spacing: 0.04em; color: var(--soft); }
+      .mail { display: flex; flex-wrap: wrap; font-size: var(--step-display); line-height: 0.95; letter-spacing: -0.035em; text-decoration: none; }
+      @media (hover: hover) and (pointer: fine) { .mail:hover { font-style: italic; } }
+      .close-meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding-top: 24px; border-top: 1px solid var(--rule); font-size: var(--step-small); color: var(--soft); }
       .close-meta a { color: var(--ink); }
 
-      /* ---------- Tablet and phone ---------- */
+      /* ---------- Tablet ---------- */
+      @media (max-width: 1100px) { .index { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
       @media (max-width: 960px) {
         .nav-links { display: none; }
         .menu-btn { display: inline-flex; align-items: center; }
-        .intro .lead { grid-column: 1 / -1; }
+        .intro-lead { grid-column: 1 / -1; margin-bottom: 32px; }
         .portrait { grid-column: 1 / span 5; }
-        .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 32px; }
-        /* Tablet: one result per row, photo beside the text */
-        .tests-grid { grid-template-columns: 1fr; row-gap: 64px; }
-        .test { grid-row: auto; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); grid-template-rows: none; column-gap: 28px; align-content: start; }
-        .test-photo { grid-row: 1 / span 5; margin: 0; }
-        .test > :not(.test-photo) { grid-column: 2; }
-        .readout { align-self: start; }
-        .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: auto; }
-        .tile-photo { flex: none; aspect-ratio: 4 / 3; }
-        .wsp-figure, .wsp-body { display: block; }
-        .wsp-figure-text { margin-top: 32px; max-width: 60ch; }
-        .wsp-body .lead { margin-bottom: 48px; }
-        .records { grid-template-columns: 1fr 1fr; gap: 32px; }
-        .wsp-body .text-link { margin-top: 32px; }
+        .title-block { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .panel h3 { grid-column: 1 / -1; }
+        .panel-sum { grid-column: 1 / -1; margin-top: 14px; }
+        .panel-media { aspect-ratio: 16 / 10; }
+        .readout { grid-column: 1 / -1; grid-row: auto; margin-bottom: 8px; }
+        .panel-note, .panel-meta, .panel-foot .text-link { grid-column: 1 / -1; }
+        .wsp { display: block; }
+        .wsp-panel { position: relative; top: auto; margin-bottom: 48px; }
         .ledger-col { grid-column: 1 / -1; }
         .preview { display: none; }
         .close-meta { grid-template-columns: 1fr 1fr; }
       }
+      /* ---------- Phone ---------- */
       @media (max-width: 640px) {
-        .hero { --hero-run: 25svh; } /* a shorter pull-back on a phone, so the thumb isn't scrolling a still photo */
-        .hero h1 { font-size: 14vw; font-stretch: 110%; }
-        .hero-degree .sep { display: block; height: 0; overflow: hidden; } /* the date drops to its own line */
-        .hero-actions .text-link { min-height: 44px; }
+        .hero { --hero-run: 25svh; }
+        .hero h1 { font-size: 15vw; }
+        .hero-degree .sep { display: block; height: 0; overflow: hidden; }
         .hero-actions .btn { flex: 1 1 100%; justify-content: space-between; }
         .hero-caption { display: none; }
         .portrait { grid-column: 1 / span 6; }
-        .facts { grid-template-columns: 1fr; }
-        .test { display: block; }
-        .test-photo { margin-bottom: 20px; }
-        .tiles { grid-template-columns: 1fr; }
-        .tile-wide { grid-column: auto; grid-row: auto; }
-        .tile a { min-height: 0; }
-        .tile-photo { aspect-ratio: 16 / 10; flex: none; }
+        .title-block { grid-template-columns: 1fr 1fr; }
+        .title-block .tb-name, .title-block .tb-wide, .title-block .tb-odd { grid-column: 1 / -1; }
+        .index { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        /* Phone: two or three pictures become a swipeable row, each nearly full width with the next one peeking in,
+           so a drawing or a calc stays big enough to read. The browser's own scroll snapping does the physics. */
+        .panel-media {
+          aspect-ratio: auto; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 86%;
+          overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none;
+          margin-right: calc(-1 * var(--margin)); padding-right: var(--margin);
+        }
+        .panel-media::-webkit-scrollbar { display: none; }
+        .panel-media:has(figure:only-child) { grid-auto-columns: 100%; margin-right: 0; padding-right: 0; }
+        .panel-media figure { aspect-ratio: 4 / 3; scroll-snap-align: start; }
+        .readout { grid-template-columns: 1fr; }
         .side-facts { grid-template-columns: 1fr; }
-        .rows a { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'photo photo' 'name date' 'kind kind'; row-gap: 4px; }
+        .rows a { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'name date' 'kind kind'; row-gap: 4px; }
         .row-name { grid-area: name; }
         .row-date { grid-area: date; }
         .row-kind { grid-area: kind; }
-        .punahou li a { grid-template-columns: minmax(0, 1fr) 24px; row-gap: 6px; }
+        .punahou li a { grid-template-columns: minmax(0, 1fr) 24px; row-gap: 4px; }
         .punahou h3 { grid-column: 1; }
         .punahou li span:not(.arrow) { grid-column: 1; grid-row: 2; text-align: left; }
         .punahou li .arrow { grid-column: 2; grid-row: 1 / span 2; }
-        .mail { font-size: 10.5vw; font-stretch: 108%; flex-direction: column; } /* each half fits the width */
+        .mail { font-size: 12vw; flex-direction: column; }
         .close-meta { grid-template-columns: 1fr; }
       }
 
-      /* ---------- Motion (none of it for people who asked for reduced motion) ---------- */
+      /* ---------- Motion ---------- */
       @media (prefers-reduced-motion: no-preference) {
-        /* On load: each headline line rises from behind its own baseline, then the rest follows */
         .hero h1 .line > span { animation: lineUp 1s var(--ease-out) both; }
-        .hero h1 .line:nth-child(3) > span { animation-delay: 90ms; }
-        .hero-role, .hero-degree, .hero-line, .hero-actions { animation: fadeUp 800ms var(--ease-out) 350ms both; }
-        .hero-degree { animation-delay: 390ms; }
-        .hero-line { animation-delay: 430ms; }
-        .hero-actions { animation-delay: 470ms; }
+        .hero-role, .hero-degree, .hero-line, .hero-actions { animation: fadeUp 800ms var(--ease-out) 300ms both; }
+        .hero-degree { animation-delay: 340ms; }
+        .hero-line { animation-delay: 380ms; }
+        .hero-actions { animation-delay: 420ms; }
         @keyframes lineUp { from { transform: translateY(105%); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } }
+        .phone-menu:not([hidden]) { animation: menuIn 260ms var(--ease-out) both; }
+        @keyframes menuIn { from { opacity: 0; transform: translateY(-8px); } }
 
-        /* Scrolling: the hero photo pulls back into a frame and the copy lifts away.
-           Driven by the scroll itself, so it runs off the main thread; older browsers keep the still version. */
+        /* Scroll-driven, off the main thread; browsers without support keep the still page */
         @supports (animation-timeline: scroll()) {
-          /* The hero is at the very top, so the page's own scroll position drives it, over exactly --hero-run */
           .hero-photo { animation: pullBack linear both; animation-timeline: scroll(root); animation-range: 0px var(--hero-run); }
           .hero-photo img { animation: settle linear both; animation-timeline: scroll(root); animation-range: 0px var(--hero-run); }
           .hero-copy, .hero-caption { animation: lift linear both; animation-timeline: scroll(root); animation-range: 0px calc(var(--hero-run) * 0.55); }
-          @keyframes pullBack { to { clip-path: inset(9vh 5vw 9vh 5vw round 4px); } }
+          @keyframes pullBack { to { clip-path: inset(9vh 5vw 9vh 5vw round 6px); } }
           @keyframes settle { from { transform: scale(1.12); } to { transform: scale(1); } }
           @keyframes lift { to { opacity: 0; transform: translateY(-8vh); } }
-
-          /* The big WSP photo drifts slowly behind its frame */
-          .wsp-photo img { animation: drift linear both; animation-timeline: view(); scale: 1.14; }
-          @keyframes drift { from { translate: 0 -5%; } to { translate: 0 5%; } }
         }
 
-        /* Section parts rise in as they arrive; photos open from the bottom edge */
         html:not(.no-js) [data-rise]:not(.in) { opacity: 0; transform: translateY(24px); }
         [data-rise] { transition: opacity 700ms var(--ease-out), transform 800ms var(--ease-out); transition-delay: var(--d, 0ms); }
         html:not(.no-js) [data-reveal]:not(.in) { clip-path: inset(100% 0 0 0); }
         [data-reveal] { transition: clip-path 1000ms var(--ease-in-out); transition-delay: var(--d, 0ms); }
+
+        /* Switching builds: the new panel's pictures open upward one after another,
+           its text rises in, and the highlighted result wipes in last */
+        .panel.is-entering .panel-media figure { animation: openUp 700ms var(--ease-in-out) both; }
+        .panel.is-entering .panel-media figure:nth-child(2) { animation-delay: 70ms; }
+        .panel.is-entering .panel-media figure:nth-child(3) { animation-delay: 140ms; }
+        .panel.is-entering .panel-head > *, .panel.is-entering .panel-foot > * { animation: fadeUp 600ms var(--ease-out) both; }
+        .panel.is-entering .panel-foot > * { animation-delay: 220ms; }
+        .panel.is-entering .readout div:last-child { animation: wipe 600ms var(--ease-out) 500ms both; }
+        @keyframes openUp { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+        @keyframes wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
       }
       @media (prefers-reduced-motion: reduce) {
-        /* Colour still changes between chapters, gently; nothing moves */
+        /* Switching builds is a short fade; nothing moves */
+        .panel.is-entering { animation: rowFade 200ms ease both; }
       }
     </style>
 
     <script>
       const root = document.documentElement;
-
-      // Chapters: when a chapter covers the middle of the screen, the ground and text take its colour,
-      // and so does the phone's status bar
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
       const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-      const groundColors: Record<string, string> = { graphite: '#0d0e10', olive: '#45473e', paper: '#e8e7e2' };
-      const chapters = document.querySelectorAll<HTMLElement>('[data-chapter]');
+      const groundColors: Record<string, string> = { graphite: '#151515', paper: '#f3efe7' };
+
+      // Chapters: when one covers the middle of the screen, the ground, the text and the phone's status bar take its colour
       const chapterIO = new IntersectionObserver(
         (entries) => entries.forEach((e) => {
           if (!e.isIntersecting) return;
@@ -759,16 +833,15 @@ const nav = [
         }),
         { rootMargin: '-50% 0px -50% 0px' },
       );
-      chapters.forEach((c) => chapterIO.observe(c));
+      document.querySelectorAll('[data-chapter]').forEach((c) => chapterIO.observe(c));
 
-      // Top bar: see-through over the first photo, solid once the photo has gone
+      // Top bar: see-through over the first photo, solid once it has gone
       const bar = document.querySelector<HTMLElement>('.bar')!;
-      const intro = document.querySelector<HTMLElement>('.intro')!;
       new IntersectionObserver(([e]) => bar.classList.toggle('is-solid', e.boundingClientRect.top <= 72), {
         rootMargin: '-72px 0px 0px 0px', threshold: [0, 1],
-      }).observe(intro);
+      }).observe(document.querySelector('.intro')!);
 
-      // Phone menu: opens over the page; Esc, the button again, or choosing a link closes it
+      // Phone menu
       const menuBtn = document.querySelector<HTMLButtonElement>('.menu-btn')!;
       const menu = document.querySelector<HTMLElement>('#phone-menu')!;
       const setMenu = (open: boolean) => {
@@ -784,9 +857,73 @@ const nav = [
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { setMenu(false); menuBtn.focus(); } });
       matchMedia('(min-width: 961px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
 
-      // Section parts: rise in as they arrive, a little after one another;
-      // anything the visitor jumped past (a link or a fast fling) shows at once
-      document.querySelectorAll<HTMLElement>('section, .tiles').forEach((group) => {
+      // What I've built: the tiles work as tabs. Picking one shows its build in the panel below,
+      // in the same place, the way a product page swaps between models.
+      // Arrow keys move between tiles; a link to #panel-<build> opens that build.
+      const tabList = document.querySelector<HTMLElement>('[data-tabs]');
+      if (tabList) {
+        const tabs = Array.from(tabList.querySelectorAll<HTMLAnchorElement>('[data-tab]'));
+        const panels = new Map(Array.from(document.querySelectorAll<HTMLElement>('[data-panel]')).map((p) => [p.dataset.panel!, p]));
+        tabList.setAttribute('role', 'tablist');
+        tabList.setAttribute('aria-label', 'Builds');
+        tabList.querySelectorAll('li').forEach((li) => li.setAttribute('role', 'presentation'));
+        tabs.forEach((t) => {
+          t.setAttribute('role', 'tab');
+          t.setAttribute('aria-controls', `panel-${t.dataset.tab}`);
+        });
+        panels.forEach((p, slug) => {
+          p.setAttribute('role', 'tabpanel');
+          p.setAttribute('aria-labelledby', `tab-${slug}`);
+          p.tabIndex = 0;
+        });
+        let current = tabs[0].dataset.tab!;
+        const select = (slug: string, { focus = false, scroll = false } = {}) => {
+          if (slug !== current) {
+            const prev = panels.get(current)!;
+            const next = panels.get(slug)!;
+            prev.classList.remove('is-on', 'is-entering');
+            next.classList.remove('is-entering');
+            void next.offsetWidth; // restart the entrance if the same panel comes back
+            next.classList.add('is-on', 'is-entering');
+            current = slug;
+          }
+          tabs.forEach((t) => {
+            const on = t.dataset.tab === slug;
+            t.setAttribute('aria-selected', String(on));
+            t.tabIndex = on ? 0 : -1;
+          });
+          panels.forEach((p, s) => { p.inert = s !== slug; });
+          if (focus) tabs.find((t) => t.dataset.tab === slug)!.focus();
+          if (scroll) {
+            // Keep the tile row in sight, like a product page. Only when the panel's title is off-screen,
+            // bring it up: on a phone (where the tiles fill several screens) to the top, elsewhere just into view.
+            const top = panels.get(slug)!.getBoundingClientRect().top;
+            const behavior: ScrollBehavior = reduceMotion.matches ? 'auto' : 'smooth';
+            if (innerWidth <= 640 && (top > innerHeight * 0.7 || top < 0)) panels.get(slug)!.scrollIntoView({ behavior, block: 'start' });
+            else if (top > innerHeight - 140) window.scrollBy({ top: top - innerHeight * 0.55, behavior });
+          }
+        };
+        tabs.forEach((t, i) => {
+          t.addEventListener('click', (e) => {
+            e.preventDefault();
+            select(t.dataset.tab!, { scroll: true });
+          });
+          t.addEventListener('keydown', (e) => {
+            const k = e.key;
+            const j = k === 'ArrowRight' ? (i + 1) % tabs.length
+              : k === 'ArrowLeft' ? (i - 1 + tabs.length) % tabs.length
+              : k === 'Home' ? 0 : k === 'End' ? tabs.length - 1 : -1;
+            if (j < 0) return;
+            e.preventDefault();
+            select(tabs[j].dataset.tab!, { focus: true });
+          });
+        });
+        const fromHash = location.hash.replace('#panel-', '');
+        select(panels.has(fromHash) ? fromHash : current);
+      }
+
+      // Section parts rise in as they arrive, a little after one another; anything jumped past shows at once
+      document.querySelectorAll<HTMLElement>('section, .index').forEach((group) => {
         group.querySelectorAll<HTMLElement>(':scope [data-rise], :scope [data-reveal]').forEach((el, i) => {
           if (!el.style.getPropertyValue('--d')) el.style.setProperty('--d', `${Math.min(i, 5) * 70}ms`);
         });
@@ -810,14 +947,13 @@ const nav = [
           if (!previewImg || !previewCap || !img) return;
           previewImg.srcset = img.srcset;
           previewImg.src = img.currentSrc || img.src;
-          previewImg.style.objectPosition = getComputedStyle(img).objectPosition;
           previewCap.textContent = row.querySelector('.row-name')!.textContent;
         };
         row.addEventListener('mouseenter', swap);
         row.addEventListener('focus', swap);
       });
 
-      // Everything: pick a field to show only its work, in place. Without JavaScript these are links to each field's page.
+      // Everything: pick a field to show only its work, in place
       const ledger = document.querySelector<HTMLElement>('.ledger');
       if (ledger) {
         const chips = Array.from(ledger.querySelectorAll<HTMLAnchorElement>('[data-field]'));
@@ -838,7 +974,7 @@ const nav = [
               r.classList.remove('is-fresh');
               if (match) {
                 r.style.setProperty('--rd', `${Math.min(shown, 8) * 25}ms`);
-                void r.offsetWidth; // restart the rise for rows that were already showing
+                void r.offsetWidth;
                 r.classList.add('is-fresh');
                 shown++;
               }

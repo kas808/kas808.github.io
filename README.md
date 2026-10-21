@@ -1,61 +1,67 @@
-# Kasin Ito-Sato portfolio
+# Kasin Ito-Sato: mechanical engineering portfolio
 
-The source for https://kasinitosato.github.io. Every push to `main` rebuilds the
-site and puts it online through GitHub Actions.
+Source for **[kasinitosato.github.io](https://kasinitosato.github.io)**, the portfolio of Kasin Ito-Sato, a
+mechanical engineering student at Loyola Marymount University (BS, May 2027).
 
-## Link previews
+The site shows design, build and test work, and most projects report what was measured against what was
+predicted. A few examples:
 
-When you paste a link to the site into LinkedIn, iMessage, Slack, an email or a
-job application, the app shows a preview card: a picture, a title and a short
-description. Every page has its own preview, and the pictures are drawn
-automatically each time the site builds, in the site's colors and font.
+- [Rope Climbing Robot](https://kasinitosato.github.io/projects/rope-climbing-robot/): screw-slider drive, crossed 38 ft at 86% of predicted speed
+- [Small Wind Turbine Design](https://kasinitosato.github.io/projects/wind-turbine/): 3D printed rotor, wind tunnel power vs. hand calculations and CFD
+- [2x Magnifying Pantograph](https://kasinitosato.github.io/projects/pantograph/): aluminum linkage with GD&T drawings and a tolerance analysis
+- [WSP internship](https://kasinitosato.github.io/experience/wsp/): HVAC, plumbing and fire protection design in Honolulu
 
-### What each page shows
+Projects can be browsed by skill:
+[aerodynamics](https://kasinitosato.github.io/projects/aerodynamics/) ·
+[thermal & HVAC](https://kasinitosato.github.io/projects/thermal/) ·
+[fluids](https://kasinitosato.github.io/projects/fluids/) ·
+[design & CAD](https://kasinitosato.github.io/projects/design/) ·
+[manufacturing](https://kasinitosato.github.io/projects/manufacturing/) ·
+[testing](https://kasinitosato.github.io/projects/testing/) ·
+[controls](https://kasinitosato.github.io/projects/controls/)
 
-| Page | Picture | Description |
-|---|---|---|
-| Home | Your name, "Mechanical Engineer · LMU '27" and three project photos | The site description in `src/lib/site.ts` |
-| Skill filters, like `/projects/thermal/` | The category name and intro over a darkened project photo | The category's `intro` |
-| Project pages (LMU and Punahou) | The project title over its cover photo, with the course or "Punahou School" | The project's `summary` |
-| Experience pages | The job title over its cover photo, with the organization | The `summary` |
-| Projects, Punahou, Experience, Resume, Contact | The home design with the page name | The page's own description |
+[Resume](https://kasinitosato.github.io/resume/) · [LinkedIn](https://www.linkedin.com/in/kasin-ito-sato) · [Contact](https://kasinitosato.github.io/contact/)
 
-Descriptions are trimmed to about 155 characters so apps don't cut them off.
+## How it's built
 
-### How to change a preview
+- **[Astro](https://astro.build)** static site. Every page is plain HTML at build time.
+- **Content as Markdown.** Each project is a folder in `src/content/` with an `index.md` (front matter for
+  title, course, date, role, team, skill categories, tools, cover photo, gallery and documents) and its images beside it. Adding a
+  project means adding a folder, with no layout code to touch.
+- **Responsive images.** Photos are resized to WebP at several widths during the build.
+- **Generated link previews.** Every page gets its own share image, drawn at build time with
+  [Satori](https://github.com/vercel/satori) from the page's title and cover photo (`src/lib/og-image.ts`).
+- **PDFs as pages.** Reports and drawings are pre-rendered to page images (`tools/pdf-pages.mjs`), so
+  they scroll inline instead of opening a browser PDF viewer.
+- **Deploys on push.** GitHub Actions builds the site and publishes it to GitHub Pages on every push to
+  `main` (`.github/workflows/deploy.yml`). The build fails if an em dash appears in the site copy.
 
-- **A project page:** change `title`, `course`, `summary`, `cover` or
-  `coverPosition` in that project's `index.md`. `coverPosition` picks which
-  part of the photo stays in the picture (`50% 0%` is the top, `50% 50%` the middle).
-- **A skill filter page:** change the `name` or `intro` in `src/lib/categories.ts`.
-  The photo comes from the first project in that category that has a photo. To
-  pick a different one, set `shareFrom` to that project's address, for example
-  `shareFrom: '/projects/wind-turbine/'`.
-- **The home page photo strip:** it uses the first three projects in
-  `src/lib/featured.ts`.
-- **The plain pages** (Resume, Contact and so on): the page name and the line
-  under it are in `src/lib/og.ts`.
-- **The layout itself** (sizes, colors, darkening): `src/lib/og-image.ts`.
+## Running it locally
 
-The pictures are saved at `/og/<page>.jpg`, for example
-https://kasinitosato.github.io/og/projects--thermal.jpg. To look at them
-before pushing, run `npm run build` and open the files in `dist/og/`.
+Needs Node 22.
 
-After a build, `npm run check-previews` checks that every page has all the
-preview tags and that its picture exists. If you add a new kind of page, the
-build stops and tells you to add it to `src/lib/og.ts`.
+```bash
+npm ci
+npm run dev      # http://localhost:4321
+npm run build    # static site in dist/
+```
 
-### Seeing your change in the apps
+| Script | What it does |
+|---|---|
+| `npm run shrink` | Resizes any photo over 2000 px in `src/content` or `src/assets` |
+| `npm run pdf-pages` | Renders PDFs marked `embed: true` to page images |
+| `npm run check-dashes` | Fails if the site copy contains an em dash |
+| `npm run check-previews` | After a build, checks every page has its preview tags and image |
 
-Apps save a copy of a preview the first time a link is shared, so after you
-push a change it can keep showing the old one for a while. To refresh it:
+## Layout
 
-1. Wait for the GitHub Actions run to finish (the green check on the repo page).
-2. **LinkedIn:** open the [Post Inspector](https://www.linkedin.com/post-inspector/),
-   paste the page's link and click **Inspect**. That fetches the page again and
-   updates the preview LinkedIn shows.
-3. **Facebook, Instagram and WhatsApp:** open the
-   [Sharing Debugger](https://developers.facebook.com/tools/debug/), paste the
-   link, click **Debug**, then **Scrape Again**.
-4. **iMessage and Slack:** these don't have a refresh tool. Adding something
-   to the end of the link, like `?v=2`, makes them fetch a fresh preview.
+| Path | Contents |
+|---|---|
+| `src/content/projects/` | LMU projects, one folder each |
+| `src/content/experience/` | WSP internship and Robotics TA pages |
+| `src/content/punahou/` | Punahou School projects, grouped by section |
+| `src/lib/` | Site details, skill categories, featured projects, preview images |
+| `src/components/`, `src/layouts/`, `src/pages/` | Page templates and routes |
+| `src/styles/global.css` | Colors, the type scale and shared styles |
+| `public/media/` | Resume PDF and other files served as-is |
+| `tools/` | The image, PDF and copy-check scripts above |

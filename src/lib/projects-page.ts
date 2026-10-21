@@ -47,7 +47,7 @@ export const largeCards: CardEntry[] = [
     summary: 'With carnival rides canceled during Covid-19, our class built a ride-on train as the only ride. I helped machine the couplings and worked on the solar charger.',
     tools: ['Horizontal Bandsaw', 'Mill', 'CAD', 'Prototyping', 'Charge Controller'],
     date: '',
-    href: '/punahou/#lanakila-express', // same link as the home page carousel
+    href: '/punahou/lanakila-express/the-train/', // the train's overview page, same as the home page
     cover: lanakila,
     coverAlt: 'The Lanakila Express train carrying riders at the Punahou carnival',
   },

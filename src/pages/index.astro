@@ -32,8 +32,9 @@ import turbineCalcs from '../content/projects/wind-turbine/11_hand_calcs_power_e
 import pantographBand from '../assets/home/pantograph-final-build.jpg';
 import saeLayout from '../content/projects/sae-aero/concept_sketch_layout.jpg';
 import saeCargo from '../content/projects/sae-aero/concept_sketch_cargo_bay.jpg';
-import clampMachined from '../content/projects/toggle-clamp-dfm/dfm_01_machined_part_drawing_GDT.png';
-import clampSheetMetal from '../content/projects/toggle-clamp-dfm/dfm_02_sheet_metal_bent_drawing_GDT.png';
+import trainFrame from '../content/punahou/lanakila-express/the-train/images/frame-and-bogies.jpg';
+import trainBender from '../content/punahou/lanakila-express/the-train/images/roller-bender.jpg';
+import trainTrack from '../content/punahou/lanakila-express/the-train/images/track-sections.jpg';
 import pipingSchematic from '../content/projects/hydraulic-system/01_piping_schematic.png';
 import pumpCurve from '../content/projects/hydraulic-system/04_pump_curve_selection.png';
 
@@ -43,8 +44,13 @@ import pumpCurve from '../content/projects/hydraulic-system/04_pump_curve_select
 //   media:   the panel's pictures, side by side in one wide band (the sharpest versions on hand)
 //   results: the readout under the pictures; the last one is highlighted. The three featured builds
 //            take theirs from src/lib/featured.ts, the others use facts from their project summaries.
+//   punahou: for a Punahou build, its page (src/content/punahou/<section>/<page>/). Those pages have
+//            no summary or course, so `summary` and `meta` are written here instead.
 type Media = { image: ImageMetadata; alt: string; position?: string; fit?: 'contain' };
-type Build = { slug: string; short: string; info: string; media: Media[]; results?: { label: string; value: string }[] };
+type Build = {
+  slug: string; short: string; info: string; media: Media[]; results?: { label: string; value: string }[];
+  punahou?: string; summary?: string; meta?: string; cover?: ImageMetadata; coverPosition?: string;
+};
 const buildList: Build[] = [
   {
     slug: 'rope-climbing-robot', short: 'Rope Climbing Robot', info: 'Measured 0.115 ft/s against 0.134 predicted',
@@ -74,14 +80,6 @@ const buildList: Build[] = [
     results: [{ label: 'Competition', value: 'SAE Aero 2027' }, { label: 'Status', value: 'In progress' }],
   },
   {
-    slug: 'toggle-clamp-dfm', short: 'Toggle Clamp DFM', info: 'Machined and sheet metal redesigns, full GD&T',
-    media: [
-      { image: clampMachined, alt: 'GD&T drawing of the left support redesigned as a machined part', fit: 'contain' },
-      { image: clampSheetMetal, alt: 'GD&T drawing of the left support redesigned as bent sheet metal', fit: 'contain' },
-    ],
-    results: [{ label: 'Modeled in', value: 'SolidWorks' }, { label: 'Left support', value: 'Machined and sheet metal' }],
-  },
-  {
     slug: 'hydraulic-system', short: 'Hydraulic System', info: 'Pump sized for 23.4 m of head',
     media: [
       { image: pipingSchematic, alt: 'Piping schematic of the school water system with its three branches', fit: 'contain' },
@@ -89,9 +87,36 @@ const buildList: Build[] = [
     ],
     results: [{ label: 'Solver', value: 'MATLAB pipe network' }, { label: 'Required pump head', value: '23.4 m' }],
   },
+  {
+    slug: 'lanakila-express', punahou: 'lanakila-express/the-train', short: 'Lanakila Express', info: 'Ride-on train, built by 8 teams over 2 years',
+    summary: 'A ride-on electric train for kids, built from scratch by our Engineering IV class: welded aluminum cars, waterjet-cut steel bogies, CNC-machined wheels and track curved on a roller bender we built. I helped bend the track and worked on the solar charger, the couplings and the track joints.',
+    meta: 'Punahou School · Engineering IV',
+    cover: trainFrame, coverPosition: '50% 40%',
+    media: [
+      { image: trainFrame, position: '50% 45%', alt: 'A welded aluminum car frame on the bench, with the steel bogies and a chain-driven motor bogie behind it' },
+      { image: trainBender, position: '40% 50%', alt: 'Steel flat bar being fed through the class-built roller bender to curve it' },
+      { image: trainTrack, position: '50% 40%', alt: 'Finished curved track sections stacked in rows, ready to lay' },
+    ],
+    results: [{ label: 'Power', value: 'Solar-charged batteries' }, { label: 'Riders', value: 'Hundreds at the 2022 carnival' }],
+  },
 ];
 const builds = await Promise.all(
   buildList.map(async (b) => {
+    if (b.punahou) {
+      const page = await getEntry('punahou', b.punahou);
+      if (!page) throw new Error(`Punahou page "${b.punahou}" not found in src/content/punahou/`);
+      return {
+        ...b,
+        title: page.data.title,
+        summary: b.summary ?? '',
+        meta: b.meta ?? 'Punahou School',
+        cover: b.cover ?? page.data.cover ?? page.data.banner,
+        coverPosition: b.coverPosition,
+        href: url(`/punahou/${b.punahou}/`),
+        results: b.results ?? [],
+        note: undefined,
+      };
+    }
     const entry = await getEntry('projects', b.slug);
     if (!entry) throw new Error(`Project "${b.slug}" not found in src/content/projects/`);
     const f = featured.find((x) => x.slug === b.slug);
@@ -140,7 +165,7 @@ const firstWithPhoto = rows.find((r) => r.cover)!;
 
 const punahou = [
   { name: 'Go-Kart', detail: 'Engineering III', href: '/punahou/engineering-iii/go-kart/' },
-  { name: 'Lanakila Express', detail: 'Solar charger, tracks, couplings', href: '/punahou/#lanakila-express' },
+  { name: 'Lanakila Express', detail: 'Cars, track, solar charger', href: '/punahou/lanakila-express/the-train/' },
   { name: 'Waikiki Zootopia', detail: 'Zoo enrichment toys', href: '/punahou/ke-kilohana/waikiki-zootopia/' },
   { name: 'Machine shop tests', detail: 'Mill and lathe', href: '/punahou/#competency-tests' },
   { name: 'Robotics TA', detail: 'Grades 4 to 6', href: '/experience/robotics-ta/' },

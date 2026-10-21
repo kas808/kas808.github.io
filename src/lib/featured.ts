@@ -47,7 +47,7 @@ export const featured = [
 export const punahou = [
   {
     title: 'Lanakila Express',
-    href: '/punahou/#lanakila-express',
+    href: '/punahou/lanakila-express/the-train/',
     image: lanakila,
     alt: 'The Lanakila Express train carrying riders at the Punahou carnival',
   },

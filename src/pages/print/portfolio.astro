@@ -1,0 +1,276 @@
+---
+// A two-page highlights version of the portfolio for job applications
+// (letter landscape). Not linked from the site. To make the PDF, run
+// `npm run portfolio-pdf` (builds the site, then prints this page with Chrome).
+//
+// Page 1: the first two featured projects.
+// Page 2: the third featured project, the Punahou Go-Kart and a strip of more projects.
+// Featured projects and their measured results come from src/lib/featured.ts;
+// the Go-Kart card is written below (Punahou pages have no summary or role fields),
+// and the strip's projects are listed in `more`.
+import '@fontsource-variable/work-sans';
+import { Image } from 'astro:assets';
+import { getEntry } from 'astro:content';
+import { site } from '../../lib/site';
+import { featured } from '../../lib/featured';
+import goKartPhoto from '../../assets/featured/go-kart.jpg';
+
+const siteHost = 'kasinitosato.github.io';
+const more = ['sae-aero', 'toggle-clamp-dfm', 'hydraulic-system', 'heat-sink'];
+
+const project = async (slug: string) => {
+  const entry = await getEntry('projects', slug);
+  if (!entry) throw new Error(`Project "${slug}" not found in src/content/projects/`);
+  return entry;
+};
+
+type Card = {
+  slug: string;
+  eyebrow: string;
+  title: string;
+  summary?: string;
+  results?: { label: string; value: string }[];
+  note?: string;
+  highlights?: string[];
+  role?: string;
+  tools: string[];
+  cover: ImageMetadata;
+  coverPosition?: string;
+};
+
+// From src/content/punahou/engineering-iii/go-kart/
+const goKart: Card = {
+  slug: 'punahou/engineering-iii/go-kart',
+  eyebrow: 'Punahou School · Engineering III',
+  title: 'Go-Kart',
+  summary:
+    'A four-person team build of a go-kart in six weeks, from a kit and 2 x 1 in aluminum rectangular tubing: research, sketches, CAD, chassis, drive, steering and brakes.',
+  highlights: [
+    'Reworked chassis bars when the brackets had off-set holes, and made and welded our own turning mechanism when the kit parts were too long.',
+    'Took the 3D printed steering wheel cap through three prints: the first came out as two weak pieces, the second broke from too little infill, the third held.',
+  ],
+  role: 'Designed the drive\'s axle mount bearing, brake disc mount, sprocket mount and spacers, and the steering wheel cap body.',
+  tools: ['CAD', 'Chassis Fabrication', 'Welding', 'Drilling', '3D Printing', 'Drive and Steering Systems'],
+  cover: goKartPhoto,
+};
+
+const featuredCards: Card[] = await Promise.all(
+  featured.map(async (f) => {
+    const { data } = await project(f.slug);
+    if (!data.cover) throw new Error(`Featured project "${f.slug}" needs a cover photo`);
+    return {
+      slug: `projects/${f.slug}`,
+      eyebrow: `Project · ${[data.course, data.date].filter(Boolean).join(' · ')}`,
+      title: data.title,
+      summary: data.summary,
+      results: f.results,
+      note: f.note,
+      role: data.role,
+      tools: data.tools.slice(0, 7),
+      cover: data.cover,
+      coverPosition: data.coverPosition,
+    };
+  }),
+);
+
+const moreProjects = await Promise.all(more.map(async (slug) => ({ slug, ...(await project(slug)).data })));
+const allCards = [...featuredCards, goKart];
+const pages = [allCards.slice(0, 2), allCards.slice(2, 4)];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>{site.name} | Portfolio Highlights</title>
+  </head>
+  <body>
+    {pages.map((cards, pi) => (
+      <section class="page">
+        {pi === 0 && (
+          <header class="masthead">
+            <div>
+              <p class="eyebrow">Portfolio highlights</p>
+              <h1>{site.name}</h1>
+              <p class="lead">
+                Mechanical engineering student at Loyola Marymount University (BS, May 2027).
+                Design, build and test work, with measured results reported against predictions.
+              </p>
+            </div>
+            <ul class="contact">
+              <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+              <li><a href={site.linkedin}>linkedin.com/in/kasin-ito-sato</a></li>
+              <li><a href={`https://${siteHost}`}>{siteHost}</a></li>
+            </ul>
+          </header>
+        )}
+
+        <div class="cards">
+          {cards.map((c) => (
+            <article class="card">
+              <figure class="photo">
+                <Image src={c.cover} alt="" width={1400} quality={78} format="jpg" style={c.coverPosition ? `object-position: ${c.coverPosition}` : undefined} />
+              </figure>
+              <div class="body">
+                <p class="eyebrow">{c.eyebrow}</p>
+                <h2><a href={`https://${siteHost}/${c.slug}/`}>{c.title}</a></h2>
+                {c.summary && <p class="summary">{c.summary}</p>}
+                {c.results && (
+                  <div class="result">
+                    <dl>
+                      {c.results.map((r) => (
+                        <div><dt>{r.label}</dt><dd>{r.value}</dd></div>
+                      ))}
+                    </dl>
+                    {c.note && <p>{c.note}</p>}
+                  </div>
+                )}
+                {c.highlights && (
+                  <ul class="highlights">
+                    {c.highlights.map((h) => <li>{h}</li>)}
+                  </ul>
+                )}
+                {c.role && <p class="role"><strong>My role.</strong> {c.role}</p>}
+                <ul class="tags">
+                  {c.tools.map((t) => <li>{t}</li>)}
+                </ul>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {pi === 1 && (
+          <aside class="more">
+            <h2>More projects at <a href={`https://${siteHost}/projects/`}>{siteHost}/projects</a></h2>
+            <ul>
+              {moreProjects.map((p) => (
+                <li>
+                  <a href={`https://${siteHost}/projects/${p.slug}/`}>{p.title}</a>
+                  <span>{p.summary}</span>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )}
+
+        <footer>
+          <span>{site.name} · Portfolio highlights</span>
+          <span>{pi + 1} of {pages.length}</span>
+        </footer>
+      </section>
+    ))}
+  </body>
+</html>
+
+<style is:global>
+  @page { size: 11in 8.5in; margin: 0; }
+
+  :root {
+    --ink: #253447;
+    --charcoal: #454a50;
+    --steel: #5f6a75;
+    --mist: #c6c8c5;
+    --paper: #f1f0ec;
+    --white: #fbfbf9;
+    --accent: #c8ad87;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    margin: 0;
+    background: #888;
+    color: var(--charcoal);
+    font: 9.5pt/1.45 "Work Sans Variable", system-ui, sans-serif;
+  }
+  @media print { body { background: none; } }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  figure { margin: 0; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  h1, h2 { color: var(--ink); letter-spacing: -0.02em; line-height: 1.1; font-weight: 800; margin: 0; }
+
+  .page {
+    width: 11in;
+    height: 8.5in;
+    padding: 0.45in 0.5in 0.55in;
+    background: var(--paper);
+    position: relative;
+    overflow: hidden;
+    break-after: page;
+    margin: 0 auto 0.25in;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25in;
+  }
+  @media print { .page { margin: 0; } }
+
+  .eyebrow { font-size: 8pt; font-weight: 600; color: var(--steel); margin: 0 0 0.06in; }
+
+  .masthead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 0.4in;
+    padding-bottom: 0.18in;
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .masthead h1 { font-size: 30pt; margin-bottom: 0.06in; }
+  .masthead .lead { font-size: 10.5pt; margin: 0; max-width: 6.2in; }
+  .contact { text-align: right; font-size: 9pt; font-weight: 600; color: var(--ink); line-height: 1.6; white-space: nowrap; }
+
+  /* Cards side by side share rows, so their photos match in height and their titles line up */
+  .cards { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: minmax(1.5in, 1fr) auto; column-gap: 0.3in; }
+  .card {
+    display: grid;
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+    background: var(--white);
+    border: 1px solid var(--mist);
+    border-radius: 14px 0 14px 0;
+    overflow: hidden;
+    min-height: 0;
+  }
+  .photo { min-height: 0; }
+  .body { padding: 0.16in 0.2in 0.18in; }
+  .card h2 { font-size: 15pt; margin-bottom: 0.07in; }
+  .summary { margin: 0 0 0.1in; }
+  .result {
+    background: var(--ink);
+    color: #dfe3e7;
+    padding: 0.08in 0.13in;
+    border-radius: 10px 0 10px 0;
+    margin-bottom: 0.1in;
+  }
+  .result dl { margin: 0; }
+  .result dl div { display: flex; justify-content: space-between; gap: 0.15in; padding: 0.015in 0; border-bottom: 1px solid rgba(255,255,255,0.15); }
+  .result dl div:last-child { border-bottom: 0; font-weight: 700; color: #fff; }
+  .result dt { color: #a9b3bd; }
+  .result dd { margin: 0; text-align: right; }
+  .result p { margin: 0.04in 0 0; font-size: 8.3pt; line-height: 1.4; }
+  .highlights { margin-bottom: 0.1in; }
+  .highlights li { position: relative; padding-left: 0.15in; margin-bottom: 0.05in; }
+  .highlights li::before { content: ""; position: absolute; left: 0; top: 0.065in; width: 0.065in; height: 0.065in; background: var(--accent); }
+  .role { margin: 0 0 0.1in; font-size: 8.8pt; }
+  .role strong { color: var(--ink); }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.04in; }
+  .tags li { font-size: 7.3pt; padding: 0.01in 0.065in; border: 1px solid var(--mist); border-radius: 2px; background: var(--paper); }
+
+  .more h2 { font-size: 11pt; margin-bottom: 0.08in; }
+  .more h2 a { color: var(--steel); font-weight: 600; }
+  .more ul { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.22in; }
+  .more li { border-top: 2px solid var(--accent); padding-top: 0.06in; font-size: 8pt; line-height: 1.4; }
+  .more li a { display: block; font-weight: 700; color: var(--ink); font-size: 8.8pt; margin-bottom: 0.03in; }
+
+  footer {
+    position: absolute;
+    left: 0.5in;
+    right: 0.5in;
+    bottom: 0.22in;
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.5pt;
+    color: var(--steel);
+  }
+</style>

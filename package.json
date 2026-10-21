@@ -10,7 +10,8 @@
     "check-dashes": "node tools/check-dashes.mjs",
     "shrink": "node tools/shrink-images.mjs",
     "pdf-pages": "node tools/pdf-pages.mjs",
-    "check-previews": "node tools/check-previews.mjs"
+    "check-previews": "node tools/check-previews.mjs",
+    "portfolio-pdf": "astro build && node tools/portfolio-pdf.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.3",

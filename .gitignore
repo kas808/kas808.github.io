@@ -28,3 +28,6 @@ skills-lock.json
 .impeccable/
 # tasteskill inspector screenshots and reports (local only)
 .taste-skill/
+
+# Printed portfolio (npm run portfolio-pdf)
+Kasin-Ito-Sato-Portfolio.pdf

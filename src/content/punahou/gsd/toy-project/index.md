@@ -131,7 +131,7 @@ This is what the golf club looks like and ball as well. The sleeve is on a metal
 
 ![Toy Project](./images/21.jpg)
 
-### Beach Vibes...
+## Beach Vibes...
 
 The base fully painted really brings the entire thing together! With this paint job it really brings together the beach theme we wanted. We also painted our product and company name on the sides to give it more identity relating to us. I think that the kids will really like the look and have fun playing with it!
 

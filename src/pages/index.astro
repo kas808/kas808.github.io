@@ -10,6 +10,7 @@
 // mechanical plan shown as printed, and every build ending in its measured result.
 import '@fontsource-variable/archivo/wdth.css';
 import '@fontsource-variable/newsreader/opsz.css';
+import '@fontsource-variable/newsreader/opsz-italic.css';
 import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/ibm-plex-mono/500.css';
 import { Image } from 'astro:assets';
@@ -669,7 +670,7 @@ const nav = [
       .ledger .section-title { margin-bottom: 32px; }
       .fields { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
       .fields a {
-        display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--rule);
+        display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid #8f897f; /* 3:1 control outline */
         font-family: var(--mono); font-size: var(--step-label); font-weight: 400; text-transform: uppercase; letter-spacing: 0.04em; text-decoration: none;
         transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, transform 160ms var(--ease-out);
       }
@@ -691,7 +692,7 @@ const nav = [
       .row-kind { font-size: var(--step-small); color: var(--soft); }
       .row-date { font-size: var(--step-label); color: var(--soft); text-align: right; white-space: nowrap; }
       @media (hover: hover) and (pointer: fine) {
-        .rows:has(a:hover) a:not(:hover) { color: #9b968d; }
+        .rows:has(a:hover) a:not(:hover) { color: #716c64; } /* dimmed, still 4.5:1 */
         .rows:has(a:hover) a:not(:hover) span { color: inherit; }
       }
       .row-photo { display: none; }

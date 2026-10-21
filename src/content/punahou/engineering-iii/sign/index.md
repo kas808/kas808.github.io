@@ -5,7 +5,7 @@ order: 12
 banner: ./images/01.jpg
 ---
 
-## What did we do?
+# What did we do?
 
 For this sign project we got to practice creating an Aspire file that could be read by the CNC machine. We used a profiling tool as well as a V-Carve tool to create our sign. I was unable to find what the CAD looked like but it is easy to see on the sign itself.
 

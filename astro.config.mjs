@@ -12,7 +12,8 @@ export default defineConfig({
   trailingSlash: 'ignore',
   build: { format: 'directory' },
   markdown: {
-    // Demote headings in Markdown by one level (# becomes h2) because each page already has its own big title.
+    // Each page already has its own big title (h1), so Markdown headings start at h2:
+    // whatever level a file's top headings use becomes h2, and the levels below follow in order.
     rehypePlugins: [demoteHeadings, fixLinks],
   },
 });
@@ -20,14 +21,18 @@ export default defineConfig({
 function demoteHeadings() {
   /** @param {any} tree */
   return (tree) => {
+    /** @type {any[]} */
+    const headings = [];
     /** @param {any} node */
     const walk = (node) => {
-      if (node.type === 'element' && /^h[1-5]$/.test(node.tagName)) {
-        node.tagName = 'h' + (Number(node.tagName[1]) + 1);
-      }
+      if (node.type === 'element' && /^h[1-6]$/.test(node.tagName)) headings.push(node);
       (node.children || []).forEach(walk);
     };
     walk(tree);
+    // The levels this file uses, in order: the first becomes h2, the next h3, and so on.
+    // So "# Top" and "## Top" files both start at h2, and a jump like ## to #### closes up.
+    const levels = [...new Set(headings.map((h) => Number(h.tagName[1])))].sort((a, b) => a - b);
+    for (const h of headings) h.tagName = 'h' + Math.min(6, levels.indexOf(Number(h.tagName[1])) + 2);
   };
 }
 

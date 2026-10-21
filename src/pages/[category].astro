@@ -28,6 +28,7 @@ const image = new URL(url(`/og/${ogFile(`projects/${cat.slug}`)}`), Astro.site);
     <meta name="robots" content="noindex" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#f3efe7" />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
     <!-- Old links still get the right preview -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />

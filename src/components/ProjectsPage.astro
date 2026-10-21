@@ -96,7 +96,8 @@ const filterInfo = {
 
     <!-- No filter: the regular page -->
     <div class="panel" data-panel="" hidden={Boolean(active)}>
-      <section class="wrap">
+      <section class="wrap" aria-labelledby="featured-projects">
+        <h2 id="featured-projects" class="visually-hidden">Featured projects</h2>
         <div class="big-grid">
           {large.map((c) => (
             <ProjectCard href={c.href} title={c.title} summary={c.summary} meta={c.meta} cover={c.cover} coverAlt={c.coverAlt}

@@ -17,7 +17,7 @@ const cols = images.length === 1 ? 'one' : images.length === 2 || images.length 
 ---
 
 <section class="gallery reveal" data-zoom-group>
-  {title && <h3 class="gallery-title">{title}</h3>}
+  {title && <h2 class="gallery-title">{title}</h2>}
   <ul class:list={['grid', cols]}>
     {items.map((img) => (
       <li data-zoom>

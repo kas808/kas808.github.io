@@ -11,7 +11,8 @@
   --steel: #5e5a53;      /* secondary text (6:1 on paper; dark sections swap in a lighter one below) */
   --steel-on-dark: #a8a59e; /* secondary text on graphite */
   --focus-ring: var(--ink); /* keyboard focus outline; light on dark backgrounds (set below) */
-  --mist: #d4ccbf;       /* ruled lines and borders */
+  --mist: #d4ccbf;       /* ruled lines and borders (decorative) */
+  --control-line: #8f897f; /* the outline of a control, like a filter chip (3:1 on the paper) */
   --paper: #f3efe7;      /* main background */
   --white: #faf7f1;      /* cards and panels on the paper */
   --paper-up: #e8e2d6;   /* a step darker than the paper, for quiet fills */

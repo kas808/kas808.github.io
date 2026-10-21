@@ -74,7 +74,7 @@ const d = entry.data;
   .banner-text { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding-bottom: clamp(24px, 4vw, 52px); }
   .banner h1 { color: #fff; margin: 0 0 8px; }
   .banner-meta { color: #e9e5dd; margin: 0; font-size: var(--fs-body); font-weight: 500; }
-  .crumbs { font-size: var(--fs-small); color: #e9e5dd; margin-bottom: 12px; }
+  .crumbs { font-family: var(--mono); font-size: var(--fs-label); text-transform: uppercase; letter-spacing: 0.04em; color: #e9e5dd; margin-bottom: 12px; }
   .crumbs a { color: #e9e5dd; }
 
   .intro { padding-block: clamp(36px, 5vw, 64px) 8px; }
@@ -93,7 +93,8 @@ const d = entry.data;
   .exp-prose :global(h3) { scroll-margin-top: calc(var(--header-h) + 16px); }
 
   .pager { padding-block: 56px 80px; margin-top: 40px; border-top: 1px solid var(--mist); }
-  .pager a { display: flex; flex-direction: column; gap: 4px; text-decoration: none; font-weight: 700; font-size: var(--fs-lead); color: var(--ink); }
+  .pager a { display: flex; flex-direction: column; gap: 8px; text-decoration: none; font-family: var(--serif); font-optical-sizing: auto; font-weight: 380; font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.5rem); line-height: 1.05; letter-spacing: -0.02em; color: var(--ink); }
+  @media (hover: hover) and (pointer: fine) { .pager a:hover { font-style: italic; } }
   .pager .eyebrow { margin: 0; }
   .skill-tags { margin-top: 14px; }
   .skill-tags:empty { display: none; }

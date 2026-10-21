@@ -50,6 +50,10 @@ body {
 img, video, iframe { max-width: 100%; display: block; }
 img { height: auto; }
 
+/* Browser details in the site's colors: selected text, checkboxes, the text cursor */
+::selection { background: var(--accent); color: var(--ink); }
+html { accent-color: var(--ink); caret-color: var(--ink); }
+
 a { color: var(--ink); text-underline-offset: 3px; text-decoration-thickness: 1px; }
 a:hover { color: var(--ink-soft); }
 
@@ -63,7 +67,7 @@ h1, h2, h3, h4 {
 h1 { font-size: var(--fs-display); }
 h2 { font-size: var(--fs-heading); }
 h3 { font-size: var(--fs-lead); font-weight: 700; letter-spacing: -0.01em; }
-p { margin: 0 0 1em; }
+p { margin: 0 0 1em; text-wrap: pretty; } /* no single word left alone on the last line */
 
 .wrap { width: 100%; max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
 .wrap-narrow { max-width: 780px; }
@@ -107,7 +111,9 @@ p { margin: 0 0 1em; }
   cursor: pointer;
   transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.2s var(--ease);
 }
-.btn:hover { background: var(--ink-soft); color: #fff; transform: translateY(-1px); }
+.btn:hover { background: var(--ink-soft); color: #fff; }
+@media (hover: hover) { .btn:hover { transform: translateY(-1px); } }
+.btn:active { transform: scale(0.97); transition-duration: 0.1s; } /* a small press, so a tap feels answered */
 .btn-ghost { background: transparent; color: var(--ink); }
 .btn-ghost:hover { background: var(--ink); color: #fff; }
 .section-dark .btn { background: #fff; color: var(--ink); border-color: #fff; }
@@ -164,14 +170,15 @@ hr { border: 0; border-top: 1px solid var(--mist); margin: 2.5rem 0; }
 .prose blockquote { margin: 1.5em 0; padding-left: 1em; border-left: 3px solid var(--accent); color: var(--charcoal); }
 .prose a { word-break: break-word; }
 
-/* Scroll-in animation (turned off for people who prefer reduced motion) */
-.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
-.reveal.is-visible { opacity: 1; transform: none; }
+/* Scroll-in animation: a short rise as each block comes into view. Only for people who
+   haven't asked for reduced motion, and only once the script is running, so nothing ever stays hidden. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-js) .reveal:not(.is-visible) { opacity: 0; transform: translateY(12px); }
+  .reveal { transition: opacity 0.5s var(--ease), transform 0.6s var(--ease); }
+}
 @media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
-.no-js .reveal { opacity: 1; transform: none; }
 
 /* Smooth page-to-page fade */
 @view-transition { navigation: auto; }

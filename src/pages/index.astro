@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import { getEntry } from 'astro:content';
-import sharp from 'sharp';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SkillChips from '../components/SkillChips.astro';
 import { url } from '../lib/url';
@@ -21,27 +20,18 @@ import wspSite from '../content/experience/wsp/ulana_03.jpg';
 import wspPlan from '../content/experience/wsp/spa_plan_04.jpg';
 import wspExcel from '../content/experience/wsp/building-pressurization-excel-sheet-walk-through.jpg';
 
-// Each slide also records the photo file, so the site can measure how bright it is
-// behind the text when it builds. Light photos get navy text, darker ones white text.
-const heroFiles = {
-  lanakila: 'src/assets/hero/lanakila-express.jpg',
-  wsp: 'src/assets/hero/wsp-site-visit.jpg',
-  pantograph: 'src/assets/hero/pantograph.jpg',
-  shop: 'src/assets/hero/shop.jpg',
-  rope: 'src/content/projects/rope-climbing-robot/02_robot_on_rope.jpg',
-  rube: 'src/assets/hero/rube-goldberg.jpg',
-  kart: 'src/assets/hero/go-kart.jpg',
-};
-// LMU and WSP work first; Punahou photos come last
+// LMU and WSP work first; Punahou photos come last.
+// `position` picks which part of the photo stays in view ('50% 0%' = top, '50% 50%' = middle).
 const heroSlides = [
-  { src: heroWsp, file: heroFiles.wsp, caption: 'WSP site visit', position: '50% 45%' },
-  { src: heroPantograph, file: heroFiles.pantograph, caption: '2x Magnifying Pantograph', position: '50% 55%' },
-  { src: heroRope, file: heroFiles.rope, caption: 'Rope Climbing Robot', position: '50% 40%' },
-  { src: heroShop, file: heroFiles.shop, caption: 'In the shop', position: '50% 45%' },
-  { src: heroRube, file: heroFiles.rube, caption: 'Rube Goldberg Machine', position: '50% 45%' },
-  { src: heroLanakila, file: heroFiles.lanakila, caption: 'Lanakila Express, Punahou School', position: '50% 62%' },
-  { src: heroKart, file: heroFiles.kart, caption: 'Go-Kart, Punahou School', position: '50% 50%' },
+  { src: heroWsp, caption: 'WSP site visit', position: '50% 45%' },
+  { src: heroPantograph, caption: '2x Magnifying Pantograph', position: '50% 55%' },
+  { src: heroRope, caption: 'Rope Climbing Robot', position: '50% 40%' },
+  { src: heroShop, caption: 'In the shop', position: '50% 45%' },
+  { src: heroRube, caption: 'Rube Goldberg Machine', position: '50% 45%' },
+  { src: heroLanakila, caption: 'Lanakila Express, Punahou School', position: '50% 62%' },
+  { src: heroKart, caption: 'Go-Kart, Punahou School', position: '50% 50%' },
 ];
+const pad = (n: number) => String(n).padStart(2, '0');
 
 // Featured projects: title, summary, course, date and photo from each project's index.md,
 // plus the measured result from src/lib/featured.ts
@@ -52,37 +42,30 @@ const featuredCards = await Promise.all(
     return { ...f, ...entry.data, href: `/projects/${f.slug}/` };
   }),
 );
-
-// Brightness (0 = black, 1 = white) of the area behind the text: the left 60%, middle to lower part.
-// Above LIGHT_PHOTO, the slide uses navy text; otherwise white text.
-const LIGHT_PHOTO = 0.52;
-const tones = await Promise.all(
-  heroSlides.map(async (h) => {
-    const img = sharp(h.file);
-    const { width = 1, height = 1 } = await img.metadata();
-    const viewH = Math.min(height, Math.round(width * 0.55));
-    const top = Math.round((height - viewH) / 2);
-    const stats = await sharp(h.file)
-      .extract({ left: 0, top: top + Math.round(viewH * 0.3), width: Math.round(width * 0.6), height: Math.round(viewH * 0.55) })
-      .greyscale()
-      .stats();
-    return stats.channels[0].mean / 255 > LIGHT_PHOTO ? 'light' : 'dark';
-  }),
-);
 ---
 
 <BaseLayout>
-  <section class="hero" aria-label="Introduction" data-tone={tones[0]}>
-    <div class="slides" aria-hidden="true" data-hero>
+  <section class="hero" aria-label="Introduction" data-hero>
+    <div class="slides" aria-hidden="true">
       {heroSlides.map((h, i) => (
-        <div class:list={['slide-frame', i === 0 && 'is-active']} style={`--pos: ${h.position}`} data-tone={tones[i]}>
+        <div class:list={['slide-frame', i === 0 && 'is-active']} style={`--pos: ${h.position}`} data-caption={h.caption}>
           <Image src={h.src} alt="" widths={[900, 1400, 2000, 2400]} sizes="100vw" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} />
-          <span class="slide-caption">{h.caption}</span>
         </div>
       ))}
     </div>
-    <div class="shade shade-dark" aria-hidden="true"></div>
-    <div class="shade shade-light" aria-hidden="true"></div>
+    <div class="shade" aria-hidden="true"></div>
+    <!-- Slideshow bar: pause button, which photo this is, and a line that fills until the next one -->
+    <div class="slide-bar">
+      <button class="slide-pause" type="button" aria-label="Pause slideshow" hidden>
+        <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="0.5" /><rect x="9.5" y="2.5" width="3" height="11" rx="0.5" /></svg>
+        <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.6v10.8a.5.5 0 0 0 .76.43l8.6-5.4a.5.5 0 0 0 0-.86l-8.6-5.4a.5.5 0 0 0-.76.43Z" /></svg>
+      </button>
+      <p class="slide-caption">
+        <span class="slide-count" aria-hidden="true"><span data-count>01</span> / {pad(heroSlides.length)}</span>
+        <span data-caption-text>{heroSlides[0].caption}</span>
+      </p>
+      <span class="slide-progress" aria-hidden="true"></span>
+    </div>
     <div class="wrap hero-content">
       <h1>Kasin Ito-Sato</h1>
       <p class="role">Mechanical Engineer</p>
@@ -168,10 +151,17 @@ const tones = await Promise.all(
           During my internship at WSP, I worked with licensed mechanical engineers to design HVAC, plumbing, and fire
           protection systems for commercial and residential projects. I performed load calculations and drafting, and
           researched ASHRAE 62.1 and 90.1 standards, IECC codes, and industry practices to apply them to real project
-          conditions. I gained experience using Revit, AutoCAD, TRACE 700, IES-VE, and Bluebeam to develop, revise, and
+          conditions.
+        </p>
+        <p>
+          I gained experience using Revit, AutoCAD, TRACE 700, IES-VE, and Bluebeam to develop, revise, and
           coordinate mechanical system drawings, BIM documentation, and project submittals. I also created custom Excel
           sheets that looked at demand-controlled ventilation, building pressurization, and exhaust airflow requirements.
         </p>
+        <!-- The same software as the paragraph above, as tags a reviewer can scan -->
+        <ul class="tags wsp-tools" aria-label="Software used at WSP">
+          {['Revit', 'AutoCAD', 'TRACE 700', 'IES-VE', 'Bluebeam', 'Excel'].map((t) => <li>{t}</li>)}
+        </ul>
         <a class="btn" href={url('/experience/wsp/')}>See the internship</a>
       </div>
     </div>
@@ -224,15 +214,17 @@ const tones = await Promise.all(
 </BaseLayout>
 
 <style>
-  /* Full-width hero: photos crossfade with a slow zoom under a dark gradient */
+  /* Full-width hero: photos wipe in one after another under a dark scrim, with white text on top */
   .hero {
     position: relative;
     min-height: clamp(500px, 80vh, 820px); /* short enough that the projects below start to show */
+    min-height: clamp(500px, 80svh, 820px); /* phones: measured without the browser's address bar */
     display: flex;
     align-items: flex-end;
     overflow: hidden;
     background: var(--ink);
     color: #fff;
+    --focus-ring: var(--accent);
   }
   .slides { position: absolute; inset: 0; z-index: 0; }
   /* Each new photo wipes in from left to right over the last one, with a thin tan edge */
@@ -242,73 +234,89 @@ const tones = await Promise.all(
     z-index: 0;
   }
   .slide-frame.is-active { clip-path: inset(0 0 0 0); z-index: 2; }
-  .slide-frame.is-entering { z-index: 3; animation: heroWipe 0.7s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
+  .slide-frame.is-entering { z-index: 3; animation: heroWipe 0.8s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
   .slide-frame.is-leaving { clip-path: inset(0 0 0 0); z-index: 1; }
   .slide-frame::after {
     content: ''; position: absolute; top: 0; bottom: 0; right: 0; width: 3px; background: var(--accent);
     opacity: 0; z-index: 2;
   }
-  .slide-frame.is-entering::after { opacity: 1; animation: heroEdge 0.9s linear forwards; }
+  .slide-frame.is-entering::after { opacity: 1; animation: heroEdge 1s linear forwards; }
   @keyframes heroWipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
   @keyframes heroEdge { 0%, 85% { opacity: 1; } 100% { opacity: 0; } }
   .slide-frame :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos); }
-  .slide-caption {
-    position: absolute; right: clamp(16px, 4vw, 48px); bottom: clamp(16px, 3vw, 32px); z-index: 2;
-    font-size: var(--fs-small); font-weight: 600; color: #fff;
-    /* a small dark plate keeps the caption readable on any photo, light or dark */
-    padding: 0.35em 0.7em; border-radius: 2px; background: rgba(20, 29, 40, 0.72);
-  }
-  /* Two overlays: dark (for white text) and light (for navy text). The hero's data-tone picks one. */
-  .shade { position: absolute; inset: 0; z-index: 1; transition: opacity 0.6s var(--ease); }
-  .shade-dark {
-    background:
-      linear-gradient(90deg, rgba(20, 29, 40, 0.9) 0%, rgba(20, 29, 40, 0.7) 45%, rgba(20, 29, 40, 0.28) 100%),
-      linear-gradient(0deg, rgba(20, 29, 40, 0.75) 0%, rgba(20, 29, 40, 0) 55%);
-  }
-  /* Light photos: a soft warm-gray wash only behind the text (bottom left), fading out well before the middle */
-  .shade-light {
-    opacity: 0;
-    background:
-      radial-gradient(ellipse 80% 72% at 0% 100%, rgba(205, 203, 196, 0.84) 0%, rgba(205, 203, 196, 0.62) 50%, rgba(205, 203, 196, 0) 100%),
-      linear-gradient(90deg, rgba(205, 203, 196, 0.35) 0%, rgba(205, 203, 196, 0) 50%);
-  }
-  .hero[data-tone='light'] .shade-dark { opacity: 0; }
-  .hero[data-tone='light'] .shade-light { opacity: 1; }
 
-  /* Text colors for each tone: white and light gray on dark photos, navy and charcoal on light ones */
-  .hero { --hero-text: #fff; --hero-sub: #c9d0d7; --focus-ring: var(--accent); }
-  .hero[data-tone='light'] { --hero-text: var(--ink); --hero-sub: var(--charcoal); --focus-ring: var(--ink); }
-  .hero h1, .role, .school, .focus { transition: color 0.6s var(--ease), text-shadow 0.6s var(--ease); }
-  .hero-content { position: relative; z-index: 3; padding-block: clamp(80px, 12vw, 140px) clamp(56px, 8vw, 96px); }
+  /* One scrim for every photo: darkest behind the text (left and bottom), so the photo still shows on the right */
+  .shade {
+    position: absolute; inset: 0; z-index: 4; pointer-events: none;
+    background:
+      linear-gradient(90deg, rgba(20, 29, 40, 0.88) 0%, rgba(20, 29, 40, 0.66) 42%, rgba(20, 29, 40, 0.18) 100%),
+      linear-gradient(0deg, rgba(20, 29, 40, 0.8) 0%, rgba(20, 29, 40, 0) 58%);
+  }
+
+  /* Slideshow bar (bottom right): pause button, "03 / 07" and the caption, with a tan line
+     underneath that fills while each photo is up. The line's animation sets the pace. */
+  .slide-bar {
+    position: absolute; right: clamp(16px, 4vw, 48px); bottom: clamp(16px, 3vw, 32px); z-index: 6;
+    display: flex; align-items: center; gap: 12px;
+    padding: 6px 14px 8px 6px; border-radius: 2px;
+    background: rgba(20, 29, 40, 0.72);
+    color: #fff;
+  }
+  .slide-caption { position: relative; margin: 0; display: flex; gap: 10px; font-size: var(--fs-small); font-weight: 600; line-height: 1.3; }
+  .slide-count { color: var(--steel-on-dark); font-variant-numeric: tabular-nums; }
+  .slide-pause {
+    display: grid; place-items: center; width: 32px; height: 32px; padding: 0;
+    color: #fff; background: rgba(255, 255, 255, 0.1); border: 0; border-radius: 2px; cursor: pointer;
+    transition: background 0.2s var(--ease), transform 0.15s var(--ease);
+  }
+  .slide-pause[hidden] { display: none; }
+  .slide-pause:hover { background: rgba(255, 255, 255, 0.22); }
+  .slide-pause:active { transform: scale(0.94); }
+  .slide-pause svg { width: 14px; height: 14px; fill: currentColor; }
+  .slide-pause .i-play, .hero.is-paused .slide-pause .i-pause { display: none; }
+  .hero.is-paused .slide-pause .i-play { display: block; }
+  .slide-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; }
+  .hero.is-playing .slide-progress { animation: slideTimer var(--slide-ms, 6000ms) linear forwards; }
+  .hero.is-paused .slide-progress { animation-play-state: paused; }
+  @keyframes slideTimer { to { transform: scaleX(1); } }
+
+  .hero-content { position: relative; z-index: 5; padding-block: clamp(80px, 12vw, 140px) clamp(72px, 9vw, 104px); }
   .hero h1 {
-    color: var(--hero-text);
+    color: #fff;
     font-size: var(--fs-display);
     font-weight: 800;
-    letter-spacing: 0.005em;
-    margin-bottom: 0.2em;
-    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
+    letter-spacing: -0.025em;
+    margin-bottom: 0.18em;
   }
-  /* a faint light glow keeps navy text clear where the photo behind it is darker */
-  .hero[data-tone='light'] h1 { text-shadow: 0 1px 18px rgba(225, 223, 217, 0.7); }
-  .hero[data-tone='light'] .role, .hero[data-tone='light'] .school, .hero[data-tone='light'] .focus { text-shadow: 0 1px 10px rgba(225, 223, 217, 0.8); }
-  .role { margin: 0 0 0.15em; font-size: var(--fs-lead); font-weight: 700; line-height: 1.4; color: var(--hero-text); }
+  .role { margin: 0 0 0.15em; font-size: var(--fs-lead); font-weight: 700; line-height: 1.4; color: #fff; }
   /* Degree and graduation date: the first thing a recruiter checks */
   .school .nowrap { white-space: nowrap; }
-  .school { margin: 0 0 1.1em; max-width: 46ch; font-size: var(--fs-lead); font-weight: 500; line-height: 1.4; text-wrap: balance; color: var(--hero-text); }
-  .focus { font-size: var(--fs-small); font-weight: 600; text-wrap: balance; color: var(--hero-sub); margin-bottom: 2em; }
+  .school { margin: 0 0 1.1em; max-width: 46ch; font-size: var(--fs-lead); font-weight: 500; line-height: 1.4; text-wrap: balance; color: #fff; }
+  .focus { font-size: var(--fs-small); font-weight: 600; text-wrap: balance; color: #c9d0d7; margin-bottom: 2em; }
   .hero-btns { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; }
-  .hero-btns .text-link { color: var(--hero-text); transition: color 0.6s var(--ease); }
+  .hero-btns .text-link { color: #fff; }
   .hero-btns .text-link:hover { color: var(--accent); }
-  .hero[data-tone='light'] .hero-btns .text-link:hover { color: var(--ink-soft); }
-  .hero-btns .btn { min-width: 180px; background: #fff; color: var(--ink); border-color: #fff; transition: background 0.6s var(--ease), color 0.6s var(--ease), border-color 0.6s var(--ease), transform 0.2s var(--ease); }
-  .hero[data-tone='light'] .hero-btns .btn { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .hero-btns .btn { min-width: 180px; background: #fff; color: var(--ink); border-color: #fff; }
   .hero-btns .btn:hover { background: var(--accent); border-color: var(--accent); color: var(--ink); }
+
+  /* On load, the text rises in line by line, once */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-content > * { animation: heroRise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .hero-content > :nth-child(2) { animation-delay: 70ms; }
+    .hero-content > :nth-child(3) { animation-delay: 120ms; }
+    .hero-content > :nth-child(4) { animation-delay: 170ms; }
+    .hero-content > :nth-child(5) { animation-delay: 220ms; }
+  }
+  @keyframes heroRise { from { opacity: 0; transform: translateY(14px); } }
+
   /* Phone: the button runs full width, the two links sit side by side under it */
   @media (max-width: 560px) {
+    .hero-content { padding-bottom: 84px; }
     .hero-btns { gap: 16px 28px; }
     .hero-btns .btn { flex: 1 0 100%; padding-block: 0.9em; }
     /* the date drops to its own line instead of leaving the dot at the end of a line */
     .school .sep { display: block; height: 0; overflow: hidden; }
+    .slide-bar { left: calc(var(--gutter) - 6px); right: auto; } /* the button lines up with the text above */
   }
 
   /* Reduced motion: the script leaves the first photo up and never switches */
@@ -322,7 +330,7 @@ const tones = await Promise.all(
     grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     gap: clamp(32px, 5vw, 64px);
     align-items: center;
-    padding-block: clamp(72px, 10vw, 130px);
+    padding-block: clamp(64px, 9vw, 112px);
     overflow-x: clip;
   }
   /* Portrait frame anchored at the top of the photo, so the head keeps its headroom
@@ -357,7 +365,7 @@ const tones = await Promise.all(
   .fcard { position: relative; display: flex; flex-direction: column; }
   .fcard-media { display: block; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--radius); background: #e7e6e1; margin-bottom: 18px; }
   .fcard-media :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); transition: transform 0.6s var(--ease); }
-  .fcard:hover .fcard-media :global(img) { transform: scale(1.03); }
+  @media (hover: hover) { .fcard:hover .fcard-media :global(img) { transform: scale(1.03); } }
   .fcard-body { display: flex; flex-direction: column; flex: 1; }
   .fcard h3 { margin: 0 0 4px; font-size: var(--fs-lead); font-weight: 800; text-wrap: balance; }
   .fcard h3 a { color: var(--ink); text-decoration: none; }
@@ -399,20 +407,25 @@ const tones = await Promise.all(
   .browse { margin-top: clamp(36px, 4vw, 52px); padding-top: 24px; border-top: 1px solid var(--mist); }
 
 
-  .wsp-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 64px); align-items: center; }
-  @media (max-width: 900px) { .wsp-grid { grid-template-columns: 1fr; } }
-  .wsp-photo { display: block; overflow: hidden; border-radius: 3px; box-shadow: 0 24px 48px -30px rgba(37, 52, 71, 0.55); }
+  /* Photo and text start on the same line; on desktop the photo stays in view while the text is read */
+  .wsp-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 64px); align-items: start; }
+  .wsp-photo { position: sticky; top: calc(var(--header-h) + 24px); display: block; overflow: hidden; border-radius: var(--radius); }
+  @media (max-width: 900px) { .wsp-grid { grid-template-columns: 1fr; } .wsp-photo { position: static; } }
   .wsp-photo :global(img) { width: 100%; height: auto; transition: transform 0.8s var(--ease); }
-  .wsp-photo:hover :global(img) { transform: scale(1.02); }
+  .wsp-text h2 { margin-top: -0.1em; }
   .wsp-text p { font-size: var(--fs-body); }
   .wsp-text .wsp-meta { margin: -0.2em 0 1em; font-size: var(--fs-small); font-weight: 600; color: var(--charcoal); }
+  .wsp-tools { margin: 0.4em 0 28px; }
 
   /* Rows of three photo links with a label along the bottom (WSP and Punahou) */
   .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
   .tiles a { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 3px; background: #fff; }
   @media (max-width: 700px) { .tiles { grid-template-columns: 1fr; gap: 12px; } .tiles a { aspect-ratio: 16 / 9; } }
   .tiles :global(img) { width: 100%; height: 100%; object-fit: var(--fit, cover); object-position: var(--pos, 50% 50%); transition: transform 0.7s var(--ease); }
-  .tiles a:hover :global(img) { transform: scale(1.04); }
+  @media (hover: hover) {
+    .tiles a:hover :global(img) { transform: scale(1.04); }
+    .wsp-photo:hover :global(img) { transform: scale(1.02); }
+  }
   .tiles span {
     position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 16px 12px;
     background: linear-gradient(rgba(23, 33, 45, 0), rgba(23, 33, 45, 0.88) 65%); color: #fff;
@@ -430,23 +443,38 @@ const tones = await Promise.all(
 </style>
 
 <script>
-  // Hero: show each photo for about 4.5 seconds, then wipe to the next one.
-  // With "reduce motion" turned on, the first photo stays up and nothing moves.
+  // Hero: show each photo for 6 seconds, then wipe to the next one. The tan line in the
+  // slideshow bar fills over those 6 seconds; when it is full, the next photo comes in.
+  // The pause button stops the line (and the slideshow) where it is.
+  // With "reduce motion" turned on, the first photo stays up, nothing moves and there is no button.
+  const SLIDE_MS = 6000;
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (hero && !reduceMotion) {
     const frames = Array.from(hero.querySelectorAll<HTMLElement>('.slide-frame'));
+    const progress = hero.querySelector<HTMLElement>('.slide-progress')!;
+    const pauseBtn = hero.querySelector<HTMLButtonElement>('.slide-pause')!;
+    const countEl = hero.querySelector<HTMLElement>('[data-count]')!;
+    const captionEl = hero.querySelector<HTMLElement>('[data-caption-text]')!;
     let current = 0;
+
+    hero.style.setProperty('--slide-ms', `${SLIDE_MS}ms`);
+    // Restart the tan line from empty
+    const startTimer = () => {
+      hero.classList.remove('is-playing');
+      void progress.offsetWidth;
+      hero.classList.add('is-playing');
+    };
+
     const next = () => {
-      if (document.hidden) return; // don't run while the tab is in the background
       const prev = frames[current];
       current = (current + 1) % frames.length;
       const incoming = frames[current];
       prev.classList.remove('is-active');
       prev.classList.add('is-leaving');
       incoming.classList.add('is-entering');
-      const heroSection = hero.closest<HTMLElement>('.hero');
-      if (heroSection && incoming.dataset.tone) heroSection.dataset.tone = incoming.dataset.tone;
+      countEl.textContent = String(current + 1).padStart(2, '0');
+      captionEl.textContent = incoming.dataset.caption ?? '';
       // Finish the swap when the wipe ends (with a timer backup in case the browser skips the event)
       let finished = false;
       const finish = () => {
@@ -457,8 +485,19 @@ const tones = await Promise.all(
         prev.classList.remove('is-leaving');
       };
       incoming.addEventListener('animationend', (e) => { if (e.target === incoming) finish(); }, { once: true });
-      setTimeout(finish, 800);
+      setTimeout(finish, 900);
     };
-    setInterval(next, 4000);
+
+    progress.addEventListener('animationend', () => {
+      if (!document.hidden) next(); // in a background tab, wait another round instead
+      startTimer();
+    });
+
+    pauseBtn.hidden = false;
+    pauseBtn.addEventListener('click', () => {
+      const paused = hero.classList.toggle('is-paused');
+      pauseBtn.setAttribute('aria-label', paused ? 'Play slideshow' : 'Pause slideshow');
+    });
+    startTimer();
   }
 </script>

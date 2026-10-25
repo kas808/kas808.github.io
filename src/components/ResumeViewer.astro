@@ -1,0 +1,426 @@
+---
+// The resume, opened in place instead of on its own page. Every link to /resume/ opens it,
+// zooming in from the link that was clicked; any link with data-resume-open does too.
+// Drag to move it, pinch (or Ctrl/Cmd + scroll) to zoom, double-tap or double-click to zoom in.
+// Without JavaScript the links simply go to the Resume page.
+//
+// The picture is src/assets/resume-page.png (remake it with: sh tools/resume-image.sh).
+// The contact line at the top of the resume has clickable areas over it (`hotspots` below,
+// in percent of the page); move them if the resume's header line changes.
+import { getImage } from 'astro:assets';
+import resumePage from '../assets/resume-page.png';
+import { url } from '../lib/url';
+import { site } from '../lib/site';
+
+const full = await getImage({ src: resumePage, width: resumePage.width, format: 'webp', quality: 88 });
+const pdf = url(site.resumePdf);
+
+const hotspots = [
+  { label: 'Call (808) 366-5691', href: 'tel:+18083665691', left: 9.2, width: 13.2 },
+  { label: `Email ${site.email}`, href: `mailto:${site.email}`, left: 23.0, width: 14.0 },
+  { label: 'LinkedIn', href: site.linkedin, left: 54.2, width: 20.8 },
+  { label: 'Portfolio website', href: 'https://kasinitosato.github.io', left: 75.8, width: 15.0 },
+];
+---
+
+<dialog class="rv" aria-label="Resume" data-resume-viewer data-page={url('/resume/')}>
+  <div class="rv-bar">
+    <p class="rv-title">Resume</p>
+    <div class="rv-zoom" role="group" aria-label="Zoom">
+      <button type="button" class="rv-icon" data-rv="out" aria-label="Zoom out"><span class="rv-minus" aria-hidden="true"></span></button>
+      <output class="rv-level" aria-live="polite">100%</output>
+      <button type="button" class="rv-icon" data-rv="in" aria-label="Zoom in"><span class="rv-plus" aria-hidden="true"></span></button>
+      <button type="button" class="rv-text" data-rv="fit">Fit</button>
+    </div>
+    <div class="rv-actions">
+      <a class="rv-text rv-download" href={pdf} download>Download PDF</a>
+      <button type="button" class="rv-icon rv-close" data-rv="close" aria-label="Close the resume"><span aria-hidden="true"></span></button>
+    </div>
+  </div>
+
+  <div class="rv-stage" data-rv-stage tabindex="0" autofocus aria-label="Resume page. Drag to move it, and use the zoom buttons or plus and minus keys to zoom.">
+    <div class="rv-fly" data-rv-fly>
+      <div class="rv-sheet" data-rv-sheet>
+        <p class="rv-loading" aria-hidden="true">Loading</p>
+        <img
+          data-src={full.src}
+          width={resumePage.width}
+          height={resumePage.height}
+          alt="Kasin Ito-Sato's one-page resume. Download the PDF for selectable text."
+          decoding="async"
+          draggable="false"
+        />
+        {hotspots.map((h) => (
+          <a class="rv-hot" href={h.href} aria-label={h.label} style={`left: ${h.left}%; width: ${h.width}%;`}
+            target={h.href.startsWith('http') ? '_blank' : undefined} rel={h.href.startsWith('http') ? 'noopener' : undefined}></a>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <p class="rv-hint" aria-hidden="true">
+    <span class="rv-hint-touch">Drag to move · pinch or double-tap to zoom</span>
+    <span class="rv-hint-mouse">Drag to move · Ctrl or ⌘ + scroll to zoom · double-click to zoom in</span>
+  </p>
+</dialog>
+
+<style is:global>
+  html.rv-lock { overflow: hidden; }
+</style>
+
+<style>
+  .rv {
+    position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none;
+    margin: 0; padding: 0; border: 0; color: #f3efe7; background: #151515;
+    font-family: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif;
+  }
+  .rv[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
+  .rv::backdrop { background: transparent; }
+
+  .rv-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: max(10px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 10px max(16px, env(safe-area-inset-left));
+    border-bottom: 1px solid rgba(243, 239, 231, 0.16); background: #151515;
+  }
+  .rv-title, .rv-level, .rv-text, .rv-hint {
+    font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .rv-title { margin: 0; color: #a8a59e; }
+  .rv-zoom, .rv-actions { display: flex; align-items: center; gap: 4px; }
+  .rv-level { min-width: 5ch; text-align: center; color: #f3efe7; font-variant-numeric: tabular-nums; }
+
+  .rv button, .rv-download {
+    display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px;
+    padding: 0 12px; border: 1px solid transparent; background: transparent; color: #f3efe7; text-decoration: none; cursor: pointer;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: border-color 160ms ease, background-color 160ms ease;
+  }
+  .rv-icon { padding: 0; }
+  .rv-download { border-color: rgba(243, 239, 231, 0.4); }
+  @media (hover: hover) and (pointer: fine) {
+    .rv button:hover, .rv-download:hover { border-color: rgba(243, 239, 231, 0.6); }
+  }
+  .rv button:active, .rv-download:active { background: rgba(243, 239, 231, 0.12); }
+  .rv button:focus-visible, .rv-download:focus-visible, .rv-hot:focus-visible { outline: 2px solid #f3efe7; outline-offset: 2px; }
+  .rv-stage:focus-visible { box-shadow: inset 0 0 0 1px rgba(243, 239, 231, 0.35); }
+
+  /* Drawn icons: minus, plus and close are the same two 14px bars */
+  .rv-minus, .rv-plus, .rv-close span { position: relative; width: 14px; height: 14px; }
+  .rv-minus::before, .rv-plus::before, .rv-plus::after, .rv-close span::before, .rv-close span::after {
+    content: ''; position: absolute; left: 0; top: 6.5px; width: 14px; height: 1.5px; background: currentColor;
+  }
+  .rv-plus::after { transform: rotate(90deg); }
+  .rv-close span::before { transform: rotate(45deg); }
+  .rv-close span::after { transform: rotate(-45deg); }
+
+  .rv-stage { position: relative; overflow: hidden; touch-action: none; cursor: grab; outline: none; }
+  .rv-stage.is-dragging { cursor: grabbing; }
+  .rv-fly { position: absolute; inset: 0; }
+  .rv-sheet {
+    position: absolute; top: 0; left: 0; transform-origin: 0 0; background: #fff;
+    box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.7);
+  }
+  .rv-sheet.is-easing { transition: transform 260ms cubic-bezier(0.23, 1, 0.32, 1); }
+  .rv-sheet img { position: relative; display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 240ms ease; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+  .rv-sheet img.is-loaded { opacity: 1; }
+  .rv-sheet:has(img.is-loaded) .rv-loading { visibility: hidden; }
+  .rv-loading {
+    position: absolute; inset: 0; display: grid; place-items: center; margin: 0;
+    font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: #8f897f;
+  }
+  /* Clickable areas over the contact line at the top of the page */
+  .rv-hot { position: absolute; top: 6.3%; height: 2.1%; -webkit-tap-highlight-color: transparent; }
+  @media (hover: hover) and (pointer: fine) {
+    .rv-hot { cursor: pointer; }
+    .rv-hot:hover { background: rgba(185, 171, 146, 0.25); }
+  }
+
+  .rv-hint { margin: 0; padding: 10px 16px max(10px, env(safe-area-inset-bottom)); text-align: center; color: #a8a59e; background: #151515; }
+  .rv-hint-mouse { display: none; }
+  @media (hover: hover) and (pointer: fine) {
+    .rv-hint-touch { display: none; }
+    .rv-hint-mouse { display: inline; }
+  }
+  @media (max-width: 560px) {
+    .rv-title, .rv-text[data-rv='fit'] { display: none; }
+    .rv-bar { gap: 4px; }
+  }
+</style>
+
+<script>
+  const dlg = document.querySelector<HTMLDialogElement>('[data-resume-viewer]');
+  if (dlg) setUp(dlg);
+
+  function setUp(dlg: HTMLDialogElement) {
+    const page = dlg.dataset.page ?? '/resume/';
+    const stage = dlg.querySelector<HTMLElement>('[data-rv-stage]')!;
+    const fly = dlg.querySelector<HTMLElement>('[data-rv-fly]')!;
+    const sheet = dlg.querySelector<HTMLElement>('[data-rv-sheet]')!;
+    const img = sheet.querySelector('img')!;
+    const level = dlg.querySelector('output')!;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const natural = Number(img.getAttribute('width')); // full size of the picture, in pixels
+    const ratio = Number(img.getAttribute('height')) / natural;
+
+    let base = 0; // sheet width at "Fit"
+    let s = 1; // zoom, relative to Fit
+    let tx = 0;
+    let ty = 0;
+    let maxS = 4;
+    let pad = 24;
+    let opener: HTMLElement | null = null;
+    let closing = false;
+
+    const load = () => {
+      if (img.getAttribute('src')) return;
+      img.addEventListener('load', () => img.classList.add('is-loaded'), { once: true });
+      img.src = img.dataset.src!;
+    };
+
+    // Which links open the viewer: any link to the Resume page on this site, or one marked data-resume-open
+    const opensViewer = (a: HTMLAnchorElement) => {
+      if (a.closest('[data-resume-viewer]')) return false;
+      if (a.hasAttribute('data-resume-open')) return true;
+      return a.origin === location.origin && a.pathname === page;
+    };
+    const linkFrom = (t: EventTarget | null) => (t instanceof Element ? t.closest<HTMLAnchorElement>('a[href]') : null);
+
+    // Start fetching the picture as soon as someone points at or focuses a resume link
+    const warm = (e: Event) => {
+      const a = linkFrom(e.target);
+      if (a && opensViewer(a)) load();
+    };
+    document.addEventListener('pointerover', warm, { passive: true });
+    document.addEventListener('focusin', warm);
+
+    document.addEventListener('click', (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // let "open in new tab" work
+      const a = linkFrom(e.target);
+      if (!a || !opensViewer(a)) return;
+      e.preventDefault();
+      open(a);
+    });
+
+    // ---------- Fit, zoom and pan ----------
+    const size = () => stage.getBoundingClientRect();
+    const render = () => {
+      sheet.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${s})`;
+      level.textContent = `${Math.round(s * 100)}%`;
+    };
+    const clamp = () => {
+      const { width: W, height: H } = size();
+      const w = base * s;
+      const h = base * ratio * s;
+      tx = w <= W - 2 * pad ? (W - w) / 2 : Math.min(pad, Math.max(W - w - pad, tx));
+      ty = h <= H - 2 * pad ? (H - h) / 2 : Math.min(pad, Math.max(H - h - pad, ty));
+    };
+    const fit = () => {
+      const { width: W, height: H } = size();
+      pad = W < 640 ? 12 : 32;
+      // Phones fill the width (scroll down to read); larger screens show the whole page
+      base = W < 640 ? W - 2 * pad : Math.min(W - 2 * pad, (H - 2 * pad) / ratio);
+      sheet.style.width = `${base}px`;
+      sheet.style.height = `${base * ratio}px`;
+      maxS = Math.min(6, Math.max(2.5, natural / base));
+      s = 1;
+      tx = 0;
+      ty = pad;
+      clamp();
+      render();
+    };
+    const zoomTo = (next: number, cx: number, cy: number, ease = false) => {
+      next = Math.min(maxS, Math.max(1, next));
+      tx = cx - ((cx - tx) * next) / s;
+      ty = cy - ((cy - ty) * next) / s;
+      s = next;
+      clamp();
+      sheet.classList.toggle('is-easing', ease && !reduceMotion.matches);
+      render();
+    };
+    const zoomCenter = (factor: number) => {
+      const { width: W, height: H } = size();
+      zoomTo(s * factor, W / 2, H / 2, true);
+    };
+    const toggleAt = (cx: number, cy: number) => zoomTo(s > 1.05 ? 1 : Math.min(maxS, 2.5), cx, cy, true);
+
+    // Pointers: one finger or the mouse drags, two fingers pinch
+    const pts = new Map<number, { x: number; y: number }>();
+    let travel = 0;
+    let dragged = false;
+    let lastTap = { t: 0, x: 0, y: 0 };
+    let lastPointer = 'mouse';
+    const local = (e: PointerEvent | MouseEvent | WheelEvent) => {
+      const r = size();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    };
+    const pinch = () => {
+      const [a, b] = [...pts.values()];
+      return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) };
+    };
+
+    stage.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      lastPointer = e.pointerType;
+      pts.set(e.pointerId, local(e));
+      if (pts.size === 1) { travel = 0; dragged = false; }
+      sheet.classList.remove('is-easing');
+    });
+    stage.addEventListener('pointermove', (e) => {
+      const prev = pts.get(e.pointerId);
+      if (!prev) return;
+      const before = pts.size === 2 ? pinch() : null;
+      const now = local(e);
+      pts.set(e.pointerId, now);
+      if (before) {
+        const after = pinch();
+        tx += after.x - before.x;
+        ty += after.y - before.y;
+        zoomTo(s * (after.d / before.d), after.x, after.y);
+        dragged = true;
+        return;
+      }
+      tx += now.x - prev.x;
+      ty += now.y - prev.y;
+      travel += Math.abs(now.x - prev.x) + Math.abs(now.y - prev.y);
+      if (travel > 6 && !dragged) {
+        dragged = true;
+        stage.setPointerCapture(e.pointerId); // only once it is a drag, so taps still reach the links
+        stage.classList.add('is-dragging');
+      }
+      clamp();
+      render();
+    });
+    const lift = (e: PointerEvent) => {
+      if (!pts.delete(e.pointerId)) return;
+      if (pts.size) return;
+      stage.classList.remove('is-dragging');
+      if (dragged || e.type === 'pointercancel' || e.pointerType === 'mouse') return;
+      // Double-tap to zoom in, or back out to Fit
+      const p = local(e);
+      if (e.timeStamp - lastTap.t < 320 && Math.hypot(p.x - lastTap.x, p.y - lastTap.y) < 30) {
+        toggleAt(p.x, p.y);
+        lastTap.t = 0;
+      } else lastTap = { t: e.timeStamp, ...p };
+    };
+    stage.addEventListener('pointerup', lift);
+    stage.addEventListener('pointercancel', lift);
+    stage.addEventListener('dblclick', (e) => {
+      if (lastPointer !== 'mouse' || (e.target as Element).closest('.rv-hot')) return; // touch has its own double-tap above
+      const p = local(e);
+      toggleAt(p.x, p.y);
+    });
+    // A drag never counts as a click on a link; a click on the dark area around the page closes
+    stage.addEventListener('click', (e) => {
+      if (dragged) { e.preventDefault(); e.stopPropagation(); dragged = false; return; }
+      if (!(e.target as Element).closest('[data-rv-sheet]')) requestClose();
+    }, true);
+
+    stage.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      sheet.classList.remove('is-easing');
+      if (e.ctrlKey || e.metaKey) {
+        const p = local(e);
+        const d = Math.max(-50, Math.min(50, e.deltaY)); // a mouse-wheel notch is about 100; a trackpad pinch sends small steps
+        zoomTo(s * Math.exp(-d * 0.01), p.x, p.y); // trackpad pinch arrives as Ctrl + wheel
+      } else {
+        const k = e.deltaMode === 1 ? 16 : 1;
+        tx -= e.deltaX * k;
+        ty -= e.deltaY * k;
+        clamp();
+        render();
+      }
+    }, { passive: false });
+
+    dlg.addEventListener('keydown', (e) => {
+      if (e.target instanceof HTMLElement && e.target.closest('button, a') && (e.key === 'Enter' || e.key === ' ')) return;
+      const pan = (dx: number, dy: number) => { tx += dx; ty += dy; clamp(); sheet.classList.add('is-easing'); render(); };
+      const keys: Record<string, () => void> = {
+        '+': () => zoomCenter(1.4), '=': () => zoomCenter(1.4), '-': () => zoomCenter(1 / 1.4), '0': () => fit(),
+        ArrowUp: () => pan(0, 80), ArrowDown: () => pan(0, -80), ArrowLeft: () => pan(80, 0), ArrowRight: () => pan(-80, 0),
+      };
+      if (keys[e.key]) { e.preventDefault(); keys[e.key](); }
+    });
+
+    dlg.querySelector('[data-rv="in"]')!.addEventListener('click', () => zoomCenter(1.4));
+    dlg.querySelector('[data-rv="out"]')!.addEventListener('click', () => zoomCenter(1 / 1.4));
+    dlg.querySelector('[data-rv="fit"]')!.addEventListener('click', () => { sheet.classList.add('is-easing'); fit(); });
+    dlg.querySelector('[data-rv="close"]')!.addEventListener('click', () => requestClose());
+    dlg.addEventListener('cancel', (e) => { e.preventDefault(); requestClose(); }); // Escape
+    window.addEventListener('resize', () => { if (dlg.open) fit(); });
+
+    // ---------- Open and close ----------
+    // Back on a phone closes the viewer instead of leaving the page
+    const ours = () => (history.state as { resumeViewer?: boolean } | null)?.resumeViewer === true;
+    window.addEventListener('popstate', () => { if (dlg.open) close(); });
+    function requestClose() {
+      if (ours()) history.back(); // popstate then closes it
+      else close();
+    }
+
+    // The sheet grows out of the link that was clicked, and shrinks back into it on close
+    const flight = (from: HTMLElement) => {
+      const a = from.getBoundingClientRect();
+      const r = sheet.getBoundingClientRect();
+      const st = size();
+      const ox = r.left - st.left + r.width / 2;
+      const oy = r.top - st.top + r.height / 2;
+      fly.style.transformOrigin = `${ox}px ${oy}px`;
+      const k = Math.max(0.06, Math.min(0.5, a.width / r.width));
+      return `translate(${a.left + a.width / 2 - (r.left + r.width / 2)}px, ${a.top + a.height / 2 - (r.top + r.height / 2)}px) scale(${k})`;
+    };
+
+    function open(from: HTMLElement) {
+      if (dlg.open) return;
+      opener = from;
+      closing = false;
+      load();
+      dlg.showModal();
+      document.documentElement.classList.add('rv-lock');
+      sheet.classList.remove('is-easing');
+      fit();
+      history.pushState({ ...(history.state ?? {}), resumeViewer: true }, '');
+      stage.focus({ preventScroll: true });
+      if (reduceMotion.matches) {
+        dlg.animate({ opacity: [0, 1] }, { duration: 160, easing: 'ease-out' });
+        return;
+      }
+      dlg.animate({ backgroundColor: ['rgba(21, 21, 21, 0)', 'rgba(21, 21, 21, 1)'] }, { duration: 320, easing: 'ease-out' });
+      for (const el of dlg.querySelectorAll<HTMLElement>('.rv-bar, .rv-hint')) {
+        el.animate({ opacity: [0, 1] }, { duration: 300, delay: 120, easing: 'ease-out', fill: 'backwards' });
+      }
+      fly.animate(
+        { transform: [flight(from), 'none'], opacity: [0, 1, 1], offset: [0, 0.18, 1] },
+        { duration: 520, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+      );
+    }
+
+    function close() {
+      if (!dlg.open || closing) return;
+      closing = true;
+      const done = () => {
+        dlg.close();
+        document.documentElement.classList.remove('rv-lock');
+        fly.style.transform = '';
+        closing = false;
+        opener?.focus({ preventScroll: true });
+      };
+      if (reduceMotion.matches) {
+        dlg.animate({ opacity: [1, 0] }, { duration: 140, easing: 'ease-in' }).finished.then(done);
+        return;
+      }
+      // Fly back into the link if it is still on screen, otherwise just fade out
+      const r = opener?.getBoundingClientRect();
+      const visible = r && r.width > 0 && r.bottom > 0 && r.top < innerHeight;
+      const to = visible ? flight(opener!) : 'scale(0.96)';
+      dlg.animate({ backgroundColor: ['rgba(21, 21, 21, 1)', 'rgba(21, 21, 21, 0)'] }, { duration: 260, easing: 'ease-in', fill: 'forwards' });
+      for (const el of dlg.querySelectorAll<HTMLElement>('.rv-bar, .rv-hint')) {
+        el.animate({ opacity: [1, 0] }, { duration: 140, easing: 'ease-in', fill: 'forwards' });
+      }
+      fly
+        .animate({ transform: ['none', to], opacity: [1, 1, 0], offset: [0, 0.8, 1] }, { duration: 280, easing: 'cubic-bezier(0.55, 0, 1, 0.45)', fill: 'forwards' })
+        .finished.then(() => {
+          dlg.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+          done();
+        });
+    }
+  }
+</script>

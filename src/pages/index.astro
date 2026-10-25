@@ -19,6 +19,7 @@ import { url } from '../lib/url';
 import { site } from '../lib/site';
 import { categories } from '../lib/categories';
 import { featured } from '../lib/featured';
+import ResumeViewer from '../components/ResumeViewer.astro';
 import { ogFile } from '../lib/og';
 import { shortDescription } from '../lib/og-image';
 import headshot from '../assets/headshot.jpg';
@@ -1014,5 +1015,6 @@ const nav = [
         );
       }
     </script>
+    <ResumeViewer />
   </body>
 </html>
